@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.app.bluecotton.mapper.MyTestMapper">
+    <select id="select">
+        MY SELECT QUERY
+    </select>
+
+    <insert id="insert">
+        MY INSERT QUERY
+    </insert>
+
+    <update id="update">
+        MY UPDATE QUERY
+    </update>
+
+    <delete id="delete">
+        MY DELETE QUERY
+    </delete>
+
+</mapper>
