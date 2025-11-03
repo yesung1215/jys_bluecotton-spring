@@ -8,6 +8,7 @@ public class ProductVO {
     private String productName;
     private Integer productPrice;
     private Integer productStock;
-    private String productCategory;
+    private Enum productCategory;
     private Enum productType;
+    private Enum productPurchaseType;
 }

@@ -13,6 +13,5 @@ public class PostVO {
     private Long postReadCount;
     private boolean postStatus;
     private Long memberId;
-    private Long commentId;
     private Long somId;
 }

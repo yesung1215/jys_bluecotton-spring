@@ -9,6 +9,6 @@ public class PostReplyVO {
     private Long id;
     private String postReplyContent;
     private Date postReplyCreateAt;
-    private Long commentId;
+    private Long postCommentId;
     private Long memberId;
 }

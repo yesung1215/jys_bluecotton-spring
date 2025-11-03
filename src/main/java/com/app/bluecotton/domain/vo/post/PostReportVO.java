@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class PostReportVO {
     private Long id;
-    private String postCommentReportContent;
+    private String postReportContent;
     private Long memberId;
     private Long postId;
 }

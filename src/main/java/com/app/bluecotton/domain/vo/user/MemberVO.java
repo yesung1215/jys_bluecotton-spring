@@ -8,7 +8,7 @@ import java.util.Date;
 public class MemberVO {
     private Long id;
     private String memberName;
-    private String memberNickName;
+    private String memberNickname;
     private String memberEmail;
     private String memberPassword;
     private String memberAddress;

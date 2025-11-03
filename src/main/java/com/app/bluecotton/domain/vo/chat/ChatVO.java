@@ -9,6 +9,6 @@ public class ChatVO {
     private Long id;
     private String chatTitle;
     private Date chatCreateAt;
-    private boolean chatUserStatus;
-    private Integer ChatUserCount;
+    private boolean chatStatus;
+    private Integer ChatMemberCount;
 }

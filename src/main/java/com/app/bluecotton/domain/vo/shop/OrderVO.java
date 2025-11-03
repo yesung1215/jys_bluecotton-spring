@@ -8,7 +8,7 @@ import java.util.Date;
 public class OrderVO {
     private Long id;
     private Date orderCreateAt;
-    private String orderStatus;
+    private boolean orderStatus;
     private Long productId;
     private Long memberId;
 }
