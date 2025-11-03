@@ -5,6 +5,7 @@
         <setting name="jdbcTypeForNull" value="NULL" />
     </settings>
     <typeAliases>
-        <typeAlias type="com.app.bluecotton.domain.vo.MyTestVO" alias="MyTestVO" />
+<!--        <typeAlias type="com.app.bluecotton.domain.vo.MyTestVO" alias="MyTestVO" />-->
+        <typeAlias type="com.app.bluecotton.domain.vo.member.MemberVO" alias="MemberVO" />
     </typeAliases>
 </configuration>

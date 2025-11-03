@@ -1,4 +1,4 @@
-package com.app.bluecotton.domain.vo.user;
+package com.app.bluecotton.domain.vo.member;
 
 import lombok.Data;
 
