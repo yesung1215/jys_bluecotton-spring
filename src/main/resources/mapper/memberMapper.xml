@@ -3,7 +3,7 @@
 <mapper namespace="com.app.bluecotton.mapper.MemberMapper">
 
     <select id="selectAll" resultType="MemberVO">
-        SELECT ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD, MEMBER_ADDRESS, MEMBER_GENDER, MEMBER_BIRTH, MEMBER_CANDY, MEMBER_RANK, MEMBER_PROVIDER
+        SELECT ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD, MEMBER_ADDRESS, MEMBER_GENDER, MEMBER_BIRTH, MEMBER_CANDY, MEMBER_RANK, MEMBER_PROVIDER, MEMBER_PHONE
         FROM TBL_MEMBER
     </select>
 
@@ -23,7 +23,7 @@
     </select>
 
     <select id="select" parameterType="Long" resultType="MemberVO">
-        SELECT ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD, MEMBER_ADDRESS, MEMBER_GENDER, MEMBER_BIRTH, MEMBER_CANDY, MEMBER_RANK, MEMBER_PROVIDER
+        SELECT ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD, MEMBER_ADDRESS, MEMBER_GENDER, MEMBER_BIRTH, MEMBER_CANDY, MEMBER_RANK, MEMBER_PROVIDER, MEMBER_PHONE
         FROM TBL_MEMBER
         WHERE ID = #{id}
     </select>
@@ -34,9 +34,9 @@
     </select>
 
     <insert id="insert" parameterType="MemberVO">
-        INSERT INTO TBL_MEMBER(ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD, MEMBER_ADDRESS, MEMBER_GENDER, MEMBER_BIRTH)
+        INSERT INTO TBL_MEMBER(ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD, MEMBER_ADDRESS, MEMBER_GENDER, MEMBER_BIRTH, MEMBER_PHONE)
         VALUES(SEQ_MEMBER.NEXTVAL, #{memberName}, #{memberNickname}, #{memberEmail}, #{memberPassword},
-        #{memberAddress}, #{memberGender}, #{memberBirth})
+        #{memberAddress}, #{memberGender}, #{memberBirth}, #{memberPhone})
     </insert>
 
     <update id="update">

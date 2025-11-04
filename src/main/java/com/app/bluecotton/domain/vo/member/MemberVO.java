@@ -21,4 +21,5 @@ public class MemberVO {
     private Long memberCandy;
     private String memberRank;
     private String memberProvider;
+    private String memberPhone;
 };
