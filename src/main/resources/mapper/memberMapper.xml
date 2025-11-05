@@ -2,49 +2,93 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.app.bluecotton.mapper.MemberMapper">
 
-    <select id="selectAll" resultType="MemberVO">
-        SELECT ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD, MEMBER_ADDRESS, MEMBER_GENDER, MEMBER_BIRTH, MEMBER_CANDY, MEMBER_RANK, MEMBER_PROVIDER
-        FROM TBL_MEMBER
-    </select>
-
-    <select id="existByMemberEmail" parameterType="String" resultType="_boolean">
+    <!-- 회원 단건 조회 -->
+    <select id="select" parameterType="Long" resultType="MemberVO">
         SELECT
-        CASE
-        WHEN COUNT(ID) > 0 THEN 1 ELSE 0
-        END
+        ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD,
+        MEMBER_ADDRESS, MEMBER_PICTURE_PATH, MEMBER_PICTURE_NAME,
+        MEMBER_GENDER, MEMBER_BIRTH, MEMBER_CANDY, MEMBER_RANK, MEMBER_PROVIDER, MEMBER_PHONE
         FROM TBL_MEMBER
-        WHERE MEMBER_EMAIL = #{memberEmail}
+        WHERE ID = #{id}
     </select>
 
+    <!-- 이메일로 회원 ID 조회 -->
     <select id="selectIdByEmail" parameterType="String" resultType="Long">
         SELECT ID
         FROM TBL_MEMBER
         WHERE MEMBER_EMAIL = #{memberEmail}
     </select>
 
-    <select id="select" parameterType="Long" resultType="MemberVO">
-        SELECT ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD, MEMBER_ADDRESS, MEMBER_GENDER, MEMBER_BIRTH, MEMBER_CANDY, MEMBER_RANK, MEMBER_PROVIDER
+    <!-- 전체 회원 조회 -->
+    <select id="selectAll" resultType="MemberVO">
+        SELECT
+        ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD,
+        MEMBER_ADDRESS, MEMBER_PICTURE_PATH, MEMBER_PICTURE_NAME,
+        MEMBER_GENDER, MEMBER_BIRTH, MEMBER_CANDY, MEMBER_RANK, MEMBER_PROVIDER, MEMBER_PHONE
         FROM TBL_MEMBER
-        WHERE ID = #{id}
     </select>
 
+    <!-- 이메일 중복 체크 -->
+    <select id="existByMemberEmail" parameterType="String" resultType="_boolean">
+        SELECT CASE WHEN COUNT(ID) > 0 THEN 1 ELSE 0 END
+        FROM TBL_MEMBER
+        WHERE MEMBER_EMAIL = #{memberEmail}
+    </select>
+
+    <!-- 전체 주소 조회 (지도용) -->
     <select id="selectAllAddress" resultType="String">
         SELECT MEMBER_ADDRESS
         FROM TBL_MEMBER
+        WHERE MEMBER_ADDRESS IS NOT NULL
     </select>
 
+    <!-- 일반 회원가입 -->
     <insert id="insert" parameterType="MemberVO">
-        INSERT INTO TBL_MEMBER(ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD, MEMBER_ADDRESS, MEMBER_GENDER, MEMBER_BIRTH)
-        VALUES(SEQ_MEMBER.NEXTVAL, #{memberName}, #{memberNickname}, #{memberEmail}, #{memberPassword},
-        #{memberAddress}, #{memberGender}, #{memberBirth})
+        INSERT INTO TBL_MEMBER(
+        ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD,
+        MEMBER_ADDRESS, MEMBER_PICTURE_PATH, MEMBER_PICTURE_NAME,
+        MEMBER_GENDER, MEMBER_BIRTH, MEMBER_PROVIDER, MEMBER_PHONE
+        ) VALUES (
+        SEQ_MEMBER.NEXTVAL, #{memberName}, #{memberNickname}, #{memberEmail}, #{memberPassword},
+        #{memberAddress}, #{memberPicturePath}, #{memberPictureName},
+        #{memberGender}, #{memberBirth}, #{memberProvider}, #{memberPhone}
+        )
     </insert>
 
-    <update id="update">
-        MY UPDATE QUERY
+    <!-- 소셜 회원가입 -->
+    <insert id="insertSocial" parameterType="MemberInsertSocialVO">
+        INSERT INTO TBL_MEMBER(
+        ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL,
+        MEMBER_PICTURE_PATH, MEMBER_PICTURE_NAME,
+        MEMBER_PROVIDER
+        ) VALUES (
+        SEQ_MEMBER.NEXTVAL, #{memberName}, #{memberNickname}, #{memberEmail},
+        #{memberPicturePath}, #{memberPictureName},
+        #{memberProvider}
+        )
+    </insert>
+
+    <!-- 회원 정보 수정 -->
+    <update id="update" parameterType="MemberVO">
+        UPDATE TBL_MEMBER
+        SET
+        MEMBER_NAME = #{memberName},
+        MEMBER_NICKNAME = #{memberNickname},
+        MEMBER_PASSWORD = #{memberPassword},
+        MEMBER_ADDRESS = #{memberAddress},
+        MEMBER_PICTURE_PATH = #{memberPicturePath},
+        MEMBER_PICTURE_NAME = #{memberPictureName},
+        MEMBER_GENDER = #{memberGender},
+        MEMBER_BIRTH = #{memberBirth},
+        MEMBER_PROVIDER = #{memberProvider},
+        MEMBER_PHONE = #{memberPhone}
+        WHERE ID = #{id}
     </update>
 
-    <delete id="delete">
-        MY DELETE QUERY
+    <!-- 회원 삭제 -->
+    <delete id="delete" parameterType="Long">
+        DELETE FROM TBL_MEMBER
+        WHERE ID = #{id}
     </delete>
 
 </mapper>

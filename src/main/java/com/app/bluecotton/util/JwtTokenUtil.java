@@ -27,7 +27,7 @@ public class JwtTokenUtil {
         return Jwts.builder()
                 .claim("memberEmail", memberEmail) // 클레임 추가(이메일)
                 .setExpiration(expirationDate) // 만료시간
-                .setIssuer("sehwan")
+                .setIssuer("BlueCotton")
                 .signWith(SignatureAlgorithm.HS256, secretKey) // SHA-256 알고리즘
                 .setHeaderParam("type", "JWT") // JWT 타입
                 .compact(); // 생성
@@ -43,7 +43,7 @@ public class JwtTokenUtil {
         return Jwts.builder()
                 .claim("memberEmail", memberEmail) // 클레임 추가(이메일)
                 .setExpiration(expirationDate) // 만료시간
-                .setIssuer("sehwan")
+                .setIssuer("BlueCotton")
                 .signWith(SignatureAlgorithm.HS256, secretKey) // SHA-256 알고리즘
                 .setHeaderParam("type", "JWT") // JWT 타입
                 .compact(); // 생성

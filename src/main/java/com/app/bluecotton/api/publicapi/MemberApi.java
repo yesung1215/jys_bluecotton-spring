@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,18 +17,28 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/member/*")
 public class MemberApi {
+
     private final MemberService memberService;
 
+    //  스웨거 설명서 추가해야함
+    //  회원 가입
     @PostMapping("register")
-    public ResponseEntity<ApiResponseDTO<Object>> register(@RequestBody MemberVO memberVO){
-        log.info("회원가입테스트");
+    public ResponseEntity<ApiResponseDTO<Object>> register(@RequestBody MemberVO  memberVO) {
         memberService.register(memberVO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.of("회원가입이 완료되었습니다"));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.of("회원가입이 완료되었습니다")); // 201
     }
 
-    @GetMapping("member-address")
-    public ResponseEntity<ApiResponseDTO<Object>> memberAddress(){
-        List<String> data = memberService.findALlMemberAddress();
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("모든 회원의 주소를 조회했습니다", data));
+    //  회원 수정
+    @PutMapping("modify")
+    public ResponseEntity<ApiResponseDTO<Object>> modify(@RequestBody MemberVO  memberVO) {
+        memberService.modify(memberVO);
+        return  ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("정보 수정이 완료되었습니다"));
+    }
+
+    //  회원 탈퇴
+    @DeleteMapping("unregister")
+    public ResponseEntity<ApiResponseDTO<Object>> unregister(@RequestBody Long  id) {
+        memberService.withdraw(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.of("회원 탈퇴가 완료되었습니다"));
     }
 }

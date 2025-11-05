@@ -9,6 +9,8 @@
         <typeAlias type="com.app.bluecotton.domain.vo.member.MemberVO" alias="MemberVO" />
         <typeAlias type="com.app.bluecotton.domain.vo.member.MemberProfileVO" alias="MemberProfileVO" />
         <typeAlias type="com.app.bluecotton.domain.vo.member.MemberSocialVO" alias="MemberSocialVO" />
+        <typeAlias type="com.app.bluecotton.domain.vo.member.MemberInsertSocialVO" alias="MemberInsertSocialVO" />
+
 
         <!-- post -->
         <typeAlias type="com.app.bluecotton.domain.vo.post.PostVO" alias="PostVO" />
