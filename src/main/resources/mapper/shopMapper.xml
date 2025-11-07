@@ -82,8 +82,67 @@
         </choose>
     </select>
     
-    <select id="selectProductDetailHeader" >
+    <select id="selectProductDetailHeader" parameterType="Long" resultType="com.app.bluecotton.domain.dto.ProductDetailResponseDTO">
+        SELECT
+        TBP.ID,
+        TBP.PRODUCT_NAME,
+        TBP.PRODUCT_PRICE,
+        TBP.PRODUCT_TYPE,
+        TBP.PRODUCT_PURCHASE_TYPE,
 
+        (SELECT ROUND(AVG(TBPR.PRODUCT_REVIEW_RATING), 1)
+        FROM TBL_PRODUCT_REVIEW TBPR
+        WHERE TBPR.PRODUCT_ID = TBP.ID) AS PRODUCT_AVG_RATING,
+
+        (SELECT COUNT(*)
+        FROM TBL_PRODUCT_REVIEW TBPR
+        WHERE TBPR.PRODUCT_ID = TBP.ID) AS PRODUCT_REVIEW_COUNT,
+
+        (SELECT COUNT(*)
+        FROM TBL_PRODUCT_LIKE TBPL
+        WHERE TBPL.PRODUCT_ID = TBP.ID) AS PRODUCT_LIKE_COUNT,
+
+
+        (SELECT TBPI.PRODUCT_IMAGE_PATH || TBPI.PRODUCT_IMAGE_NAME
+        FROM TBL_PRODUCT_IMAGE TBPI
+        WHERE TBPI.PRODUCT_ID = TBP.ID
+        AND TBPI.PRODUCT_IMAGE_TYPE = 'MAIN'
+        AND ROWNUM = 1) AS PRODUCT_MAIN_IMAGE_URL,
+
+
+        (SELECT LISTAGG(TBPI.PRODUCT_IMAGE_PATH || TBPI.PRODUCT_IMAGE_NAME, ',')
+        WITHIN GROUP (ORDER BY TBPI.ID)
+        FROM TBL_PRODUCT_IMAGE TBPI
+        WHERE TBPI.PRODUCT_ID = TBP.ID
+        AND TBPI.PRODUCT_IMAGE_TYPE = 'SUB') AS PRODUCT_SUB_IMAGE_URL
+
+        FROM TBL_PRODUCT TBP
+        WHERE TBP.ID = #{id}
+    </select>
+    
+    <select id="selectProductDetailInfo" parameterType="Long" resultType="com.app.bluecotton.domain.dto.ProductInfoDetailResponseDTO">
+        SELECT
+        TBP.PRODUCT_NAME,
+        TBP.PRODUCT_MAIN_DESCRIPTION,
+        TBP.PRODUCT_SUB_DESCRIPTION,
+        TBP.PRODUCT_WEIGHT,
+        TBP.PRODUCT_SIZE,
+        TBP.PRODUCT_MATERIAL,
+
+        (SELECT TBPI.PRODUCT_IMAGE_PATH || TBPI.PRODUCT_IMAGE_NAME
+        FROM TBL_PRODUCT_IMAGE TBPI
+        WHERE TBPI.PRODUCT_ID = TBP.ID
+        AND TBPI.PRODUCT_IMAGE_TYPE = 'MAIN'
+        AND ROWNUM = 1) AS PRODUCT_MAIN_IMAGE_URL,
+
+        (SELECT LISTAGG(TBPI.PRODUCT_IMAGE_PATH || TBPI.PRODUCT_IMAGE_NAME, ',')
+        WITHIN GROUP (ORDER BY TBPI.ID)
+        FROM TBL_PRODUCT_IMAGE TBPI
+        WHERE TBPI.PRODUCT_ID = TBP.ID
+        AND TBPI.PRODUCT_IMAGE_TYPE = 'SUB') AS PRODUCT_SUB_IMAGE_URL
+
+        FROM TBL_PRODUCT TBP
+        WHERE TBP.ID = #{id}
     </select>
 
 
