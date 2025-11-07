@@ -16,6 +16,7 @@ public class SomResponseDTO {
     private String somTitle;
     private String somCategory;
     private String somAddress;
+    private String somType;
     private Date somStartDate;
     private Date somEndDate;
     private Integer somLike;
@@ -27,6 +28,7 @@ public class SomResponseDTO {
         this.somTitle = somVO.getSomTitle();
         this.somCategory = somVO.getSomCategory();
         this.somAddress = somVO.getSomAddress();
+        this.somType = somVO.getSomType();
         this.somStartDate = somVO.getSomStartDate();
         this.somEndDate = somVO.getSomEndDate();
         this.somLike = somVO.getSomLike();

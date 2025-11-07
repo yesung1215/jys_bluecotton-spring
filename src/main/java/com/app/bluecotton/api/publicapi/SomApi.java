@@ -36,8 +36,8 @@ public class SomApi {
     }
 
     //  솜 카테고리별 조회
-    @GetMapping("category/{somCategory}")
-    public ResponseEntity<ApiResponseDTO> getSomByCategory(@PathVariable("somCategory") String somCategory) {
+    @PostMapping("category")
+    public ResponseEntity<ApiResponseDTO> getSomByCategory(@RequestParam String somCategory) {
         List<SomVO> data = somService.findByCategory(somCategory);
         log.info("category: {}", somCategory);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("솜 카테고리별로 불러왔습니다", data));

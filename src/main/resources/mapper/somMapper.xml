@@ -3,24 +3,24 @@
 <mapper namespace="com.app.bluecotton.mapper.SomMapper">
     <!--  솜 등록  -->
     <insert id="insert" parameterType="SomVO">
-        INSERT INTO TBL_SOM(ID, SOM_TITLE, SOM_CATEGORY, SOM_ADDRESS, SOM_START_DATE, SOM_END_DATE, SOM_CONTENT, MEMBER_ID)
-        VALUES(SEQ_SOM.NEXTVAL, #{somTitle}, #{somCategory}, #{somAddress}, #{somStartDate}, #{somEndDate}, #{somContent}, #{memberId})
+        INSERT INTO TBL_SOM(ID, SOM_TITLE, SOM_CATEGORY, SOM_ADDRESS, SOM_TYPE, SOM_START_DATE, SOM_END_DATE, SOM_CONTENT, MEMBER_ID)
+        VALUES(SEQ_SOM.NEXTVAL, #{somTitle}, #{somCategory}, #{somAddress}, #{somType}, #{somStartDate}, #{somEndDate}, #{somContent}, #{memberId})
     </insert>
     <!--  솜 상세 조회  -->
     <select id="selectById" parameterType="Long" resultType="SomVO">
-        SELECT ID, SOM_TITLE, SOM_CATEGORY, SOM_ADDRESS, SOM_START_DATE, SOM_END_DATE, SOM_LIKE, SOM_CONTENT, MEMBER_ID
+        SELECT ID, SOM_TITLE, SOM_CATEGORY, SOM_ADDRESS, SOM_TYPE, SOM_START_DATE, SOM_END_DATE, SOM_LIKE, SOM_CONTENT, MEMBER_ID
         FROM TBL_SOM
         WHERE ID = #{id}
     </select>
     <!--  솜 카테고리별 조회  -->
     <select id="selectSomByCategory" parameterType="String" resultType="SomVO">
-        SELECT ID, SOM_TITLE, SOM_CATEGORY, SOM_ADDRESS, SOM_START_DATE, SOM_END_DATE, SOM_LIKE, SOM_CONTENT, MEMBER_ID
+        SELECT ID, SOM_TITLE, SOM_CATEGORY, SOM_ADDRESS, SOM_TYPE, SOM_START_DATE, SOM_END_DATE, SOM_LIKE, SOM_CONTENT, MEMBER_ID
         FROM TBL_SOM
         WHERE SOM_CATEGORY  = #{somCategory}
     </select>
     <!--  솜 전체 조회  -->
     <select id="selectAll" resultType="SomVO">
-        SELECT ID, SOM_TITLE, SOM_CATEGORY, SOM_ADDRESS, SOM_START_DATE, SOM_END_DATE, SOM_LIKE, SOM_CONTENT, MEMBER_ID
+        SELECT ID, SOM_TITLE, SOM_CATEGORY, SOM_ADDRESS, SOM_TYPE, SOM_START_DATE, SOM_END_DATE, SOM_LIKE, SOM_CONTENT, MEMBER_ID
         FROM TBL_SOM
     </select>
     <!--  솜 전체 주소 조회  -->

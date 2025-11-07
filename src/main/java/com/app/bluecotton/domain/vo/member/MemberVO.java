@@ -35,4 +35,23 @@ public class MemberVO {
     private String memberRank;
     private String memberProvider;
     private String memberPhone;
+
+    {
+        this.memberPicturePath = "/default";
+        this.memberPictureName = "member.jpg";
+        this.memberAddress = "경기도 성남시 분당구 이매로 143번길 10";
+        this.memberNickname = "임시닉네임";
+        this.memberProvider = "local";
+        this.memberRank = "rookie";
+        this.memberCandy = 0;
+    }
+
+    public MemberVO(MemberInsertSocialVO memberInsertSocialVO) {
+        this.id = memberInsertSocialVO.getId();
+        this.memberEmail = memberInsertSocialVO.getMemberEmail();
+        this.memberName = memberInsertSocialVO.getMemberName();
+        this.memberNickname = memberInsertSocialVO.getMemberNickname();
+        this.memberPictureName = memberInsertSocialVO.getMemberPictureName();
+        this.memberPicturePath = memberInsertSocialVO.getMemberPicturePath();
+        this.memberProvider = memberInsertSocialVO.getMemberProvider(); }
 };

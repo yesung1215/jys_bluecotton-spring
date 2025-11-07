@@ -16,7 +16,7 @@ public interface MemberMapper {
     public void insertSocial(MemberInsertSocialVO memberInsertSocialVO);
 
     //  회원 상세 조회
-    public Optional<MemberVO> select(Long memberId);
+    public Optional<MemberVO> selectById(Long memberId);
 
     //  회원의 이메일로 아이디 조회
     public Long selectIdByEmail(String memberEmail);

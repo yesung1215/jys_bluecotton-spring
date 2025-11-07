@@ -16,7 +16,7 @@ public interface SomMapper {
     public Optional<SomVO> selectById(Long somId);
 
     //  솜 카테고리별 조회
-    public List<SomVO> selectSomByCategory(String category);
+    public List<SomVO> selectSomByCategory(String somCategory);
 
     //  솜 전체 조회
     public List<SomVO> selectAll();

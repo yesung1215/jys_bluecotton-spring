@@ -26,8 +26,8 @@ public class SomDAO {
     }
 
     //  솜 카테고리별 조회
-    public List<SomVO> findByCategory(String category) {
-        return somMapper.selectSomByCategory(category);
+    public List<SomVO> findByCategory(String somCategory) {
+        return somMapper.selectSomByCategory(somCategory);
     }
 
     //  솜 전체 조회

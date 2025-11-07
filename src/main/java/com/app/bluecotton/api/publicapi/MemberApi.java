@@ -43,4 +43,11 @@ public class MemberApi {
         memberService.withdraw(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.of("회원 탈퇴가 완료되었습니다"));
     }
+
+    //  회원 정보 상세 조회 테스트
+    @GetMapping("read")
+    public ResponseEntity<ApiResponseDTO> read(@RequestParam Long memberId) {
+        MemberResponseDTO data = memberService.getMemberById(memberId);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("회원 정보를 불러왔습니다",data));
+    }
 }
