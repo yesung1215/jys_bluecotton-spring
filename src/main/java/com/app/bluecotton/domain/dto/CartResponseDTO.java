@@ -13,4 +13,5 @@ public class CartDTO {
     private String productName;
     private String productPrice;
     private String productPurchaseType;
+    private Integer productStock;
 }
