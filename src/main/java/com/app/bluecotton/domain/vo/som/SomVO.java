@@ -14,6 +14,7 @@ public class SomVO {
     private String somTitle;
     private String somCategory;
     private String somAddress;
+    private String somType;
     private Date somStartDate;
     private Date somEndDate;
     private Integer somLike;

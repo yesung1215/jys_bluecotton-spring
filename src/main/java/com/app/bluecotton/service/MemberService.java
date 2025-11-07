@@ -31,6 +31,6 @@ public interface MemberService {
     public void withdraw(Long id);
 
     // 회원 전체 주소 조히
-    public List<String> getAllMemberAddress();
+    public List<String> findAllMemberAddress();
 
 }

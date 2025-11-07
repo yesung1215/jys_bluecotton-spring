@@ -49,5 +49,6 @@ public class MemberResponseDTO implements Serializable {
         this.memberCandy = memberVO.getMemberCandy();
         this.memberRank = memberVO.getMemberRank();
         this.memberPhone = memberVO.getMemberPhone();
+        this.memberAddress = memberVO.getMemberAddress();
     }
 }

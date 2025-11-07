@@ -29,7 +29,7 @@ public class MyPageApi {
 
     @GetMapping("member-address")
     public ResponseEntity<ApiResponseDTO<Object>> memberAddress(){
-        List<String> data = memberService.findALlMemberAddress();
+        List<String> data = memberService.findAllMemberAddress();
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("모든 회원의 주소를 조회했습니다", data));
     }
 }

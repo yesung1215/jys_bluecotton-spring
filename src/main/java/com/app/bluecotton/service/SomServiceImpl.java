@@ -36,8 +36,8 @@ public class SomServiceImpl implements SomService {
 
     //  솜 카테고리별 조회
     @Override
-    public List<SomVO> findByCategory(String category) {
-        return somDAO.findByCategory(category);
+    public List<SomVO> findByCategory(String somCategory) {
+        return somDAO.findByCategory(somCategory);
     }
 
     //  솜 전체 조회

@@ -17,7 +17,7 @@ public class MemberDAO {
 
     //  회원 조회
     public Optional<MemberVO> findById(Long id){
-        return memberMapper.select(id);
+        return memberMapper.selectById(id);
     }
     //  전체 조회
     public List<MemberVO> findAll(){

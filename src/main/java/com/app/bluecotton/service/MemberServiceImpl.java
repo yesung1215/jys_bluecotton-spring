@@ -100,7 +100,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public List<String> getAllMemberAddress() {
+    public List<String> findAllMemberAddress() {
         return memberDAO.findAllMemberAddress();
     }
 

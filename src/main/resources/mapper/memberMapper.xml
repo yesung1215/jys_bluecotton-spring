@@ -7,15 +7,6 @@
         FROM TBL_MEMBER
     </select>
 
-    <select id="existByMemberEmail" parameterType="String" resultType="_boolean">
-        SELECT
-        ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD,
-        MEMBER_ADDRESS, MEMBER_PICTURE_PATH, MEMBER_PICTURE_NAME,
-        MEMBER_GENDER, MEMBER_BIRTH, MEMBER_CANDY, MEMBER_RANK, MEMBER_PROVIDER, MEMBER_PHONE
-        FROM TBL_MEMBER
-        WHERE ID = #{id}
-    </select>
-
     <!-- 이메일로 회원 ID 조회 -->
     <select id="selectIdByEmail" parameterType="String" resultType="Long">
         SELECT ID
@@ -23,9 +14,10 @@
         WHERE MEMBER_EMAIL = #{memberEmail}
     </select>
 
-    <select id="select" parameterType="Long" resultType="MemberVO">
+    <select id="selectById" parameterType="Long" resultType="MemberVO">
         SELECT ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD, MEMBER_ADDRESS, MEMBER_GENDER, MEMBER_BIRTH, MEMBER_CANDY, MEMBER_RANK, MEMBER_PROVIDER, MEMBER_PHONE
         FROM TBL_MEMBER
+        WHERE ID = #{id}
     </select>
 
     <!-- 이메일 중복 체크 -->
@@ -44,9 +36,28 @@
 
     <!-- 일반 회원가입 -->
     <insert id="insert" parameterType="MemberVO">
-        INSERT INTO TBL_MEMBER(ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD, MEMBER_ADDRESS, MEMBER_GENDER, MEMBER_BIRTH, MEMBER_PHONE)
-        VALUES(SEQ_MEMBER.NEXTVAL, #{memberName}, #{memberNickname}, #{memberEmail}, #{memberPassword},
-        #{memberAddress}, #{memberGender}, #{memberBirth}, #{memberPhone})
+        INSERT INTO TBL_MEMBER(
+        ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD,
+        MEMBER_ADDRESS, MEMBER_PICTURE_PATH, MEMBER_PICTURE_NAME,
+        MEMBER_GENDER, MEMBER_BIRTH, MEMBER_PROVIDER, MEMBER_PHONE
+        ) VALUES (
+        SEQ_MEMBER.NEXTVAL, #{memberName}, #{memberNickname}, #{memberEmail}, #{memberPassword},
+        #{memberAddress}, #{memberPicturePath}, #{memberPictureName},
+        #{memberGender}, #{memberBirth}, #{memberProvider}, #{memberPhone}
+        )
+    </insert>
+
+    <!-- 소셜 회원가입 -->
+    <insert id="insertSocial" parameterType="MemberInsertSocialVO">
+        INSERT INTO TBL_MEMBER(
+        ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL,
+        MEMBER_PICTURE_PATH, MEMBER_PICTURE_NAME,
+        MEMBER_PROVIDER
+        ) VALUES (
+        SEQ_MEMBER.NEXTVAL, #{memberName}, #{memberNickname}, #{memberEmail},
+        #{memberPicturePath}, #{memberPictureName},
+        #{memberProvider}
+        )
     </insert>
 
     <!-- 회원 정보 수정 -->
