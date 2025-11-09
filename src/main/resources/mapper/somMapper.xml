@@ -18,6 +18,12 @@
         FROM TBL_SOM
         WHERE SOM_CATEGORY  = #{somCategory}
     </select>
+    <!--  솜 타입별 조회  -->
+    <select id="selectSomByType" parameterType="String" resultType="SomVO">
+        SELECT ID, SOM_TITLE, SOM_CATEGORY, SOM_ADDRESS, SOM_TYPE, SOM_START_DATE, SOM_END_DATE, SOM_LIKE, SOM_CONTENT, MEMBER_ID
+        FROM TBL_SOM
+        WHERE SOM_TYPE  = #{somType}
+    </select>
     <!--  솜 전체 조회  -->
     <select id="selectAll" resultType="SomVO">
         SELECT ID, SOM_TITLE, SOM_CATEGORY, SOM_ADDRESS, SOM_TYPE, SOM_START_DATE, SOM_END_DATE, SOM_LIKE, SOM_CONTENT, MEMBER_ID
@@ -39,5 +45,56 @@
         DELETE FROM TBL_SOM
         WHERE ID = #{id}
     </delete>
+
+    <!--  솜 인증 작성  -->
+    <insert id="insertSomCheck" parameterType="SomCheckResponseDTO">
+        INSERT INTO TBL_SOM_CHECK (
+        ID,
+        SOM_CHECK_IS_CHECKED,
+        SOM_CHECK_CONTENT,
+        MEMBER_ID,
+        SOM_ID
+        )
+        VALUES (
+        SEQ_SOM_CHECK.NEXTVAL,
+        <!-- boolean → 'Y'/'N' 변환 -->
+        <choose>
+            <when test="somCheckIsChecked"> 'Y' </when>
+            <otherwise> 'N' </otherwise>
+        </choose>,
+        #{somCheckContent},
+        #{memberId},
+        #{somId}
+        )
+    </insert>
+    <!--  솜 인증 조회  -->
+    <select id="selectSomCheckWithImages" parameterType="long" resultMap="SomCheckWithImagesMap">
+        SELECT
+        sc.ID AS sc_id,
+        CASE sc.SOM_CHECK_IS_CHECKED WHEN 'Y' THEN 1 ELSE 0 END AS sc_is_checked,
+        sc.SOM_CHECK_CONTENT AS sc_content,
+        sc.MEMBER_ID AS sc_member_id,
+        sc.SOM_ID AS sc_som_id,
+        sci.ID AS sci_id,
+        sci.SOM_CHECK_IMAGE_PATH AS sci_path,
+        sci.SOM_CHECK_IMAGE_NAME AS sci_name,
+        sci.SOM_CHECK_ID AS sci_check_id
+        FROM TBL_SOM_CHECK sc
+        LEFT JOIN TBL_SOM_CHECK_IMAGE sci ON sc.ID = sci.SOM_CHECK_ID
+        WHERE sc.ID = #{id}
+    </select>
+
+    <resultMap id="SomCheckWithImagesMap" type="com.app.bluecotton.domain.dto.SomCheckResponseDTO">
+        <id property="id" column="sc_id"/>
+        <result property="somCheckIsChecked" column="sc_is_checked" javaType="boolean"/>
+        <result property="somCheckContent" column="sc_content"/>
+        <result property="memberId" column="sc_member_id"/>
+        <result property="somId" column="sc_som_id"/>
+
+        <collection property="somCheckImagePath" ofType="string" column="sci_path"/>
+        <collection property="somCheckImageName" ofType="string" column="sci_name"/>
+        <collection property="somCheckId" ofType="long" column="sci_check_id"/>
+    </resultMap>
+
 </mapper>
 

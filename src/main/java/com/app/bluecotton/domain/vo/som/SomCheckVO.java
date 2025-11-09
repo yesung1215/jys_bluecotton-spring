@@ -1,8 +1,10 @@
 package com.app.bluecotton.domain.vo.som;
 
 import lombok.Data;
+import lombok.Getter;
 
 @Data
+@Getter
 public class SomCheckVO {
     private Long id;
     private boolean somCheckIsChecked;

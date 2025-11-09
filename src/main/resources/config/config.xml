@@ -45,6 +45,9 @@
         <typeAlias type="com.app.bluecotton.domain.vo.som.SomCheckVO" alias="SomCheckVO" />
         <typeAlias type="com.app.bluecotton.domain.vo.som.SomCheckImageVO" alias="SomCheckImageVO" />
 
+        <!-- som response DTO -->
+        <typeAlias type="com.app.bluecotton.domain.dto.SomCheckResponseDTO" alias="SomCheckResponseDTO" />
+
         <!-- chat -->
         <typeAlias type="com.app.bluecotton.domain.vo.chat.ChatVO" alias="ChatVO" />
         <typeAlias type="com.app.bluecotton.domain.vo.chat.ChatMemberVO" alias="ChatMemberVO" />
