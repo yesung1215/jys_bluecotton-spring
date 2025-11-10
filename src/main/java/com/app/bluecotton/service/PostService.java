@@ -14,7 +14,7 @@ import java.util.List;
 public interface PostService {
     //    게시물 목록
     List<PostMainDTO> getPosts(String somCategory, String orderType
-            , Long memberId);
+            , Long memberId, String q);
 
     //    게시물 등록
     void write(PostVO postVO, List<String> imageUrls);

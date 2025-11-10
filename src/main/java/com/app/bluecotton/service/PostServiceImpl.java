@@ -21,8 +21,8 @@ public class PostServiceImpl implements PostService {
 
     //    게시판 목록 조회 서비스
     @Override
-    public List<PostMainDTO> getPosts(String somCategory, String orderType, Long memberId) {
-        return postDAO.findPosts(somCategory, orderType, memberId);
+    public List<PostMainDTO> getPosts(String somCategory, String orderType, Long memberId, String q) {
+        return postDAO.findPosts(somCategory, orderType, memberId, q);
     }
 
     //    게시판 등록 서비스
@@ -104,6 +104,8 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDetailDTO getPostDetail(Long postId, Long memberId) {
         memberId = 1L; // 로그인 가정
+
+        postDAO.updateReadCount(postId); // 조회수 + 1
 
         PostDetailDTO post = postDAO.findPostDetailByIdWithLike(postId, memberId);
         List<PostCommentDTO> comments = postDAO.findPostCommentsByPostIdWithLike(postId, memberId);

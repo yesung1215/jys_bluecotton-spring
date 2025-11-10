@@ -17,8 +17,8 @@ public class PostDAO {
     private final PostMapper postMapper;
 
     //    게시글 목록 조회
-    public List<PostMainDTO> findPosts(String somCategory, String orderType, Long memberId) {
-        return postMapper.select(somCategory, orderType, memberId);
+    public List<PostMainDTO> findPosts(String somCategory, String orderType, Long memberId, String q) {
+        return postMapper.select(somCategory, orderType, memberId, q);
     }
 
     //    게시물 등록

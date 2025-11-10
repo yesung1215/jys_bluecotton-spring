@@ -28,10 +28,12 @@ public class PostApi {
     @GetMapping("/all")
     public ResponseEntity<ApiResponseDTO<List<PostMainDTO>>> getAllPosts(
             @RequestParam(required = false) String somCategory,
-            @RequestParam(required = false) String orderType
+            @RequestParam(defaultValue = "latest") String orderType,
+//            @RequestParam(required = false) Long memberId,
+            @RequestParam(required = false) String q
     ) {
         Long memberId = 1L; // 로그인 가정
-        List<PostMainDTO> posts = postService.getPosts(somCategory, orderType, memberId);
+        List<PostMainDTO> posts = postService.getPosts(somCategory, orderType, memberId, q);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("게시글 목록 조회 완료", posts));
     }
 

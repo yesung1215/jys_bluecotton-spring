@@ -20,8 +20,9 @@ class PostServiceImplTest {
         String somCategory = null; // 전체 조회
         String orderType = null;   // 기본값: 최신순
         Long memberId = 1L;        // 로그인한 회원(좋아요 여부 확인용)
+        String q = null;
 
-        List<PostMainDTO> posts = postService.getPosts(somCategory, orderType, memberId);
+        List<PostMainDTO> posts = postService.getPosts(somCategory, orderType, memberId, q);
 
         // then
         log.info("조회된 게시글 개수 = {}", posts.size());
