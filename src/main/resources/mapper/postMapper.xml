@@ -195,12 +195,23 @@
     <!-- 임시저장 등록(새 작성 창에서) -->
     <insert id="insertDraft" parameterType="com.app.bluecotton.domain.vo.post.PostDraftVO">
         INSERT INTO TBL_POST_DRAFT (
-        ID, POST_DRAFT_TITLE, POST_DRAFT_CONTENT, MEMBER_ID, SOM_ID
-        ) VALUES (
-        SEQ_POST_DRAFT.NEXTVAL, #{postDraftTitle},
-        #{postDraftContent}, #{memberId}, #{somId}
+        ID,
+        POST_DRAFT_TITLE,
+        POST_DRAFT_CONTENT,
+        POST_DRAFT_CREATE_AT,
+        MEMBER_ID,
+        SOM_ID
+        )
+        VALUES (
+        SEQ_POST_DRAFT.NEXTVAL,
+        #{postDraftTitle, jdbcType=VARCHAR},
+        #{postDraftContent, jdbcType=VARCHAR},
+        DEFAULT,
+        #{memberId, jdbcType=NUMERIC},
+        #{somId, jdbcType=NUMERIC}
         )
     </insert>
+
 
     <!-- 임시저장 조회 -->
     <select id="selectDraftById" parameterType="long" resultType="com.app.bluecotton.domain.vo.post.PostDraftVO">
