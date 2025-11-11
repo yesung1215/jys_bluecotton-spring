@@ -1,11 +1,12 @@
 package com.app.bluecotton.api.mypage;
 
-import com.app.bluecotton.domain.dto.ApiResponseDTO;
-import com.app.bluecotton.domain.dto.MemberResponseDTO;
-import com.app.bluecotton.domain.dto.SomResponseDTO;
+import com.app.bluecotton.domain.dto.*;
 import com.app.bluecotton.domain.vo.member.MemberVO;
+import com.app.bluecotton.domain.vo.post.PostDraftVO;
 import com.app.bluecotton.domain.vo.som.SomVO;
 import com.app.bluecotton.service.MemberService;
+import com.app.bluecotton.service.MyPagePostService;
+import com.app.bluecotton.service.PostService;
 import com.app.bluecotton.service.SomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,8 @@ public class MyPageApi {
 
     private final SomService somService;
     private final MemberService memberService;
+    private final MyPagePostService myPagePostService;
+    private final PostService postService;
 
     // 솜 정보 출력
     @GetMapping("read-som")
@@ -46,5 +49,71 @@ public class MyPageApi {
     public ResponseEntity<ApiResponseDTO<Object>> readMemberAddress(){
         List<String> data = memberService.findAllMemberAddress();
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("모든 회원의 주소를 조회했습니다", data));
+    }
+
+    //    마이페이지 내가 쓴 글
+    @GetMapping("read-post-write")
+    public ResponseEntity<ApiResponseDTO> readPostWrite(@RequestParam Long id){
+        log.info("내가 쓴 글을 불러옵니다");
+        log.info("출력: {}", myPagePostService.readPostWrite(id));
+        List<MyPagePostWriteDTO> data = myPagePostService.readPostWrite(id);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("내가 쓴 글이 출력되었습니다", data));
+    }
+
+    //    마이페이지 내가 좋아요한 글
+    @GetMapping("read-post-like")
+    public ResponseEntity<ApiResponseDTO> readPostLike(@RequestParam Long id){
+        log.info("내가 좋아요한 글을 불러옵니다");
+        log.info("출력: {}", myPagePostService.readPostLike(id));
+        List<MyPagePostLikeDTO> data = myPagePostService.readPostLike(id);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("내가 좋아요한 글이 출력되었습니다", data));
+    }
+
+    //    마이페이지 내가 임시저장한 글
+    @GetMapping("read-post-save")
+    public ResponseEntity<ApiResponseDTO> readPostSave(@RequestParam Long id){
+        log.info("내가 임시저장한 글을 불러옵니다");
+        log.info("출력: {}", postService.getDraft(id));
+        PostDraftVO data = postService.getDraft(id);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("내가 임시저장한 글이 출력되었습니다", data));
+    }
+
+    //    내가 작성한 글 삭제
+    @DeleteMapping("delete-post-write")
+    public ResponseEntity<ApiResponseDTO> deletePostWrite(@RequestParam Long id){
+        log.info("내가 작성한 글을 삭제합니다");
+        myPagePostService.deletePostWrite(id);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("내가 작성한 글이 삭제되었습니다"));
+    }
+
+    //    내가 좋아요한 글 삭제
+    @DeleteMapping("delete-post-like")
+    public ResponseEntity<ApiResponseDTO> deletePostLike(@RequestParam Long id){
+        log.info("내가 좋아요한 글을 삭제합니다");
+        myPagePostService.deletePostLike(id);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("내가 좋아요한 글이 삭제되었습니다"));
+    }
+
+    //    내가 단 댓글 삭제
+    @DeleteMapping("delete-post-comment")
+    public ResponseEntity<ApiResponseDTO> deletePostReply(@RequestParam Long id){
+        log.info("내가 단 댓글을 삭제합니다");
+        postService.deleteComment(id);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("내가 단 댓글이 삭제되었습니다"));
+    }
+    //    내가 임시저장한 글 삭제
+    @DeleteMapping("delete-post-save")
+    public ResponseEntity<ApiResponseDTO> deletePostSave(@RequestParam Long id){
+        log.info("내가 임시저장한 글을 삭제합니다");
+        myPagePostService.deletePostSave(id);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("내가 임시저장한 글이 삭제되었습니다"));
+    }
+
+    //    내가 최근에 본 글 삭제
+    @DeleteMapping("delete-post-recent")
+    public ResponseEntity<ApiResponseDTO> deletePostRecent(@RequestParam Long id){
+        log.info("내가 최근에 본 글을 불러옵니다");
+        myPagePostService.deletePostRecent(id);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("내가 최근에 본 글이 삭제되었습니다"));
     }
 }
