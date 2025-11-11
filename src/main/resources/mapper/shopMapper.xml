@@ -317,6 +317,26 @@
     </update>
 
 
+    <!--  마이페이지 구매내역 리뷰하기 작성  -->
+    <select id="selectReviewModal" parameterType="Long">
+        SELECT TBP.PRODUCT_NAME,
+        (SELECT TBPI.PRODUCT_IMAGE_PATH || TBPI.PRODUCT_IMAGE_NAME
+        FROM TBL_PRODUCT_IMAGE TBPI
+        WHERE TBP.ID = TBPI.PRODUCT_ID
+        AND TBPI.PRODUCT_IMAGE_TYPE = 'MAIN'
+        AND ROWNUM = 1
+        ) AS PRODUCT_MAIN_IMAGE_URL
+        FROM TBL_PRODUCT TBP
+        WHERE TBP.ID = #{productId}
+    </select>
+
+    <insert id="insertMyReview" parameterType="DTO로 받을 것">
+        INSERT INTO TBL_PRODUCT_REVIEW
+        (ID, PRODUCT_ID, MEMBER_ID, PRODUCT_REVIEW_RATING, PRODUCT_REVIEW_CONTENT, PRODUCT_REVIEW_CREATE_AT)
+        VALUES
+        (SEQ_PRODUCT_REVIEW.NEXTVAL, #{productId}, #{memberId}, #{rating}, #{content}, SYSTIMESTAMP)
+    </insert>
+
 
 </mapper>
 
