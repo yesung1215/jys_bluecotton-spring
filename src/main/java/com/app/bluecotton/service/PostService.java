@@ -19,6 +19,7 @@ public interface PostService {
     //    게시물 등록
     void write(PostVO postVO, List<String> imageUrls);
 
+    //  카테고리 목록
     List<SomCategoryDTO> getJoinedCategories(Long memberId);
 
     //    게시물 삭제
@@ -63,4 +64,6 @@ public interface PostService {
     // 답글 좋아요
     void toggleReplyLike(Long ReplyId, Long memberId);
 
+    //  테스트
+    public PostDetailDTO selectTest(Long postId);
 }

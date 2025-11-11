@@ -237,61 +237,48 @@
         WHERE ID = #{id}
     </delete>
 
-    <!-- 게시글 상세 조회 (좋아요 여부 포함) -->
+    <!-- 게시물 상세조회   -->
     <resultMap id="postDetailMap" type="com.app.bluecotton.domain.dto.post.PostDetailDTO">
-        <id column="postId" property="postId"/>
-        <result column="postTitle" property="postTitle"/>
-        <result column="postContent" property="postContent"/>
-        <result column="postImageUrl" property="postImageUrl"/>
-        <result column="postCreateAt" property="postCreateAt"/>
-        <result column="postReadCount" property="postReadCount"/>
-        <result column="memberNickname" property="memberNickname"/>
-        <result column="memberProfileUrl" property="memberProfileUrl"/>
-        <result column="memberId" property="memberId"/>
-        <result column="postLikeCount" property="postLikeCount"/>
-        <result column="postIsLike" property="postIsLike"/>
+        <id property="postId" column="postId"/>
+        <result property="postTitle" column="postTitle"/>
+        <result property="postContent" column="postContent"/>
+        <result property="postImageUrl" column="postImageUrl"/>
+        <result property="memberId" column="memberId"/>
+        <result property="memberNickname" column="memberNickname"/>
+        <result property="memberProfileUrl" column="memberProfileUrl"/>
+        <result property="postCreateAt" column="postCreateAt"/>
+        <result property="postReadCount" column="postReadCount"/>
+        <result property="postLikeCount" column="postLikeCount"/>
+        <result property="postIsLike" column="postIsLike"/>
     </resultMap>
 
-    <!-- 수정된 최종 버전 -->
     <select id="selectPostDetailByIdWithLike"
-            parameterType="map"
             resultMap="postDetailMap">
-
         SELECT
-        P.ID AS postId,
+        P.ID AS id,
         P.POST_TITLE AS postTitle,
         P.POST_CONTENT AS postContent,
         NVL(PI.POST_IMAGE_PATH || PI.POST_IMAGE_NAME, '/upload/default/default_post.jpg') AS postImageUrl,
-
-        P.MEMBER_ID AS memberId,  <!-- ✅ 그대로 소문자! -->
-
+        P.MEMBER_ID AS memberId,
         P.POST_CREATE_AT AS postCreateAt,
         P.POST_READ_COUNT AS postReadCount,
         M.MEMBER_NICKNAME AS memberNickname,
         NVL(MP.MEMBER_PROFILE_PATH || MP.MEMBER_PROFILE_NAME, '/images/default_profile.png') AS memberProfileUrl,
-
         (SELECT COUNT(*) FROM TBL_POST_LIKE L WHERE L.POST_ID = P.ID) AS postLikeCount,
-
         CASE
         WHEN EXISTS (
-        SELECT 1
-        FROM TBL_POST_LIKE L
+        SELECT 1 FROM TBL_POST_LIKE L
         WHERE L.POST_ID = P.ID
-        AND L.MEMBER_ID = #{loginMemberId}
+        AND L.MEMBER_ID = #{memberId}
         ) THEN 1
         ELSE 0
         END AS postIsLike
-
         FROM TBL_POST P
         JOIN TBL_MEMBER M ON P.MEMBER_ID = M.ID
         LEFT JOIN TBL_MEMBER_PROFILE MP ON MP.MEMBER_ID = M.ID
         LEFT JOIN TBL_POST_IMAGE PI ON PI.POST_ID = P.ID
         WHERE P.ID = #{postId}
     </select>
-
-
-
-
 
     <!-- 댓글 좋아요 여부 포함 조회 -->
     <select id="selectCommentsByPostIdWithLike" parameterType="map"
@@ -301,6 +288,7 @@
         C.POST_COMMENT_CONTENT AS COMMENT_CONTENT,
         C.POST_COMMENT_CREATE_AT AS COMMENT_CREATE_AT,
         M.MEMBER_NICKNAME,
+        C.MEMBER_ID,
         NVL(MP.MEMBER_PROFILE_PATH || MP.MEMBER_PROFILE_NAME, '/images/default_profile.png') AS MEMBER_PROFILE_URL,
         NVL(CL.LIKE_COUNT, 0) AS COMMENT_LIKE_COUNT,
         CASE
@@ -332,6 +320,7 @@
         R.POST_REPLY_CONTENT AS REPLY_CONTENT,
         R.POST_REPLY_CREATE_AT AS REPLY_CREATE_AT,
         M.MEMBER_NICKNAME,
+        R.MEMBER_ID,
         NVL(MP.MEMBER_PROFILE_PATH || MP.MEMBER_PROFILE_NAME, '/images/default_profile.png') AS MEMBER_PROFILE_URL,
         NVL(RL.LIKE_COUNT, 0) AS REPLY_LIKE_COUNT,
         CASE
@@ -497,7 +486,7 @@
             parameterType="long"
             resultType="com.app.bluecotton.domain.dto.post.PostDetailDTO">
         SELECT
-        P.ID AS POST_ID,
+        P.ID AS id,
         P.POST_TITLE,
         P.POST_CONTENT,
         NVL(PI.POST_IMAGE_PATH || PI.POST_IMAGE_NAME, '/upload/default/default_post.jpg') AS POST_IMAGE_URL,
@@ -555,6 +544,25 @@
         LEFT JOIN TBL_MEMBER_PROFILE MP ON M.ID = MP.MEMBER_ID
         WHERE R.POST_COMMENT_ID = #{commentId}
         ORDER BY R.POST_REPLY_CREATE_AT ASC
+    </select>
+
+    <select id="selectTest" parameterType="Long" resultType="com.app.bluecotton.domain.dto.post.PostDetailDTO">
+        SELECT
+        P.ID AS ID,
+        P.POST_TITLE AS POST_TITLE,
+        P.POST_CONTENT AS POST_CONTENT,
+        NVL(PI.POST_IMAGE_PATH || PI.POST_IMAGE_NAME, '/upload/default/default_post.jpg') AS POST_IMAGE_URL,
+        P.POST_CREATE_AT AS POST_CREATE_AT,
+        P.POST_READ_COUNT AS P0ST_READ_COUNT,
+        M.MEMBER_NICKNAME AS MEMBER_NICKNAME,
+        NVL(MP.MEMBER_PROFILE_PATH || MP.MEMBER_PROFILE_NAME, '/images/default_profile.png') AS MEMBER_PROFILE_URL,
+        P.MEMBER_ID AS MEMBER_ID,
+        (SELECT COUNT(*) FROM TBL_POST_LIKE L WHERE L.POST_ID = P.ID) AS POST_LIKE_COUNT
+        FROM TBL_POST P
+        JOIN TBL_MEMBER M ON P.MEMBER_ID = M.ID
+        LEFT JOIN TBL_MEMBER_PROFILE MP ON M.ID = MP.MEMBER_ID
+        LEFT JOIN TBL_POST_IMAGE PI ON P.ID = PI.POST_ID AND ROWNUM = 1
+        WHERE P.ID = #{id}
     </select>
 
 </mapper>

@@ -6,6 +6,7 @@ import com.app.bluecotton.domain.dto.post.*;
 import com.app.bluecotton.domain.vo.post.*;
 import com.app.bluecotton.service.PostService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,32 +15,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/private/post")
 @RequiredArgsConstructor
 public class PostPrivateApi {
 
     private final PostService postService;
-
-    // 게시글 상세 조회
-    // (비로그인/로그인 모두 접근 가능)
-    @GetMapping("/read/{id}")
-    public ResponseEntity<ApiResponseDTO<PostDetailDTO>> getPostDetail(
-            @PathVariable("id") Long id,
-            @AuthenticationPrincipal MemberResponseDTO currentUser
-    ) {
-        // 로그인 여부에 따라 null-safe로 처리
-        Long memberId = (currentUser != null) ? currentUser.getId() : null;
-
-        PostDetailDTO postDetail = postService.getPostDetail(id, memberId);
-
-        if (postDetail == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponseDTO.of("게시글을 찾을 수 없습니다.", null));
-        }
-
-        return ResponseEntity.ok(ApiResponseDTO.of("게시글 상세 조회 성공", postDetail));
-    }
 
     // 게시글 등록
     @PostMapping("/write")
@@ -52,6 +34,9 @@ public class PostPrivateApi {
         postVO.setMemberId(memberId);
 
         postService.write(postVO, dto.getImageUrls());
+
+        log.info("{}", postVO);
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponseDTO.of("게시글이 등록되었습니다.", Map.of("postId", postVO.getId())));
     }

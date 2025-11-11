@@ -19,6 +19,8 @@ public class PostCommentDTO {
     private String memberNickname;
     private String memberProfileUrl;
 
+    private Long memberId;
+
     // 대댓글 포함
     private List<PostReplyDTO> replies;
 }

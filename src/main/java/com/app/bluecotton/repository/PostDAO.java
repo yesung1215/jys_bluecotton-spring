@@ -16,19 +16,24 @@ import java.util.List;
 public class PostDAO {
     private final PostMapper postMapper;
 
-    // 게시글 목록 / 등록 / 삭제
+    /* ===================== 🟦 게시글 ===================== */
+
+    // 게시글 목록
     public List<PostMainDTO> findPosts(String somCategory, String orderType, Long memberId, String q) {
         return postMapper.select(somCategory, orderType, memberId, q);
     }
 
+    // 게시글 등록
     public void insert(PostVO postVO) {
         postMapper.insert(postVO);
     }
 
+    // 오늘 해당 솜에 이미 게시글 있는지 검사
     public boolean existsTodayPostInSom(Long memberId, Long somId) {
         return postMapper.existsTodayPostInSom(memberId, somId) > 0;
     }
 
+    // 게시글 이미지 매핑
     public void updatePostIdByUrl(String url, Long postId) {
         postMapper.updatePostIdByUrl(url, postId);
     }
@@ -41,27 +46,15 @@ public class PostDAO {
         postMapper.insertThumbnail(url, postId);
     }
 
-    public void deletePostById(Long id) {
-        postMapper.deletePostById(id);
-    }
+    // 게시글 삭제 관련
+    public void deletePostById(Long id) { postMapper.deletePostById(id); }
+    public void deleteLikesByPostId(Long postId) { postMapper.deleteLikesByPostId(postId); }
+    public void deletePostImages(Long postId) { postMapper.deletePostImages(postId); }
+    public void deleteReportsByPostId(Long postId) { postMapper.deleteReportsByPostId(postId); }
+    public void deleteRecentsByPostId(Long postId) { postMapper.deleteRecentsByPostId(postId); }
 
-    public void deleteLikesByPostId(Long postId) {
-        postMapper.deleteLikesByPostId(postId);
-    }
+    /* ===================== 🟨 임시저장 ===================== */
 
-    public void deletePostImages(Long postId) {
-        postMapper.deletePostImages(postId);
-    }
-
-    public void deleteReportsByPostId(Long postId) {
-        postMapper.deleteReportsByPostId(postId);
-    }
-
-    public void deleteRecentsByPostId(Long postId) {
-        postMapper.deleteRecentsByPostId(postId);
-    }
-
-    // 임시저장
     public void insertDraft(PostDraftVO postDraftVO) {
         postMapper.insertDraft(postDraftVO);
     }
@@ -74,12 +67,12 @@ public class PostDAO {
         postMapper.deleteDraftById(id);
     }
 
-    // 회원 참여중 솜 카테고리 조회
+    /* ===================== 🟩 카테고리 / 수정 ===================== */
+
     public List<SomCategoryDTO> findJoinedCategories(Long memberId) {
         return postMapper.findJoinedCategories(memberId);
     }
 
-    // 게시글 수정
     public PostModifyDTO findByIdForUpdate(Long id) {
         return postMapper.findByIdForUpdate(id);
     }
@@ -88,12 +81,13 @@ public class PostDAO {
         postMapper.update(postVO);
     }
 
-    // 게시글 상세 조회
+    /* ===================== 🟦 게시글 상세 ===================== */
+
+    // 로그인 사용자용 (좋아요 여부 포함)
     public PostDetailDTO findPostDetailByIdWithLike(Long postId, Long memberId) {
         return postMapper.selectPostDetailByIdWithLike(postId, memberId);
     }
 
-    // 로그인 사용자용 (좋아요 포함)
     public List<PostCommentDTO> findPostCommentsByPostIdWithLike(Long postId, Long memberId) {
         return postMapper.selectCommentsByPostIdWithLike(postId, memberId);
     }
@@ -115,7 +109,9 @@ public class PostDAO {
         return postMapper.selectRepliesByCommentIdWithoutLike(commentId);
     }
 
-    // 좋아요
+    /* ===================== ❤️ 좋아요 ===================== */
+
+    // 게시글 좋아요
     public boolean existsLike(Long postId, Long memberId) {
         return postMapper.existsLike(postId, memberId) > 0;
     }
@@ -128,12 +124,9 @@ public class PostDAO {
         postMapper.deleteLike(postId, memberId);
     }
 
+    // 댓글 좋아요
     public boolean existsCommentLike(Long commentId, Long memberId) {
         return postMapper.existsCommentLike(commentId, memberId) > 0;
-    }
-
-    public boolean existsReplyLike(Long replyId, Long memberId) {
-        return postMapper.existsReplyLike(replyId, memberId) > 0;
     }
 
     public void insertCommentLike(Long commentId, Long memberId) {
@@ -144,6 +137,11 @@ public class PostDAO {
         postMapper.deleteCommentLike(commentId, memberId);
     }
 
+    // 대댓글 좋아요
+    public boolean existsReplyLike(Long replyId, Long memberId) {
+        return postMapper.existsReplyLike(replyId, memberId) > 0;
+    }
+
     public void insertReplyLike(Long replyId, Long memberId) {
         postMapper.insertReplyLike(replyId, memberId);
     }
@@ -152,7 +150,8 @@ public class PostDAO {
         postMapper.deleteReplyLike(replyId, memberId);
     }
 
-    // 조회수 / 최근 본 게시물
+    /* ===================== 👁 조회수 / 최근 본 게시글 ===================== */
+
     public void updateReadCount(Long postId) {
         postMapper.updateReadCount(postId);
     }
@@ -161,7 +160,8 @@ public class PostDAO {
         postMapper.insertOrUpdateRecentView(memberId, postId);
     }
 
-    // 댓글 / 답글
+    /* ===================== 💬 댓글 / 답글 ===================== */
+
     public void insertComment(PostCommentVO postCommentVO) {
         postMapper.insertComment(postCommentVO);
     }
@@ -177,4 +177,6 @@ public class PostDAO {
     public void deleteReply(Long replyId) {
         postMapper.deleteReply(replyId);
     }
+
+    public PostDetailDTO selectTest(Long postId) { return postMapper.selectTest(postId); }
 }

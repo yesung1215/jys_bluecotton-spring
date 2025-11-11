@@ -15,6 +15,8 @@ public class PostReplyDTO {
     private Date replyCreateAt;
     private Long replyLikeCount;
 
+    private Long memberId;
     private String memberNickname;
     private String memberProfileUrl;
+
 }

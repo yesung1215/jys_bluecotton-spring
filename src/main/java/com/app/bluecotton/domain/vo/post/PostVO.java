@@ -1,5 +1,6 @@
 package com.app.bluecotton.domain.vo.post;
 
+import com.app.bluecotton.domain.dto.post.PostDetailDTO;
 import lombok.Data;
 
 import java.util.Date;

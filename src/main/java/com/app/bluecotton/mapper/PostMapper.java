@@ -56,18 +56,26 @@ public interface PostMapper {
     PostModifyDTO findByIdForUpdate(@Param("id") Long id);
     void update(PostVO postVO);
 
-    // 로그인 사용자용 (좋아요 포함)
-    PostDetailDTO selectPostDetailByIdWithLike(
-            @Param("postId") Long postId,
-            @Param("loginMemberId") Long loginMemberId
-    );
-    List<PostCommentDTO> selectCommentsByPostIdWithLike(@Param("postId") Long postId, @Param("memberId") Long memberId);
-    List<PostReplyDTO> selectRepliesByCommentIdWithLike(@Param("commentId") Long commentId, @Param("memberId") Long memberId);
+    // 게시글 상세 (로그인)
+    PostDetailDTO selectPostDetailByIdWithLike(@Param("postId") Long postId,
+                                               @Param("memberId") Long memberId);
 
-    // 비로그인 사용자용 (좋아요 제외)
-    PostDetailDTO selectPostDetailWithoutLike(Long postId);
-    List<PostCommentDTO> selectCommentsByPostIdWithoutLike(Long postId);
-    List<PostReplyDTO> selectRepliesByCommentIdWithoutLike(Long commentId);
+    // 게시글 상세 (비로그인)
+    PostDetailDTO selectPostDetailWithoutLike(@Param("postId") Long postId);
+
+    // 댓글 목록 (로그인)
+    List<PostCommentDTO> selectCommentsByPostIdWithLike(@Param("postId") Long postId,
+                                                        @Param("memberId") Long memberId);
+
+    // 댓글 목록 (비로그인)
+    List<PostCommentDTO> selectCommentsByPostIdWithoutLike(@Param("postId") Long postId);
+
+    // 대댓글 목록 (로그인)
+    List<PostReplyDTO> selectRepliesByCommentIdWithLike(@Param("commentId") Long commentId,
+                                                        @Param("memberId") Long memberId);
+
+    // 대댓글 목록 (비로그인)
+    List<PostReplyDTO> selectRepliesByCommentIdWithoutLike(@Param("commentId") Long commentId);
 
     // 게시물 좋아요
     int existsLike(@Param("postId") Long postId, @Param("memberId") Long memberId);
@@ -93,4 +101,7 @@ public interface PostMapper {
     void insertReply(PostReplyVO postReplyVO);
     void deleteComment(Long commentId);
     void deleteReply(Long replyId);
+
+    //  테스트
+    public PostDetailDTO selectTest(Long id);
 }
