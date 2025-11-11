@@ -69,6 +69,26 @@ public class ShopServiceImpl implements ShopService {
         return shopDAO.findMyReviews(id);
     }
 
+    @Override
+    public List<MyPageOrderListDTO> getMyOrders(Long memberId) {
+        return shopDAO.findMyOrders(memberId);
+    }
+
+    @Override
+    public Map<String, Object> getReviewModal(Long productId) {
+        return shopDAO.getReviewModal(productId);
+    }
+
+    @Override
+    public void insertMyReview(MyPageReviewWriteDTO myPageReviewWriteDTO) {
+        shopDAO.insertMyReview(myPageReviewWriteDTO);
+    }
+
+    @Override
+    public void insertMyReviewImage(MyPageReviewWriteDTO myPageReviewWriteDTO) {
+        shopDAO.insertMyReviewImage(myPageReviewWriteDTO);
+    }
+
 
 }
 

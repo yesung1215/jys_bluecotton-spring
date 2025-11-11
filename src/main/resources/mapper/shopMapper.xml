@@ -316,9 +316,32 @@
         AND MEMBER_ID = #{memberId}
     </update>
 
+    <!-- 마이페이지 구매내역 전체조회 -->
+    <select id="selectPurchaseList" parameterType="Long" resultType="com.app.bluecotton.domain.dto.MyPageOrderListDTO">
+        SELECT
+        TBO.ID AS ORDER_ID,
+        TBO.PRODUCT_ID,
+        TBP.PRODUCT_NAME AS PRODUCT_NAME,
+        (SELECT TBPI.PRODUCT_IMAGE_PATH || TBPI.PRODUCT_IMAGE_NAME
+        FROM TBL_PRODUCT_IMAGE TBPI
+        WHERE TBPI.PRODUCT_ID = TBP.ID
+        AND TBPI.PRODUCT_IMAGE_TYPE = 'MAIN'
+        AND ROWNUM = 1)   AS PRODUCT_MAIN_IMAGE_URL,
+        TBO.ORDER_CREATE_AT,
+        (SELECT COUNT(*)
+        FROM TBL_ORDER
+        WHERE MEMBER_ID = TBO.MEMBER_ID) AS ORDER_TOTAL_COUNT
+        FROM TBL_ORDER TBO
+        JOIN TBL_PRODUCT TBP
+        ON TBP.ID = TBO.PRODUCT_ID
+        WHERE TBO.MEMBER_ID = #{memberId}
+        ORDER BY TBO.ORDER_CREATE_AT DESC
+    </select>
 
-    <!--  마이페이지 구매내역 리뷰하기 작성  -->
-    <select id="selectReviewModal" parameterType="Long">
+
+    <!--  마이페이지 구매내역 리뷰하기 작성-->
+        <!--  리뷰 모달 조회  -->
+    <select id="selectReviewModal" parameterType="Long" resultType="map">
         SELECT TBP.PRODUCT_NAME,
         (SELECT TBPI.PRODUCT_IMAGE_PATH || TBPI.PRODUCT_IMAGE_NAME
         FROM TBL_PRODUCT_IMAGE TBPI
@@ -330,13 +353,24 @@
         WHERE TBP.ID = #{productId}
     </select>
 
-    <insert id="insertMyReview" parameterType="DTO로 받을 것">
+    <!-- 리뷰 내용 추가 -->
+    <insert id="insertMyReview" parameterType="com.app.bluecotton.domain.dto.MyPageReviewWriteDTO">
+        <selectKey keyProperty="reviewId" resultType="long" order="BEFORE">
+            SELECT SEQ_PRODUCT_REVIEW.NEXTVAL FROM DUAL
+        </selectKey>
         INSERT INTO TBL_PRODUCT_REVIEW
         (ID, PRODUCT_ID, MEMBER_ID, PRODUCT_REVIEW_RATING, PRODUCT_REVIEW_CONTENT, PRODUCT_REVIEW_CREATE_AT)
         VALUES
-        (SEQ_PRODUCT_REVIEW.NEXTVAL, #{productId}, #{memberId}, #{rating}, #{content}, SYSTIMESTAMP)
+        (#{reviewId}, #{productId}, #{memberId}, #{rating}, #{content}, SYSTIMESTAMP)
     </insert>
 
+    <!-- 리뷰 이미지 추가 -->
+    <insert id="insertMyReviewImage" parameterType="com.app.bluecotton.domain.dto.MyPageReviewWriteDTO">
+        INSERT INTO TBL_PRODUCT_REVIEW_IMAGE
+        (ID, PRODUCT_REVIEW_IMAGE_PATH, PRODUCT_REVIEW_IMAGE_NAME, PRODUCT_REVIEW_ID)
+        VALUES
+        (SEQ_PRODUCT_REVIEW_IMAGE.NEXTVAL, #{imagePath}, #{imageName}, #{reviewId})
+    </insert>
 
 </mapper>
 

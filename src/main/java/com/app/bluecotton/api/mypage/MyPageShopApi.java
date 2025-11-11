@@ -1,8 +1,6 @@
 package com.app.bluecotton.api.mypage;
 
-import com.app.bluecotton.domain.dto.ApiResponseDTO;
-import com.app.bluecotton.domain.dto.MyReviewListDTO;
-import com.app.bluecotton.domain.dto.ProductListResponseDTO;
+import com.app.bluecotton.domain.dto.*;
 import com.app.bluecotton.service.ShopService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,6 +33,32 @@ public class MyPageShopApi {
 
         List<MyReviewListDTO> myReviews = shopService.getMyReviews(memberId);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("마이리뷰 조회 성공", myReviews));
+    }
+
+
+    @GetMapping("/order")
+    public ResponseEntity<ApiResponseDTO> getMyOrders(@RequestParam Long memberId){
+        log.info("구매내역 전체조회", memberId);
+        List<MyPageOrderListDTO>  myOrders = shopService.getMyOrders(memberId);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("구매내역 전체 조회 성공", myOrders));
+    }
+
+
+    @GetMapping("/review/modal")
+    public ResponseEntity<ApiResponseDTO> getMyReviewModal(@RequestParam Long memberId){
+        log.info("리뷰 모달 조회", memberId);
+        Map<String, Object> myModal = shopService.getReviewModal(memberId);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("리뷰 모달 조회 성공",  myModal));
+    }
+
+    @PostMapping("/review")
+    public ResponseEntity<ApiResponseDTO> createMyReview(@RequestBody MyPageReviewWriteDTO myPageReviewWriteDTO){
+        shopService.insertMyReview(myPageReviewWriteDTO);
+
+        shopService.insertMyReviewImage(myPageReviewWriteDTO);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("리뷰 등록 성공"));
+
     }
 
 

@@ -73,4 +73,26 @@ public class ShopDAO {
     }
 
 
+    // ---- 구매 내역 ----
+    // 마이페이지(샵) 구매내역 전체조회
+    public List<MyPageOrderListDTO> findMyOrders(Long memberId){
+        return shopMapper.selectPurchaseList(memberId);
+    }
+
+    // 마이페이지(샵) 구매내역 리뷰 모달 조회
+    public Map<String, Object> getReviewModal(Long productId){
+        return shopMapper.selectReviewModal(productId);
+    }
+
+    // 마이페이지(샵) 구매내역 리뷰 작성
+    public void insertMyReview(MyPageReviewWriteDTO myPageReviewWriteDTO) {
+        shopMapper.insertMyReview(myPageReviewWriteDTO);
+    }
+
+    // 마이페이지(샵) 구매내역 리뷰 이미지 작성
+    public void insertMyReviewImage(MyPageReviewWriteDTO myPageReviewWriteDTO) {
+        shopMapper.insertMyReviewImage(myPageReviewWriteDTO);
+    }
+
+
 }

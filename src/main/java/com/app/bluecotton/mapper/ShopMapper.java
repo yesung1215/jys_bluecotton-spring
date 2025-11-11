@@ -45,7 +45,18 @@ public interface ShopMapper {
     // 마이페이지(샵) 마이리뷰 조회
     public List<MyReviewListDTO> selectMyReview(@Param("memberId") Long memberId);
 
-    // 마이페이지(샵) 마이리뷰 수정
+
+    // 마이페이지(샵) 구매내역 전체조회
+    public List<MyPageOrderListDTO> selectPurchaseList(@Param("memberId") Long memberId);
+
+    // 마이페이지 구매내역 등록 모달
+    public Map<String, Object> selectReviewModal(@Param("productId") Long productId);
+
+    // 마이페이지 구매내역 내용 추가
+    public void insertMyReview(MyPageReviewWriteDTO myPageReviewWriteDTO);
+
+    // 마이페이지 구매내역 이미지 추가
+    public void insertMyReviewImage(MyPageReviewWriteDTO myPageReviewWriteDTO);
 
 
 }

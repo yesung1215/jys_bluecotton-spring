@@ -34,4 +34,18 @@ public interface ShopService {
     // 마이페이지(샵) 마이리뷰 조회
     public List<MyReviewListDTO> getMyReviews(Long id);
 
+
+
+    //  ------  구매내역 --------
+    // 마이페이지(샵) 구매내역 전체조회
+    public List<MyPageOrderListDTO> getMyOrders(Long memberId);
+
+    // 마이페이지(샵) 구매내역 리뷰 모달 조회
+    public Map<String, Object> getReviewModal(Long productId);
+
+    // 마이페이지(샵) 구매내역 리뷰 작성
+    public void insertMyReview(MyPageReviewWriteDTO myPageReviewWriteDTO);
+
+    // 마이페이지(샵) 구매내역 리뷰 이미지 작성
+    public void insertMyReviewImage(MyPageReviewWriteDTO myPageReviewWriteDTO);
 }
