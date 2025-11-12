@@ -3,20 +3,24 @@
 <mapper namespace="com.app.bluecotton.mapper.OrderMapper">
     <!-- 바로 결제 시  -->
     <insert id="insertSingle" parameterType="com.app.bluecotton.domain.dto.OrderDTO">
+        <selectKey keyProperty="id" resultType="long" order="BEFORE">
+            SELECT SEQ_ORDER.NEXTVAL FROM DUAL
+        </selectKey>
+
         INSERT INTO TBL_ORDER (ID, ORDER_CREATE_AT, ORDER_STATUS, MEMBER_ID, PRODUCT_ID, QUANTITY, TOTAL_PRICE, CART_ID )
         VALUES (
-        SEQ_ORDER.NEXTVAL,
+        #{id},
         SYSDATE,
-        #{orderStatus},
-        #{memberId},
+        'N', #{memberId},
         #{productId},
         #{quantity},
-        (SELECT P.PRODUCT_PRICE
-        FROM TBL_PRODUCT P
-        WHERE P.ID = #{productId}) * #{quantity},
+        #{totalPrice},
         NULL
         )
     </insert>
+
+
+
 
     <!-- 장바구니에서 주문 시  -->
     <insert id="insertCartOrder" parameterType="com.app.bluecotton.domain.dto.OrderCartDTO">
@@ -58,13 +62,8 @@
         WHERE MEMBER_ID = #{memberId}
     </select>
 
-    <select id="selectByMemberIdAndOrderId" parameterType="Long" resultType="OrderVO">
-        SELECT
-        ORDER_CREATE_AT,
-        PRODUCT_ID,
-        ORDER_STATUS,
-        QUANTITY,
-        TOTAL_PRICE
+    <select id="selectByMemberIdAndOrderId" resultType="OrderVO">
+        SELECT ID, ORDER_CREATE_AT, PRODUCT_ID, ORDER_STATUS, QUANTITY, TOTAL_PRICE
         FROM TBL_ORDER
         WHERE MEMBER_ID = #{memberId} AND ID = #{id}
     </select>

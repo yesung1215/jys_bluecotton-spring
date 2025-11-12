@@ -1,6 +1,7 @@
 package com.app.bluecotton.service;
 
 import com.app.bluecotton.domain.dto.OrderCartDTO;
+import com.app.bluecotton.domain.dto.OrderCheckoutDTO;
 import com.app.bluecotton.domain.dto.OrderDTO;
 import com.app.bluecotton.domain.vo.shop.OrderVO;
 
@@ -9,9 +10,9 @@ import java.util.Optional;
 
 public interface OrderService {
 
-    public void addOrder(OrderDTO orderDTO);
+    public Long addOrder(OrderDTO orderDTO);
 
-    public void addOrderCart(OrderCartDTO orderCartDTO);
+    public Long addOrderCart(OrderCheckoutDTO orderCheckoutDTO);
 
     public List<OrderVO> selectAllOrders(Long memberId);
 

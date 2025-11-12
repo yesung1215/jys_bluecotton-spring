@@ -3,6 +3,7 @@ package com.app.bluecotton.api.publicapi;
 
 import com.app.bluecotton.domain.dto.ApiResponseDTO;
 import com.app.bluecotton.domain.dto.OrderCartDTO;
+import com.app.bluecotton.domain.dto.OrderCheckoutDTO;
 import com.app.bluecotton.domain.dto.OrderDTO;
 import com.app.bluecotton.domain.vo.shop.OrderVO;
 import com.app.bluecotton.service.OrderService;
@@ -25,19 +26,21 @@ public class OrderApi {
     private final OrderService orderService;
 
     @PostMapping("single")
-    public ResponseEntity<ApiResponseDTO> addOrder(@RequestBody  OrderDTO orderDTO) {
-        orderService.addOrder(orderDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("주문하기 성공!"));
+    public ResponseEntity<ApiResponseDTO<Long>> addOrder(@RequestBody  OrderDTO orderDTO) {
+        Long orderId = orderService.addOrder(orderDTO);
+        log.info("orderId:{}",orderId);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("주문하기 성공!", orderId));
     }
 
     @PostMapping("cart")
-    public  ResponseEntity<ApiResponseDTO>  addOrderCart(@RequestBody OrderCartDTO orderCartDTO) {
-        orderService.addOrderCart(orderCartDTO);
+    public  ResponseEntity<ApiResponseDTO<Long>>  addOrderCart(@RequestBody OrderCheckoutDTO orderCheckoutDTO) {
+        Long orderId = orderService.addOrderCart(orderCheckoutDTO);
+        log.info("Integrated Order ID: {}", orderId);
 
-        Long memberId = orderCartDTO.getMemberId();
+        Long memberId = orderCheckoutDTO.getMemberId();
         orderService.clearCartAfterOrder(memberId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("장바구니에서 주문하기 성공!"));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("장바구니에서 주문하기 성공!", orderId));
     }
 
     @GetMapping("list")

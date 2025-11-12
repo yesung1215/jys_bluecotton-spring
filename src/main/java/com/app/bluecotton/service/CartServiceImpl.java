@@ -37,19 +37,18 @@ public class CartServiceImpl implements CartService {
     public void updateMinusCart(CartVO cartVO) {
         Long memberId = cartVO.getMemberId();
         Long productId = cartVO.getProductId();
-        Optional<Integer> quantityOptional = cartDAO.selectQuantity(memberId, productId);
-
-        quantityOptional.ifPresentOrElse(quantity -> {
-            if(quantity <= 1) {
-                throw new CartException("상품 수량이 1입니다. 더이상 줄일 수 없습니다");
-            }
-            cartDAO.decreaseProduct(cartVO);
-        }, () -> {
-            throw new CartException("해당 상품이 없습니다");
-        });
-
-
-
+//        Optional<Integer> quantityOptional = cartDAO.selectQuantity(memberId, productId);
+//
+//        quantityOptional.ifPresentOrElse(quantity -> {
+//            if(quantity <= 1) {
+//                throw new CartException("상품 수량이 1입니다. 더이상 줄일 수 없습니다");
+//            }
+//            cartDAO.decreaseProduct(cartVO);
+//        }, () -> {
+//            throw new CartException("해당 상품이 없습니다");
+//        });
+//
+        cartDAO.decreaseProduct(cartVO);
 
     }
 
