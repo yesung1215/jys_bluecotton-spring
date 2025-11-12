@@ -18,6 +18,6 @@ public class ProductListResponseDTO {
     private Integer productReviewCount;
     private Integer productLikeCount;
     private String productImageUrl;
-
+    private Integer isLiked;
 
 }

@@ -2,29 +2,39 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.app.bluecotton.mapper.ShopMapper">
 
+<!-- 샵 메인 페이지 필터별 상품 조회  -->
     <select id="selectProductsByFilter" resultType="com.app.bluecotton.domain.dto.ProductListResponseDTO" parameterType="Map">
         SELECT
         TBP.ID,TBP.PRODUCT_NAME,TBP.PRODUCT_PRICE,TBP.PRODUCT_TYPE, TBP.PRODUCT_PURCHASE_TYPE,
-<!--  리뷰 별점 평균-->
+        <!--  리뷰 별점 평균-->
         (SELECT ROUND(AVG(TBPR.PRODUCT_REVIEW_RATING), 1)
         FROM TBL_PRODUCT_REVIEW TBPR
         WHERE TBPR.PRODUCT_ID = TBP.ID) AS PRODUCT_AVG_RATING,
 
-<!--    리뷰 총합-->
+        <!--   리뷰 총합-->
         (SELECT COUNT(TBPR.ID)
         FROM TBL_PRODUCT_REVIEW TBPR
         WHERE TBPR.PRODUCT_ID = TBP.ID) AS PRODUCT_REVIEW_COUNT,
 
-<!--        찜 하기 총 개수-->
+        <!--    찜 하기 총 개수-->
         (SELECT COUNT(TBPL.PRODUCT_ID)
         FROM TBL_PRODUCT_LIKE TBPL
         WHERE TBPL.PRODUCT_ID = TBP.ID) AS PRODUCT_LIKE_COUNT,
 
-<!--        이미지 경로 + 이미지 이름-->
+        <!--   이미지 경로 + 이미지 이름-->
         (SELECT TBPI.PRODUCT_IMAGE_PATH || TBPI.PRODUCT_IMAGE_NAME
         FROM TBL_PRODUCT_IMAGE TBPI
         WHERE TBPI.PRODUCT_ID = TBP.ID
-        AND ROWNUM = 1) AS PRODUCT_IMAGE_URL
+        AND ROWNUM = 1 AND PRODUCT_IMAGE_TYPE = 'MAIN') AS PRODUCT_IMAGE_URL,
+
+        (CASE
+            WHEN #{memberId} IS NULL THEN 0
+            ELSE (
+            SELECT COUNT(*)
+            FROM TBL_PRODUCT_LIKE TBPL
+            WHERE TBPL.PRODUCT_ID = TBP.ID
+            AND TBPL.MEMBER_ID = #{memberId}
+            ) END) AS IS_LIKED
 
         FROM TBL_PRODUCT TBP
         <where>
@@ -82,7 +92,26 @@
         </choose>
     </select>
     
-    <select id="selectProductDetailHeader" parameterType="Long" resultType="com.app.bluecotton.domain.dto.ProductDetailResponseDTO">
+<!-- 샵 메인 페이지 찜하기 추가 -->
+    <insert id="insertMyLikedProduct">
+        INSERT INTO TBL_PRODUCT_LIKE (ID, MEMBER_ID, PRODUCT_ID)
+        VALUES (SEQ_PRODUCT_LIKE.NEXTVAL, #{memberId}, #{productId})
+    </insert>
+
+<!--  샵 메인 페이지 찜하기 삭제  -->
+    <delete id="deleteMyLikedProduct" >
+        DELETE FROM TBL_PRODUCT_LIKE
+        WHERE MEMBER_ID = #{memberId} AND PRODUCT_ID = #{productId}
+    </delete>
+
+    <select id="selectLikeCount" resultType="Integer">
+        SELECT COUNT(*)
+        FROM TBL_PRODUCT_LIKE
+        WHERE MEMBER_ID = #{memberId} AND PRODUCT_ID = #{productId}
+    </select>
+
+    <!--  상품 상세 페이지 상단 조회 -->
+    <select id="selectProductDetailHeader" parameterType="map" resultType="com.app.bluecotton.domain.dto.ProductDetailResponseDTO">
         SELECT
         TBP.ID,
         TBP.PRODUCT_NAME,
@@ -102,6 +131,14 @@
         FROM TBL_PRODUCT_LIKE TBPL
         WHERE TBPL.PRODUCT_ID = TBP.ID) AS PRODUCT_LIKE_COUNT,
 
+        (CASE
+        WHEN #{memberId} IS NULL THEN 0
+        ELSE (
+        SELECT COUNT(*)
+        FROM TBL_PRODUCT_LIKE TBPL_MY
+        WHERE TBPL_MY.PRODUCT_ID = TBP.ID
+        AND TBPL_MY.MEMBER_ID = #{memberId}
+        ) END) AS IS_LIKED,
 
         (SELECT TBPI.PRODUCT_IMAGE_PATH || TBPI.PRODUCT_IMAGE_NAME
         FROM TBL_PRODUCT_IMAGE TBPI
@@ -119,7 +156,8 @@
         FROM TBL_PRODUCT TBP
         WHERE TBP.ID = #{id}
     </select>
-    
+
+    <!--  상품 상세 페이지 "정보" 조회 -->
     <select id="selectProductDetailInfo" parameterType="Long" resultType="com.app.bluecotton.domain.dto.ProductInfoDetailResponseDTO">
         SELECT
         TBP.PRODUCT_NAME,
@@ -144,8 +182,8 @@
         FROM TBL_PRODUCT TBP
         WHERE TBP.ID = #{id}
     </select>
-    
-    
+
+    <!--  상품 상세 페이지 "상품 리뷰" -->
     <select id="selectProductReviewDetail" parameterType="map" resultType="com.app.bluecotton.domain.dto.ProductReviewDetailResponseDTO">
         SELECT
         TBPR.ID,
@@ -193,6 +231,7 @@
         </choose>
     </select>
 
+    <!--  샵 상세 페이지 "리뷰 평점" -->
     <select id="selectProductReviewStats" parameterType="Long" resultType="com.app.bluecotton.domain.dto.ProductReviewStatsResponseDTO">
 
         SELECT
@@ -207,7 +246,7 @@
         WHERE PRODUCT_ID = #{id}
     </select>
 
-    <!--  마이페이지 찜  -->
+    <!--  마이페이지 찜한 상품 조회  -->
     <select id="selectMyLikedProducts" parameterType="Long" resultType="com.app.bluecotton.domain.dto.ProductListResponseDTO">
         SELECT
         TBP.ID,
@@ -246,15 +285,12 @@
         ORDER BY
         TBP.ID DESC
     </select>
-    
-    <delete id="deleteMyLikedProduct">
-        DELETE FROM TBL_PRODUCT_LIKE
-        WHERE MEMBER_ID = #{memberId} AND PRODUCT_ID = #{productId}
-    </delete>
+
 
     <!--  마이페이지 마이리뷰 조회 -->
     <select id="selectMyReview" parameterType="Long" resultType="com.app.bluecotton.domain.dto.MyReviewListDTO">
         SELECT TBPR.ID,
+        TBPR.PRODUCT_ID,
         TBP.PRODUCT_NAME AS PRODUCT_NAME,
         TO_CHAR(TBPR.PRODUCT_REVIEW_CREATE_AT, 'YYYY.MM.DD') AS PRODUCT_REVIEW_DATE,
         TBPR.PRODUCT_REVIEW_CONTENT,
@@ -272,7 +308,7 @@
         TBPR.ID DESC
     </select>
 
-    <!--    마이페이지 마이리뷰 수정 -->
+    <!--   마이페이지 마이리뷰 수정 -->
     <update id="updateMyReview" parameterType="map">
         UPDATE TBL_PRODUCT_REVIEW
         SET PRODUCT_REVIEW_RATING  = #{rating},
@@ -280,10 +316,71 @@
         WHERE ID = #{reviewId}
         AND MEMBER_ID = #{memberId}
     </update>
-
-    <delete id="deleteMyReview">
-
+    
+    <!--  마이페이지 마이리뷰 삭제  -->
+    <delete id="deleteMyReview" parameterType="Long">
+        DELETE FROM TBL_PRODUCT_REVIEW
+        WHERE ID = #{id}
     </delete>
+
+    <!-- 마이페이지 구매내역 전체조회 -->
+    <select id="selectPurchaseList" parameterType="Long" resultType="com.app.bluecotton.domain.dto.MyPageOrderListDTO">
+        SELECT
+        TBO.ID AS ORDER_ID,
+        TBO.PRODUCT_ID,
+        TBP.PRODUCT_NAME AS PRODUCT_NAME,
+        (SELECT TBPI.PRODUCT_IMAGE_PATH || TBPI.PRODUCT_IMAGE_NAME
+        FROM TBL_PRODUCT_IMAGE TBPI
+        WHERE TBPI.PRODUCT_ID = TBP.ID
+        AND TBPI.PRODUCT_IMAGE_TYPE = 'MAIN'
+        AND ROWNUM = 1)   AS PRODUCT_MAIN_IMAGE_URL,
+        TBO.ORDER_CREATE_AT,
+        (SELECT COUNT(*)
+        FROM TBL_ORDER
+        WHERE MEMBER_ID = TBO.MEMBER_ID) AS ORDER_TOTAL_COUNT
+        FROM TBL_ORDER TBO
+        JOIN TBL_PRODUCT TBP
+        ON TBP.ID = TBO.PRODUCT_ID
+        WHERE TBO.MEMBER_ID = #{memberId}
+        ORDER BY TBO.ORDER_CREATE_AT DESC
+    </select>
+
+
+    <!--  마이페이지 구매내역 리뷰하기 작성-->
+        <!--  리뷰 모달 조회  -->
+    <select id="selectReviewModal" parameterType="Long" resultType="map">
+        SELECT TBP.PRODUCT_NAME,
+        (SELECT TBPI.PRODUCT_IMAGE_PATH || TBPI.PRODUCT_IMAGE_NAME
+        FROM TBL_PRODUCT_IMAGE TBPI
+        WHERE TBP.ID = TBPI.PRODUCT_ID
+        AND TBPI.PRODUCT_IMAGE_TYPE = 'MAIN'
+        AND ROWNUM = 1
+        ) AS PRODUCT_MAIN_IMAGE_URL
+        FROM TBL_PRODUCT TBP
+        WHERE TBP.ID = #{productId}
+    </select>
+
+    <!-- 리뷰 내용 추가 -->
+    <insert id="insertMyReview" parameterType="com.app.bluecotton.domain.dto.MyPageReviewWriteDTO">
+        <selectKey keyProperty="reviewId" resultType="long" order="BEFORE">
+            SELECT SEQ_PRODUCT_REVIEW.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TBL_PRODUCT_REVIEW
+        (ID, PRODUCT_ID, MEMBER_ID, PRODUCT_REVIEW_RATING, PRODUCT_REVIEW_CONTENT, PRODUCT_REVIEW_CREATE_AT)
+        VALUES
+        (#{reviewId}, #{productId}, #{memberId}, #{rating}, #{content}, SYSTIMESTAMP)
+    </insert>
+
+    <!-- 리뷰 이미지 추가 -->
+    <insert id="insertMyReviewImage" parameterType="com.app.bluecotton.domain.dto.MyPageReviewWriteDTO">
+        INSERT INTO TBL_PRODUCT_REVIEW_IMAGE
+        (ID, PRODUCT_REVIEW_IMAGE_PATH, PRODUCT_REVIEW_IMAGE_NAME, PRODUCT_REVIEW_ID)
+        VALUES
+        (SEQ_PRODUCT_REVIEW_IMAGE.NEXTVAL, #{imagePath}, #{imageName}, #{reviewId})
+    </insert>
+
+
+    <!-- 마이페이지 마이리뷰   -->
 
 </mapper>
 

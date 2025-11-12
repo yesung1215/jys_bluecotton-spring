@@ -19,7 +19,7 @@ public class ShopApi {
 
     private final ShopService shopService;
 
-    // 상품 조건 조회
+    // 메인 페이지 상품 조건 조회
     @PostMapping("")
     public ResponseEntity<ApiResponseDTO> getProductsByFilter(@RequestBody Map<String, Object> filterParams) {
         log.info("상품 조건 조회 요청 들어옴: {}", filterParams);
@@ -27,11 +27,22 @@ public class ShopApi {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("상품 조건 조회 성공", products));
     }
 
+
+    // 찜하기 토글
+    @PostMapping("/like/toggle")
+    public ResponseEntity<ApiResponseDTO> toggleLike(@RequestBody Map<String, Long> toggle) {
+        Long memberId = toggle.get("memberId");
+        Long productId = toggle.get("productId");
+        shopService.toggleLike(memberId, productId);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("찜하기 토글 성공"));
+    }
+
+
     // 상세 페이지 상단 조회
     @GetMapping("read/{id}")
-    public ResponseEntity<ApiResponseDTO> getProductDetail(@PathVariable Long id) {
+    public ResponseEntity<ApiResponseDTO> getProductDetail(@PathVariable Long id, @RequestParam(required = false) Long memberId) {
         log.info("상세 페이지 상단 조회 요청 들어옴:{}",id);
-        ProductDetailResponseDTO productDetailResponseDTO = shopService.getProductDetailHeader(id);
+        ProductDetailResponseDTO productDetailResponseDTO = shopService.getProductDetailHeader(id, memberId);
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("상세 페이지 상단 조회 성공", productDetailResponseDTO));
     }

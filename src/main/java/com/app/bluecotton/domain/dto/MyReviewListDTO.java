@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 public class MyReviewListDTO {
 
     private Long id;
+    private Long productId;
     private String productName;
     private String productReviewDate;
     private String productReviewContent;
