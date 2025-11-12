@@ -1,6 +1,7 @@
 package com.app.bluecotton.api.publicapi;
 
 import com.app.bluecotton.domain.dto.ApiResponseDTO;
+import com.app.bluecotton.domain.dto.SomReadResponseDTO;
 import com.app.bluecotton.domain.dto.SomResponseDTO;
 import com.app.bluecotton.domain.vo.som.SomJoinVO;
 import com.app.bluecotton.domain.vo.som.SomVO;
@@ -38,7 +39,7 @@ public class SomApi {
     //  솜 상세 조회
     @GetMapping("read")
     public ResponseEntity<ApiResponseDTO> getSomById(@RequestParam Long somId) {
-        SomResponseDTO data = somService.findById(somId);
+        SomReadResponseDTO data = somService.findById(somId);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("솜 상세페이지를 불러왔습니다",data));
     }
 
