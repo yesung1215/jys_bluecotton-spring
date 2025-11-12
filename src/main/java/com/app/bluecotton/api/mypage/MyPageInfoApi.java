@@ -2,6 +2,7 @@ package com.app.bluecotton.api.mypage;
 
 import com.app.bluecotton.domain.dto.*;
 import com.app.bluecotton.service.MemberService;
+import com.app.bluecotton.service.MyPageInfoService;
 import com.app.bluecotton.service.MyPagePostService;
 import com.app.bluecotton.service.SomService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class MyPageInfoApi {
 
     private final SomService somService;
     private final MemberService memberService;
+    private final MyPageInfoService myPageInfoService;
 
     // 솜 정보 출력
     @GetMapping("read-som")
@@ -34,8 +36,8 @@ public class MyPageInfoApi {
     @GetMapping("read-member")
     public ResponseEntity<ApiResponseDTO> readMember(@RequestParam Long id ){
         log.info("회원정보를 불러옵니다");
-        log.info("출력: {}", memberService.getMemberById(id));
-        MemberResponseDTO data =  memberService.getMemberById(id);
+        log.info("출력: {}", myPageInfoService.selectMemberInfo(id));
+        MyPageInfoDTO data =  myPageInfoService.selectMemberInfo(id);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("회원정보가 출력되었습니다", data));
     }
     // 회원주소 출력
@@ -43,6 +45,14 @@ public class MyPageInfoApi {
     public ResponseEntity<ApiResponseDTO<Object>> readMemberAddress(){
         List<String> data = memberService.findAllMemberAddress();
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("모든 회원의 주소를 조회했습니다", data));
+    }
+
+    // 회원주소 출력
+    @PutMapping("update-member")
+    public ResponseEntity<ApiResponseDTO<Object>> updateInfo(@RequestBody MyPageInfoDTO myPageInfoDTO){
+        String data = "ㅇㅅㅇ";
+        myPageInfoService.updateInfo(myPageInfoDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("회원의 정보를 갱신했습니다", data));
     }
 
 }

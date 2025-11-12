@@ -2,60 +2,55 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.app.bluecotton.mapper.MyPageInfoMapper">
 
-    <!--마이페이지 솜 인증 추가-->
-    <insert id="insertSomCheckWithImages" parameterType="com.app.bluecotton.domain.dto.MyPageSomCheckDTO">
-        <!-- 1️⃣ SOM_CHECK 먼저 삽입 -->
-        INSERT INTO TBL_SOM_CHECK (
-        ID, SOM_CHECK_IS_CHECKED, SOM_CHECK_CONTENT, MEMBER_ID, SOM_ID
-        )
-        VALUES (
-        SEQ_SOM_CHECK.NEXTVAL,, #{somCheckIsCheckedYn}, #{somCheckContent}, #{memberId}, #{somId}
-        )
+    <!-- 회원 + 프로필 정보 조회 -->
+    <select id="selectMemberInfo" parameterType="Long" resultType="com.app.bluecotton.domain.dto.MyPageInfoDTO">
+        SELECT
+        TM.ID                        AS id,
+        TM.MEMBER_NAME               AS memberName,
+        TM.MEMBER_NICKNAME           AS memberNickname,
+        TM.MEMBER_EMAIL              AS memberEmail,
+        TM.MEMBER_PASSWORD           AS memberPassword,
+        TM.MEMBER_ADDRESS            AS memberAddress,
+        TM.MEMBER_GENDER             AS memberGender,
+        TM.MEMBER_BIRTH              AS memberBirth,
+        TM.MEMBER_CANDY              AS memberCandy,
+        TM.MEMBER_RANK               AS memberRank,
+        TM.MEMBER_PROVIDER           AS memberProvider,
+        TM.MEMBER_PHONE              AS memberPhone,
 
-        <!-- 2️⃣ 이어서 이미지 리스트 삽입 (List 반복 처리) -->
-        <foreach collection="somCheckImageList" item="image">
-            INSERT INTO TBL_SOM_CHECK_IMAGE (
-            ID, SOM_CHECK_IMAGE_PATH, SOM_CHECK_IMAGE_NAME, SOM_CHECK_ID
-            )
-            VALUES (
-            #{image.id}, #{image.somCheckImagePath}, #{image.somCheckImageName}, #{id}
-            )
-        </foreach>
-    </insert>
-
-    <!--마이페이지 솜 리뷰 추가-->
-    <insert id="insertSomReview" parameterType="com.app.bluecotton.domain.vo.som.SomReviewVO">
-        INSERT INTO TBL_SOM_REVIEW (
-        ID, SOM_REVIEW_IS_CHECKED, SOM_REVIEW_CONTENT, MEMBER_ID, SOM_ID
-        ) VALUES (
-        SEQ_SOM_REVIEW.NEXTVAL,
-        #{somReviewIsCheckedYn},
-        #{somReviewContent},
-        #{memberId},
-        #{somId}
-        )
-    </insert>
-
-    <!--마이페이지 솜 인증 호출-->
-    <select id="readSomCheck" parameterType="Long" resultType="com.app.bluecotton.domain.dto.MyPageSomCheckDTO">
-        SELECT TBM.ID, TBSC.ID, TBSC.SOM_CHECK_IS_CHECKED, TBSC.SOM_CHECK_CONTENT, TBS.SOM_CATEGORY, TBS.SOM_START_DATE, TBS.SOM_END_DATE
-        FROM TBL_SOM_CHECK TBSC
-        JOIN TBL_SOM TBS
-        ON TBSC.SOM_ID = TBS.ID
-        JOIN TBL_MEMBER TBM
-        ON TBSC.MEMBER_ID = TBM.ID
-        WHERE TBM.ID = #{id}
+        TMP.ID                       AS memberPictureId,
+        TMP.MEMBER_PROFILE_PATH      AS memberPicturePath,
+        TMP.MEMBER_PROFILE_NAME      AS memberPictureName
+        FROM TBL_MEMBER TM
+        LEFT JOIN TBL_MEMBER_PROFILE TMP
+        ON TM.ID = TMP.MEMBER_ID
+        WHERE TM.ID = #{id}
     </select>
 
-    <!--마이페이지 솜 리뷰 호출-->
-    <select id="readSomReview" parameterType="Long" resultType="com.app.bluecotton.domain.dto.MyPageSomReviewDTO">
-        SELECT TBSR.MEMBER_ID, TBSR.SOM_ID, TBSR.ID, TBSR.SOM_REVIEW_IS_CHECKED, TBSR.SOM_REVIEW_CONTENT, TBS.SOM_CATEGORY
-        FROM TBL_SOM_REVIEW TBSR
-        JOIN TBL_SOM TBS
-        ON TBSR.SOM_ID = TBS.ID
-        JOIN TBL_MEMBER TBM
-        ON TBSR.MEMBER_ID = TBM.ID
-        WHERE TBM.ID = #{id}
-    </select>
+    <!-- ① 회원정보 수정 -->
+    <update id="updateMemberInfo" parameterType="com.app.bluecotton.domain.dto.MyPageInfoDTO">
+        UPDATE TBL_MEMBER
+        <set>
+            <if test="memberName != null">         MEMBER_NAME = #{memberName},         </if>
+            <if test="memberNickname != null">     MEMBER_NICKNAME = #{memberNickname}, </if>
+            <if test="memberEmail != null">        MEMBER_EMAIL = #{memberEmail},       </if>
+            <if test="memberPassword != null">     MEMBER_PASSWORD = #{memberPassword}, </if>
+            <if test="memberAddress != null">      MEMBER_ADDRESS = #{memberAddress},   </if>
+            <if test="memberGender != null">       MEMBER_GENDER = #{memberGender},     </if>
+            <if test="memberBirth != null">        MEMBER_BIRTH = #{memberBirth, jdbcType=DATE}, </if>
+            <if test="memberPhone != null">        MEMBER_PHONE = #{memberPhone}        </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+
+    <!-- ② 회원 프로필 수정 -->
+    <update id="updateMemberProfile" parameterType="com.app.bluecotton.domain.dto.MyPageInfoDTO">
+        UPDATE TBL_MEMBER_PROFILE
+        <set>
+            <if test="memberPicturePath != null"> MEMBER_PROFILE_PATH = #{memberPicturePath}, </if>
+            <if test="memberPictureName != null"> MEMBER_PROFILE_NAME = #{memberPictureName}  </if>
+        </set>
+        WHERE MEMBER_ID = #{id}
+    </update>
 
 </mapper>

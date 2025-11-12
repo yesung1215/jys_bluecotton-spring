@@ -2,6 +2,7 @@ package com.app.bluecotton.api.mypage;
 
 import com.app.bluecotton.domain.dto.ApiResponseDTO;
 import com.app.bluecotton.domain.dto.MyPageSomCheckDTO;
+import com.app.bluecotton.domain.dto.MyPageSomReviewDTO;
 import com.app.bluecotton.domain.vo.som.SomReviewVO;
 import com.app.bluecotton.domain.vo.som.SomVO;
 import com.app.bluecotton.service.MyPageSomService;
@@ -36,5 +37,21 @@ public class MyPageSomApi {
         log.info("솜 리뷰를 불러옵니다");
         myPageSomService.insertSomReview(somReviewVO);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("솜 리뷰를 호출했습니다"));
+    }
+
+    //    마이페이지 솜 인증 호출
+    @GetMapping("read-som-check")
+    public ResponseEntity<ApiResponseDTO> readSomCheck(@RequestParam Long id) {
+        log.info("솜 인증를 불러옵니다");
+        List<MyPageSomCheckDTO> data = myPageSomService.readSomCheck(id);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("솜 인증을 호출했습니다", data));
+    }
+
+    //    마이페이지 솜 리뷰 호출
+    @GetMapping("read-som-review")
+    public ResponseEntity<ApiResponseDTO> readSomReview(@RequestParam Long id) {
+        log.info("솜 리뷰를 불러옵니다");
+        List<MyPageSomReviewDTO> data =  myPageSomService.readSomReview(id);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("솜 리뷰를 호출했습니다", data));
     }
 }
