@@ -119,13 +119,6 @@
         WHERE sc.ID = #{id}
     </select>
 
-    <insert id="insert" parameterType="SomJoinVO">
-        INSERT INTO TBL_SOM_JOIN
-        VALUES(SEQ_SOM_JOIN.NEXTVAL, #{somId}, #{memberId})
-    </insert>
-    
-    <select id="selectSomMember"
-
     <resultMap id="SomCheckWithImagesMap" type="com.app.bluecotton.domain.dto.SomCheckResponseDTO">
         <id property="id" column="sc_id"/>
         <result property="somCheckIsChecked" column="sc_is_checked" javaType="boolean"/>
