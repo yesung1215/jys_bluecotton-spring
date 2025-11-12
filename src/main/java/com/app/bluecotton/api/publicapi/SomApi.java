@@ -2,6 +2,7 @@ package com.app.bluecotton.api.publicapi;
 
 import com.app.bluecotton.domain.dto.ApiResponseDTO;
 import com.app.bluecotton.domain.dto.SomResponseDTO;
+import com.app.bluecotton.domain.vo.som.SomJoinVO;
 import com.app.bluecotton.domain.vo.som.SomVO;
 import com.app.bluecotton.service.MemberService;
 import com.app.bluecotton.service.SomService;
@@ -26,7 +27,11 @@ public class SomApi {
     //  솜 등록
     @PostMapping("register")
     public ResponseEntity<ApiResponseDTO> registerSom(@RequestBody SomVO somVO) {
+        SomJoinVO somJoinVO = new SomJoinVO();
+        somJoinVO.setSomId(somVO.getId());
+        somJoinVO.setMemberId(somVO.getMemberId());
         somService.registerSom(somVO);
+        somService.registerSomJoin(somJoinVO);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.of("솜이 등록되었습니다", somVO));
     }
 

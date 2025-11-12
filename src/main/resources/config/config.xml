@@ -48,6 +48,7 @@
 
         <!-- som response DTO -->
         <typeAlias type="com.app.bluecotton.domain.dto.SomCheckResponseDTO" alias="SomCheckResponseDTO" />
+        <typeAlias type="com.app.bluecotton.domain.dto.SomJoinResponseDTO" alias="SomJoinResponseDTO" />
 
         <!-- som update DTO -->
         <typeAlias type="com.app.bluecotton.domain.dto.SomCheckResponseDTO" alias="SomImageUpdateDTO" />

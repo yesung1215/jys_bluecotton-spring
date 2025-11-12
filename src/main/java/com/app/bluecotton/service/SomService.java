@@ -1,6 +1,9 @@
 package com.app.bluecotton.service;
 
+import com.app.bluecotton.domain.dto.SomJoinResponseDTO;
+import com.app.bluecotton.domain.dto.SomReadResponseDTO;
 import com.app.bluecotton.domain.dto.SomResponseDTO;
+import com.app.bluecotton.domain.vo.som.SomJoinVO;
 import com.app.bluecotton.domain.vo.som.SomVO;
 
 import java.util.List;
@@ -12,7 +15,7 @@ public interface SomService {
     public void registerSom(SomVO somVO);
 
     //  솜 상세 조회
-    public SomResponseDTO findById(Long somId);
+    public SomReadResponseDTO findById(Long somId);
 
     public Integer selectSomMaxPage(Map<String, Object> map);
 
@@ -29,4 +32,10 @@ public interface SomService {
 
     //  솜 삭제
     public void withdraw(Long somId);
+
+    public void registerSomJoin(SomJoinVO somJoinVO);
+
+    public List<SomJoinResponseDTO> selectAllSomJoinList(Long somId);
+
+    public void deleteSomJoin(Long somJoinId);
 }

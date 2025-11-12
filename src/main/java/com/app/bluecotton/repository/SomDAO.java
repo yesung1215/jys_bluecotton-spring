@@ -1,6 +1,8 @@
 package com.app.bluecotton.repository;
 
+import com.app.bluecotton.domain.dto.SomJoinResponseDTO;
 import com.app.bluecotton.domain.dto.SomResponseDTO;
+import com.app.bluecotton.domain.vo.som.SomJoinVO;
 import com.app.bluecotton.domain.vo.som.SomVO;
 import com.app.bluecotton.mapper.MyTestMapper;
 import com.app.bluecotton.mapper.SomMapper;
@@ -52,5 +54,17 @@ public class SomDAO {
     //  솜 삭제
     public void withdraw(Long somId) {
         somMapper.delete(somId);
+    }
+
+    public void insertSomJoin(SomJoinVO somJoinVO) {
+        somMapper.insertSomJoin(somJoinVO);
+    }
+
+    public List<SomJoinResponseDTO> readSomJoinList(Long id) {
+        return somMapper.selectAllSomJoinList(id);
+    }
+
+    public void deleteSomJoin(Long somJoinId) {
+        somMapper.deleteSomJoin(somJoinId);
     }
 }

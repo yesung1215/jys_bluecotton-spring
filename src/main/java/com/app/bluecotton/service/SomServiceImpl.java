@@ -1,7 +1,10 @@
 package com.app.bluecotton.service;
 
+import com.app.bluecotton.domain.dto.SomJoinResponseDTO;
+import com.app.bluecotton.domain.dto.SomReadResponseDTO;
 import com.app.bluecotton.domain.dto.SomResponseDTO;
 import com.app.bluecotton.domain.vo.som.SomImageVO;
+import com.app.bluecotton.domain.vo.som.SomJoinVO;
 import com.app.bluecotton.domain.vo.som.SomVO;
 import com.app.bluecotton.exception.SomException;
 import com.app.bluecotton.mapper.SomImageMapper;
@@ -25,6 +28,7 @@ public class SomServiceImpl implements SomService {
 
     private final SomDAO somDAO;
     private final SomImageMapper somImageMapper;
+    private final SomService somService;
 
     //  솜 등록
     @Override
@@ -39,8 +43,8 @@ public class SomServiceImpl implements SomService {
 
     //  솜 상세 조회
     @Override
-    public SomResponseDTO findById(Long somId) {
-        SomResponseDTO somResponseDTO = somDAO.findById(somId).map(SomResponseDTO::new).orElseThrow(() -> new SomException("솜을 불러오지 못했습니다"));
+    public SomReadResponseDTO findById(Long somId) {
+        SomReadResponseDTO somResponseDTO = somDAO.findById(somId).map(SomReadResponseDTO::new).orElseThrow(() -> new SomException("솜을 불러오지 못했습니다"));
         List<SomImageVO> somImages = somImageMapper.selectImagesBySomId(somId);
         if(somImages.size() == 0){
             SomImageVO somImageVO = new SomImageVO();
@@ -49,6 +53,7 @@ public class SomServiceImpl implements SomService {
             somImageVO.setSomImageName("1762700261.jpg");
             somImages.add(somImageVO);
         }
+        somResponseDTO.setSomCount(somService.selectAllSomJoinList(somId).size());
         somResponseDTO.setSomImageList(somImages);
 
         return somResponseDTO;
@@ -58,7 +63,7 @@ public class SomServiceImpl implements SomService {
     @Override
     public List<SomResponseDTO> findAllSom() {
         List<SomResponseDTO> somList = somDAO.findAllSom().stream().map((som) -> {
-            SomResponseDTO somResponseDTO1 = new SomResponseDTO(som);
+            SomResponseDTO somResponse = new SomResponseDTO(som);
             List<SomImageVO> somImages = somImageMapper.selectImagesBySomId(som.getId());
             if(somImages.size() == 0){
                 SomImageVO somImageVO = new SomImageVO();
@@ -67,8 +72,9 @@ public class SomServiceImpl implements SomService {
                 somImageVO.setSomImageName("1762700261.jpg");
                 somImages.add(somImageVO);
             }
-            somResponseDTO1.setSomImageList(somImages);
-            return somResponseDTO1;
+            somResponse.setSomCount(somService.selectAllSomJoinList(som.getId()).size());
+            somResponse.setSomImageList(somImages);
+            return somResponse;
         }).toList();
 
         return somList;
@@ -77,7 +83,7 @@ public class SomServiceImpl implements SomService {
     @Override
     public List<SomResponseDTO> findByCategoryAndType(Map<String, Object> map){
         List<SomResponseDTO> somList = somDAO.findSomListByCategoryAndType(map).stream().map((som) -> {
-            SomResponseDTO somResponseDTO1 = new SomResponseDTO(som);
+            SomResponseDTO somResponse = new SomResponseDTO(som);
             List<SomImageVO> somImages = somImageMapper.selectImagesBySomId(som.getId());
             if(somImages.size() == 0){
                 SomImageVO somImageVO = new SomImageVO();
@@ -86,8 +92,9 @@ public class SomServiceImpl implements SomService {
                 somImageVO.setSomImageName("1762700261.jpg");
                 somImages.add(somImageVO);
             }
-            somResponseDTO1.setSomImageList(somImages);
-            return somResponseDTO1;
+            somResponse.setSomCount(somService.selectAllSomJoinList(som.getId()).size());
+            somResponse.setSomImageList(somImages);
+            return somResponse;
         }).toList();
 
         return somList;
@@ -108,5 +115,20 @@ public class SomServiceImpl implements SomService {
     @Override
     public void withdraw(Long somId) {
         somDAO.withdraw(somId);
+    }
+
+    @Override
+    public void registerSomJoin(SomJoinVO somJoinVO) {
+        somDAO.insertSomJoin(somJoinVO);
+    }
+
+    @Override
+    public List<SomJoinResponseDTO> selectAllSomJoinList(Long somId){
+        return somDAO.readSomJoinList(somId);
+    }
+
+    @Override
+    public void deleteSomJoin(Long somJoinId) {
+        somDAO.deleteSomJoin(somJoinId);
     }
 }
