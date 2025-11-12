@@ -2,17 +2,50 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.app.bluecotton.mapper.PaymentMapper">
 
-    <insert id="insert" parameterType="PaymentVO">
-        INSERT INTO TBL_PAYMENT ( ID, PAYMENT_PRICE, PAYMENT_TYPE, PAYMENT_STATUS, PAYMENT_CREATE_AT, ORDER_ID)
-        VALUES (
-        SEQ_PAYMENT.NEXTVAL,
-        #{paymentPrice},
+    <insert id="insert" parameterType="com.app.bluecotton.domain.vo.shop.PaymentVO">
+        <selectKey keyProperty="id" resultType="long" order="BEFORE">
+            SELECT SEQ_PAYMENT.NEXTVAL FROM DUAL
+        </selectKey>
+
+        INSERT INTO TBL_PAYMENT (
+        ID, PAYMENT_PRICE, PAYMENT_TYPE, PAYMENT_STATUS,
+        PAYMENT_CREATE_AT, ORDER_ID, MERCHANT_UID
+        ) VALUES (
+        SEQ_PAYMENT.NEXTVAL, #{paymentPrice},
         #{paymentType},
         #{paymentStatus},
-        SYSDATE,
-        #{orderId}
+        SYSTIMESTAMP,
+        #{orderId},
+        #{merchantUid}
         )
     </insert>
+
+    <select id="selectByMerchantUid" parameterType="string" resultType="PaymentVO">
+        SELECT ID, PAYMENT_PRICE, PAYMENT_TYPE, PAYMENT_STATUS,
+        PAYMENT_CREATE_AT, ORDER_ID, MERCHANT_UID, IMP_UID, PAID_AMOUNT
+        FROM TBL_PAYMENT
+        WHERE MERCHANT_UID = #{merchantUid}
+    </select>
+
+    <select id="selectExpectedAmountByMerchantUid" parameterType="string" resultType="long">
+        SELECT PAYMENT_PRICE
+        FROM TBL_PAYMENT
+        WHERE MERCHANT_UID = #{merchantUid}
+    </select>
+
+    <update id="updateStatusByMerchantUid">
+        UPDATE TBL_PAYMENT
+        SET PAYMENT_STATUS = #{status}
+        WHERE MERCHANT_UID = #{merchantUid}
+    </update>
+
+    <update id="markSuccessByMerchantUid">
+        UPDATE TBL_PAYMENT
+        SET IMP_UID = #{impUid},
+        PAID_AMOUNT = #{paidAmount},
+        PAYMENT_STATUS = #{status}
+        WHERE MERCHANT_UID = #{merchantUid}
+    </update>
 
 
     <select id="selectById" parameterType="Long" resultType="PaymentVO">

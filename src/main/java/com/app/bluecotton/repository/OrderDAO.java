@@ -2,7 +2,9 @@ package com.app.bluecotton.repository;
 
 
 import com.app.bluecotton.domain.dto.OrderCartDTO;
+import com.app.bluecotton.domain.dto.OrderCheckoutDTO;
 import com.app.bluecotton.domain.dto.OrderDTO;
+import com.app.bluecotton.domain.dto.OrderItemDTO;
 import com.app.bluecotton.domain.vo.shop.OrderVO;
 import com.app.bluecotton.mapper.OrderMapper;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,22 @@ public class OrderDAO {
 
     public void addOrderCart(OrderCartDTO orderCartDTO) {
         orderMapper.insertCartOrder(orderCartDTO);
+    }
+
+    public Long selectProductPriceById(Long productId) {
+        return orderMapper.selectProductPriceById(productId);
+    }
+
+    public Long createIntegratedOrder(OrderCheckoutDTO orderCheckoutDTO) {
+        orderMapper.insertOrderHeader(orderCheckoutDTO);
+
+        Long orderId = orderCheckoutDTO.getId();
+
+        List<OrderItemDTO> items = orderCheckoutDTO.getItems();
+        if(items!=null && items.isEmpty()){
+            orderMapper.insertOrderHeader(orderId, items);
+        }
+        return orderId;
     }
 
     public List<OrderVO> selectAllOrders(Long memberId) {

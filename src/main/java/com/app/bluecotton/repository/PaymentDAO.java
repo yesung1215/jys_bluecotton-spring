@@ -1,5 +1,6 @@
 package com.app.bluecotton.repository;
 
+import com.app.bluecotton.domain.vo.shop.PaymentStatus;
 import com.app.bluecotton.domain.vo.shop.PaymentVO;
 import com.app.bluecotton.mapper.PaymentMapper;
 import lombok.RequiredArgsConstructor;
@@ -32,5 +33,21 @@ public class PaymentDAO {
 
     public void delete(Long id) {
         paymentMapper.delete(id);
+    }
+
+    public Optional<PaymentVO> findByMerchantUid(String merchantUid) {
+        return paymentMapper.selectByMerchantUid(merchantUid);
+    }
+
+    public Long findExpectedAmountByMerchantUid(String merchantUid) {
+        return paymentMapper.selectExpectedAmountByMerchantUid(merchantUid);
+    }
+
+    public int updateStatusByMerchantUid(String merchantUid, PaymentStatus status) {
+        return paymentMapper.updateStatusByMerchantUid(merchantUid, status);
+    }
+
+    public int markSuccessByMerchantUid(String merchantUid, String impUid, long paidAmount, PaymentStatus status) {
+        return paymentMapper.markSuccessByMerchantUid(merchantUid, impUid, paidAmount, status);
     }
 }
