@@ -1,4 +1,4 @@
-package com.app.bluecotton.api.mypage;
+package com.app.bluecotton.api.privateapi;
 
 import com.app.bluecotton.domain.dto.*;
 import com.app.bluecotton.service.ShopService;
@@ -14,7 +14,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/mypage/myshop/*")
+@RequestMapping("private/mypage/myshop/*")
 public class MyPageShopApi {
 
     final ShopService shopService;

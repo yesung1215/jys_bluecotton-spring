@@ -11,7 +11,7 @@
         FROM TBL_PRODUCT_REVIEW TBPR
         WHERE TBPR.PRODUCT_ID = TBP.ID) AS PRODUCT_AVG_RATING,
 
-        <!--   리뷰 총합-->
+        <!--   리뷰 총합 -->
         (SELECT COUNT(TBPR.ID)
         FROM TBL_PRODUCT_REVIEW TBPR
         WHERE TBPR.PRODUCT_ID = TBP.ID) AS PRODUCT_REVIEW_COUNT,
@@ -38,6 +38,9 @@
 
         FROM TBL_PRODUCT TBP
         <where>
+            <if test="q != null and q != ''">
+                AND (TBP.PRODUCT_NAME LIKE '%' || #{q} || '%')
+            </if>
             <!-- 카테고리: 다중 선택 OR 그룹 -->
             <if test="selection != 'all'">
                 <trim prefix="(" suffix=")" suffixOverrides="OR">
@@ -407,6 +410,8 @@
         DELETE FROM TBL_ORDER
         WHERE ID = #{id}
     </delete>
+
+
 
 
 </mapper>

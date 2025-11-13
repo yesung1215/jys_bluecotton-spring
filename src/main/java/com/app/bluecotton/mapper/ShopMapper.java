@@ -13,6 +13,8 @@ public interface ShopMapper {
     // 메인 페이지 상품 조건 조회
     public List<ProductListResponseDTO> selectProductsByFilter(Map<String,Object> filterParams);
 
+
+
     // 메인 페이지 상품 찜하기 추가
     public void insertMyLikedProduct(@Param("memberId") Long memberId , @Param("productId") Long productId);
 
