@@ -109,4 +109,9 @@ public class ShopDAO {
         return shopMapper.selectMyDeliveryList(memberId);
     }
 
+    // 마이페이지(샵) 배숑현황 삭제
+    public void deleteMyDeliveryProduct(Long id){
+        shopMapper.deleteMyDeliveryProduct(id);
+    }
+
 }

@@ -104,6 +104,11 @@ public class ShopServiceImpl implements ShopService {
         return shopDAO.findMyDeliveryList(memberId);
     }
 
+    @Override
+    public void deleteMyDeliveryProduct(Long id) {
+        shopDAO.deleteMyDeliveryProduct(id);
+    }
+
 
 }
 

@@ -14,7 +14,7 @@ public class MyPageDeliveryListDTO {
     private Long deliveryId;
     private Long productId;
     private String productName;
-    private String orderCreatedAt;
+    private String orderCreateAt;
     private DeliveryStatus deliveryStatus;
     private String productMainImageUrl;
 

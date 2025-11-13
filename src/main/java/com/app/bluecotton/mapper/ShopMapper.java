@@ -67,5 +67,7 @@ public interface ShopMapper {
     // 마이페이지 배송현황 전체 조회
     public List<MyPageDeliveryListDTO> selectMyDeliveryList(@Param("memberId") Long memberId);
 
+    // 마이페이지 배송현황 구매 취소
+    public void deleteMyDeliveryProduct(Long id);
 
 }

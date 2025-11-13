@@ -393,8 +393,8 @@
         WHERE TBPI.PRODUCT_ID = TBP.ID
         AND TBPI.PRODUCT_IMAGE_TYPE = 'MAIN'
         AND ROWNUM = 1) AS PRODUCT_MAIN_IMAGE_URL
-        FROM TBL_ORDER    TBO
-        JOIN TBL_PRODUCT  TBP
+        FROM TBL_ORDER TBO
+        JOIN TBL_PRODUCT TBP
         ON TBP.ID = TBO.PRODUCT_ID
         JOIN TBL_DELIVERY TBD
         ON TBP.ID = TBD.PRODUCT_ID AND TBO.MEMBER_ID = TBD.MEMBER_ID
@@ -402,6 +402,11 @@
         ORDER BY TBO.ORDER_CREATE_AT DESC
     </select>
 
+    <!-- 마이페이지 배송현황 구매취소 -->
+    <delete id="deleteMyDeliveryProduct" parameterType="Long">
+        DELETE FROM TBL_ORDER
+        WHERE ID = #{id}
+    </delete>
 
 
 </mapper>

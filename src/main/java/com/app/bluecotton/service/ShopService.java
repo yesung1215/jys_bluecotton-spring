@@ -56,4 +56,9 @@ public interface ShopService {
 
     // 마이페이지(샵) 배송현황 전체 조회
     public List<MyPageDeliveryListDTO> getMyDeliveryList(Long memberId);
+
+
+    // 마이페이지(샵) 배송현황 전체 조회
+    public void deleteMyDeliveryProduct(Long id);
+
 }
