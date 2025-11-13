@@ -1,6 +1,5 @@
 package com.app.bluecotton.domain.dto;
 
-import com.app.bluecotton.domain.vo.member.MemberVO;
 import com.app.bluecotton.domain.vo.som.SomImageVO;
 import com.app.bluecotton.domain.vo.som.SomVO;
 import lombok.AllArgsConstructor;
@@ -13,7 +12,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SomResponseDTO {
+public class SomReadResponseDTO {
     private Long id;
     private String somTitle;
     private String somCategory;
@@ -25,13 +24,12 @@ public class SomResponseDTO {
     private String somContent;
     private Integer somCount;
     private Long memberId;
-    private Boolean isSomLike;
 
     private List<SomImageVO> somImageList;
     private List<SomJoinResponseDTO> somJoinList;
     private MemberSomLeaderResponseDTO memberSomLeader;
 
-    public SomResponseDTO(SomVO somVO) {
+    public SomReadResponseDTO(SomVO somVO) {
         this.id = somVO.getId();
         this.somTitle = somVO.getSomTitle();
         this.somCategory = somVO.getSomCategory();

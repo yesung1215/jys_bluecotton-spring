@@ -38,8 +38,8 @@
 
         <!-- som -->
         <typeAlias type="com.app.bluecotton.domain.vo.som.SomVO" alias="SomVO" />
+        <typeAlias type="com.app.bluecotton.domain.vo.som.SomLikeVO" alias="SomLikeVO" />
         <typeAlias type="com.app.bluecotton.domain.vo.som.SomImageVO" alias="SomImageVO" />
-        <typeAlias type="com.app.bluecotton.domain.vo.som.SomImageVO" alias="SomLikeVO" />
         <typeAlias type="com.app.bluecotton.domain.vo.som.SomReviewVO" alias="SomReviewVO" />
         <typeAlias type="com.app.bluecotton.domain.vo.som.SomReviewImageVO" alias="SomReviewImageVO" />
         <typeAlias type="com.app.bluecotton.domain.vo.som.SomJoinVO" alias="SomJoinVO" />
@@ -48,6 +48,7 @@
 
         <!-- som response DTO -->
         <typeAlias type="com.app.bluecotton.domain.dto.SomCheckResponseDTO" alias="SomCheckResponseDTO" />
+        <typeAlias type="com.app.bluecotton.domain.dto.SomJoinResponseDTO" alias="SomJoinResponseDTO" />
 
         <!-- som update DTO -->
         <typeAlias type="com.app.bluecotton.domain.dto.SomCheckResponseDTO" alias="SomImageUpdateDTO" />
