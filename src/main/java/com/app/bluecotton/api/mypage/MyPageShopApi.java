@@ -69,10 +69,24 @@ public class MyPageShopApi {
 
         shopService.insertMyReviewImage(myPageReviewWriteDTO);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("리뷰 등록 성공"));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.of("리뷰 등록 성공"));
 
     }
 
+    @GetMapping("delivery/{memberId}")
+    public ResponseEntity<ApiResponseDTO> getMyDeliveryList(@PathVariable Long memberId){
+        List<MyPageDeliveryListDTO> deliveryList = shopService.getMyDeliveryList(memberId);
+        log.info("배송현황 전체 조회 성공{}", deliveryList);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("배송현황",  deliveryList));
+    }
+
+
+    @DeleteMapping("delivery/{id}")
+    public ResponseEntity<ApiResponseDTO> deleteMyDeliveryList(@PathVariable Long id){
+        log.info("구매 취소 성공");
+        shopService.deleteMyDeliveryProduct(id);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("구매 취소 성공"));
+    }
 
 
 }

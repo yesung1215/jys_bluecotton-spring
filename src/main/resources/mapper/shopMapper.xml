@@ -379,8 +379,35 @@
         (SEQ_PRODUCT_REVIEW_IMAGE.NEXTVAL, #{imagePath}, #{imageName}, #{reviewId})
     </insert>
 
+    <!-- 마이페이지 배송현황 전체조회 -->
+    <select id="selectMyDeliveryList" parameterType="Long" resultType="com.app.bluecotton.domain.dto.MyPageDeliveryListDTO">
+        SELECT
+        TBO.ID AS ORDER_ID,
+        TBD.ID AS DELIVERY_ID,
+        TBP.ID AS PRODUCT_ID,
+        TBP.PRODUCT_NAME AS PRODUCT_NAME,
+        TO_CHAR(TBO.ORDER_CREATE_AT, 'YYYY-MM-DD') AS ORDER_CREATE_AT,
+        TBD.DELIVERY_STATUS,
+        (SELECT TBPI.PRODUCT_IMAGE_PATH || TBPI.PRODUCT_IMAGE_NAME
+        FROM TBL_PRODUCT_IMAGE TBPI
+        WHERE TBPI.PRODUCT_ID = TBP.ID
+        AND TBPI.PRODUCT_IMAGE_TYPE = 'MAIN'
+        AND ROWNUM = 1) AS PRODUCT_MAIN_IMAGE_URL
+        FROM TBL_ORDER TBO
+        JOIN TBL_PRODUCT TBP
+        ON TBP.ID = TBO.PRODUCT_ID
+        JOIN TBL_DELIVERY TBD
+        ON TBP.ID = TBD.PRODUCT_ID AND TBO.MEMBER_ID = TBD.MEMBER_ID
+        WHERE TBO.MEMBER_ID = #{memberId}
+        ORDER BY TBO.ORDER_CREATE_AT DESC
+    </select>
 
-    <!-- 마이페이지 마이리뷰   -->
+    <!-- 마이페이지 배송현황 구매취소 -->
+    <delete id="deleteMyDeliveryProduct" parameterType="Long">
+        DELETE FROM TBL_ORDER
+        WHERE ID = #{id}
+    </delete>
+
 
 </mapper>
 

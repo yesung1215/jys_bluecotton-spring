@@ -16,8 +16,6 @@ public interface ShopMapper {
     // 메인 페이지 상품 찜하기 추가
     public void insertMyLikedProduct(@Param("memberId") Long memberId , @Param("productId") Long productId);
 
-    // 메인 페이지 상품 찜하기 삭제
-
 
     // 상세 페이지 상품 상단 조회
     public ProductDetailResponseDTO selectProductDetailHeader(Map<String,Object> likeParams);
@@ -30,6 +28,7 @@ public interface ShopMapper {
 
     // 상세 페이지 "리뷰 평점" 조회
     public ProductReviewStatsResponseDTO selectProductReviewStats(Long id);
+
 
     // 마이페이지(샵) 찜한 상품 조회
     public List<ProductListResponseDTO> selectMyLikedProducts(Long memberId);
@@ -64,5 +63,11 @@ public interface ShopMapper {
     // 마이페이지 구매내역 이미지 추가
     public void insertMyReviewImage(MyPageReviewWriteDTO myPageReviewWriteDTO);
 
+
+    // 마이페이지 배송현황 전체 조회
+    public List<MyPageDeliveryListDTO> selectMyDeliveryList(@Param("memberId") Long memberId);
+
+    // 마이페이지 배송현황 구매 취소
+    public void deleteMyDeliveryProduct(Long id);
 
 }

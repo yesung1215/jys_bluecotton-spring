@@ -53,4 +53,12 @@ public interface ShopService {
 
     // 마이페이지(샵) 구매내역 리뷰 이미지 작성
     public void insertMyReviewImage(MyPageReviewWriteDTO myPageReviewWriteDTO);
+
+    // 마이페이지(샵) 배송현황 전체 조회
+    public List<MyPageDeliveryListDTO> getMyDeliveryList(Long memberId);
+
+
+    // 마이페이지(샵) 배송현황 전체 조회
+    public void deleteMyDeliveryProduct(Long id);
+
 }

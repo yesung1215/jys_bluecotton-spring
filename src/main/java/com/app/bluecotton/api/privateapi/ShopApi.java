@@ -59,8 +59,7 @@ public class ShopApi {
     // 상세 페이지 상품 리뷰 조회
     @GetMapping("read/{id}/review")
     public ResponseEntity<ApiResponseDTO> getProductReview(
-            @PathVariable Long id,
-            @RequestParam Map<String, Object> reviewParams
+            @PathVariable Long id, @RequestParam Map<String, Object> reviewParams
     ) {
         // id도 넘겨야 함
         reviewParams.put("id", id);

@@ -12,4 +12,5 @@ public class DeliveryVO {
     private Integer deliveryFee;
     private Long memberId;
     private Long productId;
+    private DeliveryStatus deliveryStatus;
 }
