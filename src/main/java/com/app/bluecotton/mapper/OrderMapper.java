@@ -1,9 +1,6 @@
 package com.app.bluecotton.mapper;
 
-import com.app.bluecotton.domain.dto.OrderCartDTO;
-import com.app.bluecotton.domain.dto.OrderCheckoutDTO;
-import com.app.bluecotton.domain.dto.OrderDTO;
-import com.app.bluecotton.domain.dto.OrderItemDTO;
+import com.app.bluecotton.domain.dto.*;
 import com.app.bluecotton.domain.vo.shop.OrderVO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -19,6 +16,7 @@ public interface OrderMapper {
 
     public void insertOrderHeader(OrderCheckoutDTO orderCheckoutDTO);
 
+    public List<OrderDetailDTO> selectOrderDetailsByMemberIdAndOrderId(Long id, Long memberId);
     public void insertOrderItems(Long orderId, List<OrderItemDTO> items);
 
     public Long selectProductPriceById(Long productId);

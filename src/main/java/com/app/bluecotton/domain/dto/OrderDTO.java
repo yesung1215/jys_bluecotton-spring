@@ -16,6 +16,6 @@ public class OrderDTO {
 //    private Integer productPrice;
     private Date orderCreateAt;
     private Character orderStatus;
-    private Integer quantity;
-    private Long totalPrice;
+    private Integer orderQuantity;
+    private Long orderTotalPrice;
 }

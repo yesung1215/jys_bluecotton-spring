@@ -30,6 +30,15 @@ public class CartServiceImpl implements CartService {
     public void updatePlusCart(CartVO cartVO) {
         Long memberId = cartVO.getMemberId();
         Long productId = cartVO.getProductId();
+
+        Optional<Integer> existingQuantity = cartDAO.selectQuantity(memberId, productId);
+        if (existingQuantity.isPresent()) {
+            // 2. 이미 존재하면 수량만 증가 (updatePlusCart에서 사용하는 로직 재활용)
+            cartDAO.increaseProduct(cartVO);
+        } else {
+            // 3. 존재하지 않으면 새로 추가
+            cartDAO.add(cartVO);
+        }
         cartDAO.increaseProduct(cartVO);
     }
 
@@ -69,7 +78,7 @@ public class CartServiceImpl implements CartService {
                     CartVO cartVO = new CartVO();
                     cartVO.setMemberId(memberId);
                     cartVO.setProductId(productId);
-                    cartVO.setQuantity(q);
+                    cartVO.setCartQuantity(q);
                     return cartVO;
                 });
     }
@@ -83,7 +92,7 @@ public class CartServiceImpl implements CartService {
         CartVO vo = new CartVO();
         vo.setMemberId(memberId);
         vo.setProductId(productId);
-        vo.setQuantity(1);
+        vo.setCartQuantity(1);
         return vo;
     }
 }

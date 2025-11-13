@@ -3,6 +3,7 @@ package com.app.bluecotton.service;
 import com.app.bluecotton.domain.dto.OrderCartDTO;
 import com.app.bluecotton.domain.dto.OrderCheckoutDTO;
 import com.app.bluecotton.domain.dto.OrderDTO;
+import com.app.bluecotton.domain.dto.OrderDetailDTO;
 import com.app.bluecotton.domain.vo.shop.OrderVO;
 
 import java.util.List;
@@ -24,5 +25,5 @@ public interface OrderService {
 
     public void clearCartAfterOrder(Long memberId);
 
-
+    public List<OrderDetailDTO> selectOrderDetailsById(Long id, Long memberId);
 }

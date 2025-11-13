@@ -4,7 +4,7 @@
 
     <insert id="insert" parameterType="CartVO">
         INSERT INTO TBL_CART(ID, CART_QUANTITY, MEMBER_ID, PRODUCT_ID)
-        VALUES(SEQ_CART.NEXTVAL, #{quantity}, #{memberId}, #{productId})
+        VALUES(SEQ_CART.NEXTVAL, #{cartQuantity}, #{memberId}, #{productId})
     </insert>
 
 
@@ -36,13 +36,13 @@
 
     <update id="updatePlus" parameterType="CartVO">
         UPDATE TBL_CART
-        SET CART_QUANTITY = CART_QUANTITY + #{quantity}
+        SET CART_QUANTITY = CART_QUANTITY + #{cartQuantity}
         WHERE PRODUCT_ID = #{productId} AND MEMBER_ID = #{memberId}
     </update>
 
     <update id="updateMinus" parameterType="CartVO">
         UPDATE TBL_CART
-        SET CART_QUANTITY = CART_QUANTITY - #{quantity}
+        SET CART_QUANTITY = CART_QUANTITY - #{cartQuantity}
         WHERE PRODUCT_ID = #{productId}
         AND CART_QUANTITY >= #{quantity}
     </update>

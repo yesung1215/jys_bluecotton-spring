@@ -7,14 +7,14 @@
             SELECT SEQ_ORDER.NEXTVAL FROM DUAL
         </selectKey>
 
-        INSERT INTO TBL_ORDER (ID, ORDER_CREATE_AT, ORDER_STATUS, MEMBER_ID, PRODUCT_ID, QUANTITY, TOTAL_PRICE, CART_ID )
+        INSERT INTO TBL_ORDER (ID, ORDER_CREATE_AT, ORDER_STATUS, MEMBER_ID, PRODUCT_ID, ORDER_QUANTITY, ORDER_TOTAL_PRICE, CART_ID )
         VALUES (
         #{id},
         SYSDATE,
         'N', #{memberId},
         #{productId},
-        #{quantity},
-        #{totalPrice},
+        #{orderQuantity},
+        #{orderTotalPrice},
         NULL
         )
     </insert>
@@ -30,8 +30,8 @@
         ORDER_STATUS,
         MEMBER_ID,
         PRODUCT_ID,
-        QUANTITY,
-        TOTAL_PRICE,
+        ORDER_QUANTITY,
+        ORDER_TOTAL_PRICE,
         CART_ID
         )
         SELECT
@@ -50,20 +50,40 @@
         AND C.MEMBER_ID  = #{memberId}
     </insert>
 
+    <select id="selectProductPriceById" parameterType="Long" resultType="Long">
+        SELECT PRODUCT_PRICE
+        FROM TBL_PRODUCT
+        WHERE ID = #{productId}
+    </select>
 
     <select id="selectAllByMemberId" parameterType="Long" resultType="OrderVO">
         SELECT ORDER_CREATE_AT,
         ORDER_STATUS,
-        QUANTITY,
+        ORDER_QUANTITY,
         CART_ID,
         PRODUCT_ID,
-        TOTAL_PRICE
+        ORDER_TOTAL_PRICE
         FROM TBL_ORDER
         WHERE MEMBER_ID = #{memberId}
     </select>
 
+    <select id="selectOrderDetailsByMemberIdAndOrderId" resultType="com.app.bluecotton.domain.dto.OrderDetailDTO">
+        SELECT
+        T1.ID,
+        T1.ORDER_CREATE_AT,
+        T1.PRODUCT_ID,
+        T1.ORDER_STATUS,
+        T1.ORDER_QUANTITY,
+        T1.ORDER_TOTAL_PRICE,
+        T2.PRODUCT_NAME,
+        T2.PRODUCT_PRICE AS productPrice,  T2.PRODUCT_PURCHASE_TYPE AS purchaseType
+        FROM TBL_ORDER T1
+        JOIN TBL_PRODUCT T2 ON T1.PRODUCT_ID = T2.ID
+        WHERE T1.MEMBER_ID = #{memberId} AND T1.ID = #{id}
+    </select>
+
     <select id="selectByMemberIdAndOrderId" resultType="OrderVO">
-        SELECT ID, ORDER_CREATE_AT, PRODUCT_ID, ORDER_STATUS, QUANTITY, TOTAL_PRICE
+        SELECT ID, ORDER_CREATE_AT, PRODUCT_ID, ORDER_STATUS, ORDER_QUANTITY, ORDER_TOTAL_PRICE
         FROM TBL_ORDER
         WHERE MEMBER_ID = #{memberId} AND ID = #{id}
     </select>

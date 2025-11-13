@@ -1,10 +1,7 @@
 package com.app.bluecotton.api.publicapi;
 
 
-import com.app.bluecotton.domain.dto.ApiResponseDTO;
-import com.app.bluecotton.domain.dto.OrderCartDTO;
-import com.app.bluecotton.domain.dto.OrderCheckoutDTO;
-import com.app.bluecotton.domain.dto.OrderDTO;
+import com.app.bluecotton.domain.dto.*;
 import com.app.bluecotton.domain.vo.shop.OrderVO;
 import com.app.bluecotton.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -50,9 +47,13 @@ public class OrderApi {
     }
 
     @GetMapping("option")
-    public ResponseEntity<ApiResponseDTO<Optional<OrderVO>>>  selectOrderById(@RequestParam Long id, @RequestParam Long memberId) {
-        Optional<OrderVO> order = orderService.selectOrderById(id, memberId);
-        return ResponseEntity.ok(ApiResponseDTO.of("단일주문 확인 완료", order));
+    public ResponseEntity<ApiResponseDTO<List<OrderDetailDTO>>> selectOrderDetails(@RequestParam Long id, @RequestParam Long memberId) {
+
+        // Service의 새 메서드를 호출하여 단가 정보가 포함된 List<OrderDetailDTO>를 받습니다.
+        List<OrderDetailDTO> orderDetails = orderService.selectOrderDetailsById(id, memberId);
+
+        // 프론트엔드가 배열을 받을 수 있도록 List 형태로 반환합니다.
+        return ResponseEntity.ok(ApiResponseDTO.of("단일주문 상세 확인 완료", orderDetails));
     }
 
     @PutMapping("update")

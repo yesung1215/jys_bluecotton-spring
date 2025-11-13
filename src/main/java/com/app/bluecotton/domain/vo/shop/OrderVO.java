@@ -9,8 +9,8 @@ public class OrderVO {
     private Long id;
     private Date orderCreateAt;
     private Character orderStatus;
-    private Integer quantity;
-    private Long totalPrice;
+    private Integer orderQuantity;
+    private Long orderTotalPrice;
     private Long cartId;
     private Long memberId;
     private Long productId;

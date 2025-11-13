@@ -1,10 +1,7 @@
 package com.app.bluecotton.service;
 
 
-import com.app.bluecotton.domain.dto.OrderCartDTO;
-import com.app.bluecotton.domain.dto.OrderCheckoutDTO;
-import com.app.bluecotton.domain.dto.OrderDTO;
-import com.app.bluecotton.domain.dto.OrderItemDTO;
+import com.app.bluecotton.domain.dto.*;
 import com.app.bluecotton.domain.vo.shop.OrderVO;
 import com.app.bluecotton.mapper.OrderMapper;
 import com.app.bluecotton.repository.CartDAO;
@@ -28,11 +25,20 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderDAO orderDAO;
     private final CartDAO cartDAO;
-    private final ShopDAO shopDAO;
-    private final OrderMapper orderMapper;
+
 
     @Override
     public Long addOrder(OrderDTO orderDTO) {
+
+        Long unitPrice = orderDAO.selectProductPriceById(orderDTO.getProductId());
+        if(unitPrice == null || unitPrice <= 0) {
+            throw new IllegalArgumentException("상품 가격이 유효하지 않습니다.");
+        }
+
+        Long total = unitPrice * orderDTO.getOrderQuantity();
+
+        orderDTO.setOrderTotalPrice(total);
+        orderDTO.setOrderStatus('N');
 
         orderDAO.addOrder(orderDTO);
         return orderDTO.getId();
@@ -57,14 +63,14 @@ public class OrderServiceImpl implements OrderService {
                 throw  new IllegalArgumentException("유효하지 않거나 0원인 상품입니다");
             }
 
-            Long calTotalPrice = unitPrice * orderItemDTO.getQuantity();
+            Long calTotalPrice = unitPrice * orderItemDTO.getOrderQuantity();
 
             OrderDTO orderDTO = new OrderDTO();
             orderDTO.setMemberId(memberId);
             orderDTO.setProductId(orderItemDTO.getProductId());
-            orderDTO.setQuantity(orderItemDTO.getQuantity());
+            orderDTO.setOrderQuantity(orderItemDTO.getOrderQuantity());
             orderDTO.setOrderStatus('N');
-            orderDTO.setTotalPrice(calTotalPrice);
+            orderDTO.setOrderTotalPrice(calTotalPrice);
 
             orderDAO.addOrder(orderDTO);
 
@@ -100,6 +106,18 @@ public class OrderServiceImpl implements OrderService {
         orderDAO.detachOrderFromCart(memberId);
         // 2) 해당 회원 장바구니 전체 삭제
         cartDAO.deleteAllByMember(memberId);
+    }
+
+    @Override
+    public List<OrderDetailDTO> selectOrderDetailsById(Long id, Long memberId) {
+        List<OrderDetailDTO> details = orderDAO.selectOrderDetails(id, memberId);
+
+
+        if (details == null || details.isEmpty()) {
+            return List.of();
+        }
+
+        return details;
     }
 
 }

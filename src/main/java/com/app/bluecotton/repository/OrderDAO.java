@@ -1,10 +1,7 @@
 package com.app.bluecotton.repository;
 
 
-import com.app.bluecotton.domain.dto.OrderCartDTO;
-import com.app.bluecotton.domain.dto.OrderCheckoutDTO;
-import com.app.bluecotton.domain.dto.OrderDTO;
-import com.app.bluecotton.domain.dto.OrderItemDTO;
+import com.app.bluecotton.domain.dto.*;
 import com.app.bluecotton.domain.vo.shop.OrderVO;
 import com.app.bluecotton.mapper.OrderMapper;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +46,12 @@ public class OrderDAO {
 
     public Optional<OrderVO> selectOrderById(Long id, Long memberId) {
         return orderMapper.selectByMemberIdAndOrderId(id, memberId);
+    }
+
+    public List<OrderDetailDTO> selectOrderDetails(Long id, Long memberId) {
+        // OrderMapper의 새로운 메서드를 호출합니다.
+        // 이 쿼리는 단일 주문이라도 리스트 형태로 반환하는 것이 일반적입니다.
+        return orderMapper.selectOrderDetailsByMemberIdAndOrderId(id, memberId);
     }
 
     public void updateOrder(OrderVO orderVO) {

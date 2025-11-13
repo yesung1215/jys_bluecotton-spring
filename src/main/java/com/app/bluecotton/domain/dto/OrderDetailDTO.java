@@ -7,16 +7,17 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class OrderCartDTO {
+@AllArgsConstructor
+public class OrderDetailDTO {
     private Long id;
-    private Long memberId;
-    private Long productId;
-    private Long cartId;
-    private Integer orderQuantity;
-//    private Long totalPrice;
-//    private Integer productPrice;
     private Date orderCreateAt;
     private Character orderStatus;
+    private Long memberId;
+    private Long productId;
+    private Integer orderQuantity;
+    private Long orderTotalPrice;
+    private String productName;
+    private Long productPrice;
+    private String purchaseType;
 }
