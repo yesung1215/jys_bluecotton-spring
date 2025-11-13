@@ -78,7 +78,6 @@ public class SomServiceImpl implements SomService {
                 somImageVO.setSomImageName("1762700261.jpg");
                 somImages.add(somImageVO);
             }
-            somResponseDTO.setMemberSomLeader(new MemberSomLeaderResponseDTO(memberService.getMemberById(somResponseDTO.getMemberId())));
             somResponseDTO.setSomLike(somDAO.selectSomLikeCount(som.getId()));
             somResponseDTO.setSomCount(somDAO.readSomJoinList(som.getId()).size());
             somResponseDTO.setSomJoinList(somDAO.readSomJoinList(som.getId()));
