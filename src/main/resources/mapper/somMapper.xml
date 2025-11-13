@@ -119,6 +119,54 @@
         WHERE sc.ID = #{id}
     </select>
 
+<!--  솜 참여  -->
+    <insert id="insertSomJoin" parameterType="SomJoinVO">
+        INSERT INTO TBL_SOM_JOIN
+        VALUES(SEQ_SOM_JOIN.NEXTVAL, #{somId}, #{memberId})
+    </insert>
+
+    <select id="selectAllSomJoinList" parameterType="Long" resultType="SomJoinResponseDTO">
+        SELECT TBSJ.ID, TBSJ.SOM_ID, TBM.MEMBER_NICKNAME, TBM.MEMBER_NAME, TBMP.MEMBER_PROFILE_PATH, TBMP.MEMBER_PROFILE_NAME
+        FROM TBL_SOM_JOIN TBSJ
+        JOIN TBL_MEMBER TBM
+        ON TBSJ.MEMBER_ID = TBM.ID
+        JOIN TBL_MEMBER_PROFILE TBMP
+        ON TBM.ID = TBMP.MEMBER_ID
+        WHERE SOM_ID = #{somId}
+        ORDER BY TBSJ.ID DESC
+    </select>
+
+    <delete id="deleteSomJoin" parameterType="SomJoinVO">
+        DELETE FROM TBL_SOM_JOIN
+        WHERE SOM_ID = #{somId} AND MEMBER_ID = #{memberId}
+    </delete>
+
+    <insert id="insertSomLike" parameterType="SomLikeVO">
+        INSERT INTO TBL_SOM_LIKE VALUES (SEQ_SOM_LIKE.NEXTVAL, #{somId}, #{memberId})
+    </insert>
+
+    <select id="selectSomLikeCount" parameterType="Long" resultType="Integer">
+        SELECT COUNT(ID)
+        FROM TBL_SOM_LIKE
+        WHERE SOM_ID = #{somId}
+    </select>
+
+    <select id="selectIsSomLike" resultType="Boolean" parameterType="SomLikeVO">
+        SELECT CASE
+        WHEN COUNT(ID) > 0 THEN 1
+        ELSE 0
+        END AS IS_LIKED
+        FROM TBL_SOM_LIKE
+        WHERE SOM_ID = #{somId}
+        AND MEMBER_ID = #{memberId}
+
+    </select>
+
+    <delete id="deleteSomLike" parameterType="SomVO">
+        DELETE TBL_SOM_LIKE
+        WHERE SOM_ID = #{somId} AND MEMBER_ID = #{memberId};
+    </delete>
+
     <resultMap id="SomCheckWithImagesMap" type="com.app.bluecotton.domain.dto.SomCheckResponseDTO">
         <id property="id" column="sc_id"/>
         <result property="somCheckIsChecked" column="sc_is_checked" javaType="boolean"/>
