@@ -7,16 +7,6 @@
         FROM TBL_MEMBER
     </select>
 
-
-<!--    <select id="existByMemberEmail" parameterType="String" resultType="_boolean">-->
-<!--        SELECT-->
-<!--        ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD,-->
-<!--        MEMBER_ADDRESS, MEMBER_PICTURE_PATH, MEMBER_PICTURE_NAME,-->
-<!--        MEMBER_GENDER, MEMBER_BIRTH, MEMBER_CANDY, MEMBER_RANK, MEMBER_PROVIDER, MEMBER_PHONE-->
-<!--        FROM TBL_MEMBER-->
-<!--        WHERE ID = #{id}-->
-<!--    </select>-->
-
     <!-- 이메일로 회원 ID 조회 -->
     <select id="selectIdByEmail" parameterType="String" resultType="Long">
         SELECT ID
@@ -25,7 +15,7 @@
     </select>
 
     <select id="selectById" parameterType="Long" resultType="MemberVO">
-        SELECT ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD, MEMBER_ADDRESS, MEMBER_GENDER, MEMBER_BIRTH, MEMBER_CANDY, MEMBER_RANK, MEMBER_PROVIDER, MEMBER_PHONE
+        SELECT ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD, MEMBER_ADDRESS, MEMBER_DETAIL_ADDRESS, MEMBER_POSTCODE, MEMBER_GENDER, MEMBER_BIRTH, MEMBER_CANDY, MEMBER_RANK, MEMBER_PROVIDER, MEMBER_PHONE
         FROM TBL_MEMBER
         WHERE ID = #{id}
     </select>
@@ -44,16 +34,24 @@
         WHERE MEMBER_ADDRESS IS NOT NULL
     </select>
 
+    <select id="selectMemberProfileImage" parameterType="Long" resultType="MemberProfileVO">
+        SELECT MEMBER_PROFILE_PATH, MEMBER_PROFILE_NAME, MEMBER_ID
+        FROM TBL_MEMBER_PROFILE
+        WHERE MEMBER_ID = #{memberId}
+    </select>
     <!-- 일반 회원가입 -->
     <insert id="insert" parameterType="MemberVO">
+        <selectKey keyProperty="id" resultType="long" order="BEFORE">
+            SELECT SEQ_MEMBER.NEXTVAL FROM DUAL
+        </selectKey>
         INSERT INTO TBL_MEMBER(
-        ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PASSWORD,
-        MEMBER_ADDRESS, MEMBER_PICTURE_PATH, MEMBER_PICTURE_NAME,
-        MEMBER_GENDER, MEMBER_BIRTH, MEMBER_PROVIDER, MEMBER_PHONE
+        ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL, MEMBER_PHONE, MEMBER_PASSWORD,
+        MEMBER_ADDRESS, MEMBER_DETAIL_ADDRESS, MEMBER_POSTCODE,
+        MEMBER_GENDER, MEMBER_BIRTH, MEMBER_PROVIDER
         ) VALUES (
-        SEQ_MEMBER.NEXTVAL, #{memberName}, #{memberNickname}, #{memberEmail}, #{memberPassword},
-        #{memberAddress}, #{memberPicturePath}, #{memberPictureName},
-        #{memberGender}, #{memberBirth}, #{memberProvider}, #{memberPhone}
+        #{id}, #{memberName}, #{memberNickname}, #{memberEmail}, #{memberPhone}, #{memberPassword},
+        #{memberAddress}, #{memberDetailAddress}, #{memberPostcode},
+        #{memberGender}, #{memberBirth}, #{memberProvider}
         )
     </insert>
 
@@ -61,15 +59,19 @@
     <insert id="insertSocial" parameterType="MemberInsertSocialVO">
         INSERT INTO TBL_MEMBER(
         ID, MEMBER_NAME, MEMBER_NICKNAME, MEMBER_EMAIL,
-        MEMBER_PICTURE_PATH, MEMBER_PICTURE_NAME,
         MEMBER_PROVIDER
         ) VALUES (
         SEQ_MEMBER.NEXTVAL, #{memberName}, #{memberNickname}, #{memberEmail},
-        #{memberPicturePath}, #{memberPictureName},
         #{memberProvider}
         )
     </insert>
 
+
+    <insert id="insertDefaultProfileImage" parameterType="MemberProfileVO">
+        INSERT INTO TBL_MEMBER_PROFILE(ID, MEMBER_PROFILE_PATH, MEMBER_PROFILE_NAME, MEMBER_ID)
+        VALUES(SEQ_MEMBER_PROFILE.NEXTVAL, #{memberProfilePath}, #{memberProfileName}, #{memberId})
+
+    </insert>
     <!-- 회원 정보 수정 -->
     <update id="update" parameterType="MemberVO">
         UPDATE TBL_MEMBER
@@ -78,8 +80,6 @@
         MEMBER_NICKNAME = #{memberNickname},
         MEMBER_PASSWORD = #{memberPassword},
         MEMBER_ADDRESS = #{memberAddress},
-        MEMBER_PICTURE_PATH = #{memberPicturePath},
-        MEMBER_PICTURE_NAME = #{memberPictureName},
         MEMBER_GENDER = #{memberGender},
         MEMBER_BIRTH = #{memberBirth},
         MEMBER_PROVIDER = #{memberProvider},

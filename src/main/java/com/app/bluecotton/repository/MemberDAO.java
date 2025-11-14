@@ -1,6 +1,7 @@
 package com.app.bluecotton.repository;
 
 import com.app.bluecotton.domain.vo.member.MemberInsertSocialVO;
+import com.app.bluecotton.domain.vo.member.MemberProfileVO;
 import com.app.bluecotton.domain.vo.member.MemberVO;
 import com.app.bluecotton.mapper.MemberMapper;
 import com.app.bluecotton.mapper.MyTestMapper;
@@ -38,6 +39,14 @@ public class MemberDAO {
     //  회원 가입(소셜)
     public void saveSocialMember(MemberInsertSocialVO memberInsertSocialVO){
         memberMapper.insertSocial(memberInsertSocialVO);
+    }
+
+    public void saveInsertDefaultProfileImage(MemberProfileVO memberProfileVO){
+        memberMapper.insertDefaultProfileImage(memberProfileVO);
+    }
+
+    public Optional<MemberProfileVO> findMemberProfileImage(Long memberId){
+        return memberMapper.selectMemberProfileImage(memberId);
     }
     //  회원 수정
     public void update(MemberVO memberVO){

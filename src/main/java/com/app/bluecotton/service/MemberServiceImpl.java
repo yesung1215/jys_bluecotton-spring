@@ -2,6 +2,7 @@ package com.app.bluecotton.service;
 
 import com.app.bluecotton.domain.dto.MemberResponseDTO;
 import com.app.bluecotton.domain.vo.member.MemberInsertSocialVO;
+import com.app.bluecotton.domain.vo.member.MemberProfileVO;
 import com.app.bluecotton.domain.vo.member.MemberSocialVO;
 import com.app.bluecotton.domain.vo.member.MemberVO;
 import com.app.bluecotton.exception.MemberException;
@@ -47,6 +48,18 @@ public class MemberServiceImpl implements MemberService {
 
         // 3. 회원 가입
         memberDAO.save(memberVO);
+
+        Long memberId = memberVO.getId();
+        MemberProfileVO defaultProfileVO = new MemberProfileVO();
+        String defaultImgUrl = "https://image-server.ideaflow.co.kr/uploads/default/";
+        String defaultImgName = "솜기본_73d2adad-5a46-47ef-895f-f61aeae71a1b.png";
+
+        defaultProfileVO.setMemberId(memberId);
+        defaultProfileVO.setMemberProfilePath(defaultImgUrl);
+        defaultProfileVO.setMemberProfileName(defaultImgName);
+
+        memberDAO.saveInsertDefaultProfileImage(defaultProfileVO);
+
         return Map.of();
     }
 
@@ -73,6 +86,16 @@ public class MemberServiceImpl implements MemberService {
         // 가입한 회원의 ID
         Long memberId = memberDAO.findIdByMemberEmail(memberEmail);
 
+        MemberProfileVO defaultProfileVO = new MemberProfileVO();
+        String defaultImgUrl = "https://image-server.ideaflow.co.kr/uploads/default/";
+        String defaultImgName = "솜기본_73d2adad-5a46-47ef-895f-f61aeae71a1b.png";
+
+        defaultProfileVO.setMemberId(memberId);
+        defaultProfileVO.setMemberProfilePath(defaultImgUrl);
+        defaultProfileVO.setMemberProfileName(defaultImgName);
+
+        memberDAO.saveInsertDefaultProfileImage(defaultProfileVO);
+
         String refreshToken = jwtTokenUtil.generateRefreshToken(claim);
         String accessToken = jwtTokenUtil.generateAccessToken(claim);
 
@@ -97,6 +120,12 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberResponseDTO getMemberById(Long id) {
         return memberDAO.findById(id).map(MemberResponseDTO::new).orElseThrow(() -> new MemberException("회원 조회 실패"));
+    }
+
+    @Override
+    public MemberProfileVO getMemberProfileImage(Long memberId) {
+
+        return memberDAO.findMemberProfileImage(memberId).orElseThrow(() -> new MemberException("프로필 이미지 조회 실패"));
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.app.bluecotton.service;
 
 import com.app.bluecotton.domain.dto.MemberResponseDTO;
 import com.app.bluecotton.domain.vo.member.MemberInsertSocialVO;
+import com.app.bluecotton.domain.vo.member.MemberProfileVO;
 import com.app.bluecotton.domain.vo.member.MemberSocialVO;
 import com.app.bluecotton.domain.vo.member.MemberVO;
 
@@ -17,6 +18,8 @@ public interface MemberService {
 
     // 이메일 중복 확인
     public boolean existsByMemberEmail(String memberEmail);
+
+    public MemberProfileVO getMemberProfileImage(Long memberId);
 
     // 회원 가입 후 로그인을 처리할 수 있도록
     public Map<String, String> register(MemberVO memberVO);

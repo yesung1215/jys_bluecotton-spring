@@ -25,21 +25,18 @@ public class MemberVO {
     private String memberName;
     private String memberNickname;
     private String memberEmail;
+    private String memberPhone;
     private String memberPassword;
     private String memberAddress;
-    private String memberPicturePath;
-    private String memberPictureName;
+    private String memberDetailAddress;
+    private String memberPostcode;
     private String memberGender;
     private Date memberBirth;
     private Integer memberCandy;
     private String memberRank;
     private String memberProvider;
-    private String memberPhone;
 
     {
-        this.memberPicturePath = "/default";
-        this.memberPictureName = "member.jpg";
-        this.memberAddress = "경기도 성남시 분당구 이매로 143번길 10";
         this.memberNickname = "임시닉네임";
         this.memberProvider = "local";
         this.memberRank = "rookie";
@@ -51,7 +48,5 @@ public class MemberVO {
         this.memberEmail = memberInsertSocialVO.getMemberEmail();
         this.memberName = memberInsertSocialVO.getMemberName();
         this.memberNickname = memberInsertSocialVO.getMemberNickname();
-        this.memberPictureName = memberInsertSocialVO.getMemberPictureName();
-        this.memberPicturePath = memberInsertSocialVO.getMemberPicturePath();
         this.memberProvider = memberInsertSocialVO.getMemberProvider(); }
 };

@@ -2,6 +2,7 @@ package com.app.bluecotton.api.publicapi;
 
 import com.app.bluecotton.domain.dto.ApiResponseDTO;
 import com.app.bluecotton.domain.dto.MemberResponseDTO;
+import com.app.bluecotton.domain.vo.member.MemberProfileVO;
 import com.app.bluecotton.domain.vo.member.MemberVO;
 import com.app.bluecotton.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -9,8 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,5 +52,16 @@ public class MemberApi {
     public ResponseEntity<ApiResponseDTO> read(@RequestParam Long memberId) {
         MemberResponseDTO data = memberService.getMemberById(memberId);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("회원 정보를 불러왔습니다",data));
+    }
+
+    @GetMapping("profile")
+    public ResponseEntity<ApiResponseDTO> getProfile(@RequestParam Long memberId) {
+        MemberProfileVO memberProfileVO = memberService.getMemberProfileImage(memberId);
+
+        Map<String,Object> result = new HashMap<>();
+        result.put("memberProfilePath",memberProfileVO.getMemberProfilePath());
+        result.put("memberProfileName",memberProfileVO.getMemberProfileName());
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("이미지를 불러왔습니다", result));
     }
 }

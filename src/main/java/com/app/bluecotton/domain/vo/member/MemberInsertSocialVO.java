@@ -15,12 +15,7 @@ public class MemberInsertSocialVO {
     private String memberNickname;
     private String memberEmail;
     private String memberProvider;
-    private String memberPicturePath;
-    private String memberPictureName;
-
     {
-        this.memberPicturePath = "/default";
-        this.memberPictureName = "member.jpg";
         this.memberNickname = "임시닉네임";
     }
 }

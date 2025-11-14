@@ -30,8 +30,6 @@ public class MemberSomLeaderResponseDTO implements Serializable {
 
     public MemberSomLeaderResponseDTO(MemberResponseDTO memberResponseDTO) {
         this.id = memberResponseDTO.getId();
-        this.memberPicturePath = memberResponseDTO.getMemberPicturePath();
-        this.memberPictureName = memberResponseDTO.getMemberPictureName();
         this.memberName = memberResponseDTO.getMemberName();
         this.memberNickname = memberResponseDTO.getMemberNickname();
         this.memberProvider = memberResponseDTO.getMemberProvider();

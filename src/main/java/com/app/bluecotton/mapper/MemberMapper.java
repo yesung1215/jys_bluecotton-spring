@@ -1,6 +1,7 @@
 package com.app.bluecotton.mapper;
 
 import com.app.bluecotton.domain.vo.member.MemberInsertSocialVO;
+import com.app.bluecotton.domain.vo.member.MemberProfileVO;
 import com.app.bluecotton.domain.vo.member.MemberSocialVO;
 import com.app.bluecotton.domain.vo.member.MemberVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -15,6 +16,9 @@ public interface MemberMapper {
     //  소셜 회원 가입
     public void insertSocial(MemberInsertSocialVO memberInsertSocialVO);
 
+    public void insertDefaultProfileImage(MemberProfileVO memberProfileVO);
+
+    public Optional<MemberProfileVO> selectMemberProfileImage(Long memberId);
     //  회원 상세 조회
     public Optional<MemberVO> selectById(Long memberId);
 
