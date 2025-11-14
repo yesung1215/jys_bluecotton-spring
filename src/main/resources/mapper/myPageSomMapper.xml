@@ -2,6 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.app.bluecotton.mapper.MyPageSomMapper">
 
+    <!--  멤버가 참가하는 솜 상세 조회  -->
+    <select id="selectById" parameterType="Long" resultType="SomVO">
+        SELECT ID, SOM_TITLE, SOM_CATEGORY, SOM_ADDRESS, SOM_TYPE, SOM_START_DATE, SOM_END_DATE, SOM_LIKE, SOM_CONTENT, MEMBER_ID
+        FROM TBL_SOM
+        WHERE MEMBER_ID = #{memberId}
+        ORDER BY ID DESC
+    </select>
+
     <!-- 마이페이지 솜 인증 조회 -->
     <select id="readSomCheck"
             parameterType="long"
@@ -98,6 +106,16 @@
         JOIN TBL_MEMBER TBM
         ON TBSR.MEMBER_ID = TBM.ID
         WHERE TBM.ID = #{id}
+    </select>
+
+    <select id="readRank" parameterType="Long" resultType="java.lang.Long">
+        SELECT
+        COUNT(SOM_CHECK_IS_CHECKED)
+        FROM
+        TBL_SOM_CHECK
+        WHERE
+        MEMBER_ID = #{memberId}
+        AND SOM_CHECK_IS_CHECKED = 'Y'
     </select>
 
 </mapper>

@@ -18,6 +18,8 @@ public class MyPageInfoDTO {
     private String memberEmail;
     private String memberPassword;
     private String memberAddress;
+    private String memberDetailAddress;
+    private String memberPostcode;
     private String memberGender;
     private Date memberBirth;
     private Integer memberCandy;
@@ -35,6 +37,8 @@ public class MyPageInfoDTO {
         this.memberEmail = memberVO.getMemberEmail();
         this.memberPassword = memberVO.getMemberPassword();
         this.memberAddress = memberVO.getMemberAddress();
+        this.memberDetailAddress = memberVO.getMemberDetailAddress();
+        this.memberPostcode = memberVO.getMemberPostcode();
         this.memberGender = memberVO.getMemberGender();
         this.memberBirth = memberVO.getMemberBirth();
         this.memberCandy = memberVO.getMemberCandy();

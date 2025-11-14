@@ -1,4 +1,4 @@
-package com.app.bluecotton.api.mypage;
+package com.app.bluecotton.api.privateapi;
 
 import com.app.bluecotton.domain.dto.ApiResponseDTO;
 import com.app.bluecotton.domain.dto.MyPageSomCheckDTO;
@@ -6,7 +6,6 @@ import com.app.bluecotton.domain.dto.MyPageSomReviewDTO;
 import com.app.bluecotton.domain.vo.som.SomReviewVO;
 import com.app.bluecotton.domain.vo.som.SomVO;
 import com.app.bluecotton.service.MyPageSomService;
-import com.app.bluecotton.service.SomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,10 +17,19 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/my-page/*")
+@RequestMapping("/private/my-page/*")
 public class MyPageSomApi {
 
     private final MyPageSomService myPageSomService;
+
+    // 솜 정보 출력
+    @GetMapping("read-som")
+    public ResponseEntity<ApiResponseDTO> readSom(Long id) {
+        log.info("솔로솜 및 파티솜 정보를 불러옵니다");
+        log.info("출력: {}", myPageSomService.selectById(id));
+        List<SomVO> data = myPageSomService.selectById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("솔로솜과 파티솜을 조회했습니다", data));
+    }
 
     //    마이페이지 솜 인증 추가
     @PostMapping("insert-som-check")
@@ -53,5 +61,13 @@ public class MyPageSomApi {
         log.info("솜 리뷰를 불러옵니다");
         List<MyPageSomReviewDTO> data =  myPageSomService.readSomReview(id);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("솜 리뷰를 호출했습니다", data));
+    }
+
+    //    마이페이지 랭크 호출
+    @GetMapping("read-rank")
+    public ResponseEntity<ApiResponseDTO> readRank(@RequestParam Long id) {
+        log.info("랭크를 불러옵니다");
+        Long data =  myPageSomService.readRank(id);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("랭크를 호출했습니다", data));
     }
 }

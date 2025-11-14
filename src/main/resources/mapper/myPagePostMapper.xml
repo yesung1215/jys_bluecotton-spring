@@ -32,6 +32,8 @@
         TBPC.ID                       AS comment_id,
         TBPR.ID                       AS reply_id,
         TBP.ID                        AS post_id,
+        TBPC.POST_COMMENT_CONTENT     AS post_comment_content,
+        TBPR.POST_REPLY_CONTENT       AS post_reply_content,
         TBPC.POST_COMMENT_CREATE_AT   AS post_comment_create_at,
         TBPR.POST_REPLY_CREATE_AT     AS post_reply_create_at,
         TBP.POST_TITLE                AS post_title,

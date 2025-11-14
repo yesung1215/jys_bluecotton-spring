@@ -17,6 +17,7 @@ import java.util.List;
 public class MyPageInfoDAO {
     private final MyPageInfoMapper myPageInfoMapper;
 
+
     //    ① 회원정보 조회
     public MyPageInfoDTO selectMemberInfo(Long id) {
         return myPageInfoMapper.selectMemberInfo(id);

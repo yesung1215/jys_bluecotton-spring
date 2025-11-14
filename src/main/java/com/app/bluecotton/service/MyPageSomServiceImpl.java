@@ -2,8 +2,8 @@ package com.app.bluecotton.service;
 
 import com.app.bluecotton.domain.dto.*;
 import com.app.bluecotton.domain.vo.som.SomReviewVO;
+import com.app.bluecotton.domain.vo.som.SomVO;
 import com.app.bluecotton.mapper.MyPageSomMapper;
-import com.app.bluecotton.repository.MyPagePostDAO;
 import com.app.bluecotton.repository.MyPageSomDAO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +16,12 @@ import java.util.List;
 public class MyPageSomServiceImpl implements MyPageSomService {
     private final MyPageSomDAO myPageSomDAO;
     private final MyPageSomMapper myPageSomMapper;
+
+    //    마이페이지 회원 별 파티솜 솔로솜 조회
+    @Override
+    public List<SomVO> selectById(Long id){
+        return myPageSomDAO.selectById(id);
+    }
 
     //    마이페이지 솜 인증 추가
     @Transactional
@@ -46,8 +52,9 @@ public class MyPageSomServiceImpl implements MyPageSomService {
 
     //    마이페이지 솜 리뷰 호출
     @Override
-    public List<MyPageSomReviewDTO> readSomReview(Long id){
-        return myPageSomDAO.readSomReview(id);
-    }
+    public List<MyPageSomReviewDTO> readSomReview(Long id){ return myPageSomDAO.readSomReview(id); }
 
+    //    마이페이지 랭크 호출
+    @Override
+    public Long readRank(Long id){ return myPageSomDAO.readRank(id); }
 }

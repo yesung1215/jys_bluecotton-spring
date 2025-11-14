@@ -2,6 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.app.bluecotton.mapper.MyPageInfoMapper">
 
+
+
     <!-- 회원 + 프로필 정보 조회 -->
     <select id="selectMemberInfo" parameterType="Long" resultType="com.app.bluecotton.domain.dto.MyPageInfoDTO">
         SELECT
@@ -11,6 +13,8 @@
         TM.MEMBER_EMAIL              AS memberEmail,
         TM.MEMBER_PASSWORD           AS memberPassword,
         TM.MEMBER_ADDRESS            AS memberAddress,
+        TM.MEMBER_DETAIL_ADDRESS     AS memberDetailAddress,
+        TM.MEMBER_POSTCODE           AS memberPostcode,
         TM.MEMBER_GENDER             AS memberGender,
         TM.MEMBER_BIRTH              AS memberBirth,
         TM.MEMBER_CANDY              AS memberCandy,
@@ -36,6 +40,8 @@
             <if test="memberEmail != null">        MEMBER_EMAIL = #{memberEmail},       </if>
             <if test="memberPassword != null">     MEMBER_PASSWORD = #{memberPassword}, </if>
             <if test="memberAddress != null">      MEMBER_ADDRESS = #{memberAddress},   </if>
+            <if test="memberDetailAddress != null">MEMBER_DETAIL_ADDRESS = #{memberDetailAddress},   </if>
+            <if test="memberPostcode != null">     MEMBER_POSTCODE = #{memberPostcode}, </if>
             <if test="memberGender != null">       MEMBER_GENDER = #{memberGender},     </if>
             <if test="memberBirth != null">        MEMBER_BIRTH = #{memberBirth, jdbcType=DATE}, </if>
             <if test="memberPhone != null">        MEMBER_PHONE = #{memberPhone}        </if>
