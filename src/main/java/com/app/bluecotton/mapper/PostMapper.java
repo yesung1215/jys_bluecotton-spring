@@ -6,15 +6,24 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface PostMapper {
 
-    // 게시물 목록 조회
-    public List<PostMainDTO> select(
+    // 게시물 목록 조회 (좋아요 여부 포함)
+    List<PostMainDTO> select(
             @Param("somCategory") String somCategory,
             @Param("orderType") String orderType,
             @Param("memberId") Long memberId,
+            @Param("q") String q,
+            @Param("page") int page,
+            @Param("size") int size
+    );
+
+    // Total 게시글 수
+    int countPosts(
+            @Param("somCategory") String somCategory,
             @Param("q") String q
     );
 
@@ -43,7 +52,28 @@ public interface PostMapper {
     public void deletePostImages(Long postId);
     public void deleteReportsByPostId(Long postId);
     public void deleteRecentsByPostId(Long postId);
+    public void deleteCommentsByPostId(Long postId);
+    public void deleteCommentLikesByPostId(Long postId);
+    public void deleteCommentReportsByPostId(Long postId);
+    public void deleteRepliesByPostId(Long postId);
+    public void deleteReplyLikesByPostId(Long postId);
+    public void deleteReplyReportsByPostId(Long postId);
 
+
+    // 댓글 삭제 관련
+    public void deleteCommentById(Long commentId);
+    public void deleteCommentLikesByCommentId(Long commentId);
+    public void deleteCommentReportsByCommentId(Long commentId);
+    public void deleteRepliesByCommentId(Long commentId);
+    public void deleteReplyLikesByCommentId(Long commentId);
+    public void deleteReplyReportsByCommentId(Long commentId);
+
+    // 답글 삭제 관련
+    public void deleteReplyById(Long replyId);
+    public void deleteReplyLikeByReplyId(Long replyId);
+    public void deleteReplyReportByReplyId(Long replyId);
+
+    // 임시 저장 관련
     public void insertDraft(PostDraftVO postDraftVO);
     public PostDraftVO selectDraftById(Long id);
     public void deleteDraftById(Long id);
@@ -75,21 +105,40 @@ public interface PostMapper {
     // 댓글 / 답글
     public void insertComment(PostCommentVO postCommentVO);
     public void insertReply(PostReplyVO postReplyVO);
-    public void deleteComment(Long commentId);
-    public void deleteReply(Long replyId);
 
-    //  게시물 상세
-    public PostDetailDTO selectPost(Long id);
+    PostDetailDTO selectPost(
+            @Param("postId") Long postId,
+            @Param("memberId") Long memberId
+    );
 
-    public List<PostCommentDTO> selectComment(Long id);
+    List<PostCommentDTO> selectComment(
+            @Param("postId") Long postId,
+            @Param("memberId") Long memberId
+    );
 
-    public List<PostReplyDTO> selectReply(Long id);
+    List<PostReplyDTO> selectReply(
+            @Param("postCommentId") Long commentId,
+            @Param("memberId") Long memberId
+    );
 
-    // 신고
+    // 다음글, 이전글
+    public PostNeighborDTO selectNextPost(Long id);
+    public PostNeighborDTO selectPrevPost(Long id);
+
+
+
+    // 게시글 신고
     public void insertPostReport(PostReportVO postReportVO);
-
+    // 댓글 신고
     public void insertPostCommentReport(PostCommentReportVO postCommentReportVO);
-
+    // 답글 신고
     public void insertPostReplyReport(PostReplyReportVO postReplyReportVO);
+
+    // 게시글 신고 중복 확인
+    public int checkPostReportExists(Long postId, Long memberId);
+    // 댓글 신고 중복 확인
+    public int checkCommentReportExists(Long postCommentId, Long memberId);
+    // 답글 신고 중복 확인
+    public int checkReplyReportExists(Long postReplyId, Long memberId);
 
 }

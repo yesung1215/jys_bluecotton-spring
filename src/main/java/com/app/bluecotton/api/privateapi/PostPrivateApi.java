@@ -143,7 +143,7 @@ public class PostPrivateApi {
     // 답글 삭제
     @DeleteMapping("/reply/{replyId}")
     public ResponseEntity<ApiResponseDTO> deleteReply(@PathVariable Long replyId) {
-        postService.deleteReply(replyId);
+        postService.deleteReplyById(replyId);
         return ResponseEntity.ok(ApiResponseDTO.of("답글이 삭제되었습니다."));
     }
 
@@ -180,11 +180,48 @@ public class PostPrivateApi {
         return ResponseEntity.ok(ApiResponseDTO.of("대댓글 좋아요 토글 완료"));
     }
 
+    // 최근 본 글 추가
     @PostMapping("recent/{postId}")
     public ResponseEntity<ApiResponseDTO> recentPost(Authentication authentication, @PathVariable Long postId) {
         MemberResponseDTO currentMember = (MemberResponseDTO) authentication.getPrincipal();
         Long memberId = currentMember.getId();
         postService.registerRecent(memberId, postId);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("최근본글추가"));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.of("최근 본 글 추가"));
+    }
+
+    //  게시글 신고
+    @PostMapping("/report/post")
+    public ResponseEntity<ApiResponseDTO> reportPost(
+            @RequestBody PostReportVO vo,
+            @AuthenticationPrincipal MemberResponseDTO currentUser
+    ) {
+        vo.setMemberId(currentUser.getId());
+        postService.reportPost(vo);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.of("게시글 신고가 완료되었습니다"));
+    }
+
+    //  댓글 신고
+    @PostMapping("/report/comment")
+    public ResponseEntity<ApiResponseDTO> reportComment(
+            @RequestBody PostCommentReportVO vo,
+            @AuthenticationPrincipal MemberResponseDTO currentUser
+    ) {
+        vo.setMemberId(currentUser.getId());
+        postService.reportComment(vo);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.of("댓글 신고가 완료되었습니다"));
+    }
+
+    //  답글 신고
+    @PostMapping("/report/reply")
+    public ResponseEntity<ApiResponseDTO> reportReply(
+            @RequestBody PostReplyReportVO vo,
+            @AuthenticationPrincipal MemberResponseDTO currentUser
+    ) {
+        vo.setMemberId(currentUser.getId());
+        postService.reportReply(vo);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.of("답글 신고가 완료되었습니다"));
     }
 }

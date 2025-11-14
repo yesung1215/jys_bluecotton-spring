@@ -20,6 +20,7 @@ public class PostCommentDTO {
     private String memberProfileUrl;
 
     private Long memberId;
+    private Integer isCommentLiked;
 
     // 대댓글 포함
     private List<PostReplyDTO> replies;

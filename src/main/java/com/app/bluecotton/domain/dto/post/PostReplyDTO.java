@@ -19,4 +19,6 @@ public class PostReplyDTO {
     private String memberNickname;
     private String memberProfileUrl;
 
+    private Integer isReplyLiked;
+
 }

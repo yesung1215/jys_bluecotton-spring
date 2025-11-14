@@ -2,20 +2,35 @@ package com.app.bluecotton.repository;
 
 import com.app.bluecotton.domain.dto.post.*;
 import com.app.bluecotton.domain.vo.post.*;
+import com.app.bluecotton.mapper.MemberMapper;
 import com.app.bluecotton.mapper.PostMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
 public class PostDAO {
     private final PostMapper postMapper;
 
-    // 게시글 목록
-    public List<PostMainDTO> findPosts(String somCategory, String orderType, Long memberId, String q) {
-        return postMapper.select(somCategory, orderType, memberId, q);
+    // 게시글 목록 조회 (좋아요 여부 포함)
+    public List<PostMainDTO> findPosts(
+            String somCategory,
+            String orderType,
+            Long memberId,
+            String q,
+            int page,
+            int size
+    ) {
+        return postMapper.select(somCategory, orderType, memberId, q, page, size);
+    }
+
+    // Total 게시글 수 처리
+    public int countPosts(String somCategory, String q) {
+        return postMapper.countPosts(somCategory, q);
     }
 
     // 게시글 등록
@@ -42,11 +57,31 @@ public class PostDAO {
     }
 
     // 게시글 삭제 관련
-    public void deletePostById(Long id) { postMapper.deletePostById(id); }
+    public void deletePostById(Long postId) { postMapper.deletePostById(postId); }
     public void deleteLikesByPostId(Long postId) { postMapper.deleteLikesByPostId(postId); }
     public void deletePostImages(Long postId) { postMapper.deletePostImages(postId); }
     public void deleteReportsByPostId(Long postId) { postMapper.deleteReportsByPostId(postId); }
     public void deleteRecentsByPostId(Long postId) { postMapper.deleteRecentsByPostId(postId); }
+    public void deleteCommentsByPostId(Long postId) { postMapper.deleteCommentsByPostId(postId); }
+    public void deleteCommentLikesByPostId(Long postId) { postMapper.deleteCommentLikesByPostId(postId); }
+    public void deleteCommentReportsByPostId(Long postId) { postMapper.deleteCommentReportsByPostId(postId); }
+    public void deleteRepliesByPostId(Long postId) { postMapper.deleteRepliesByPostId(postId); }
+    public void deleteReplyLikesByPostId(Long postId) { postMapper.deleteReplyLikesByPostId(postId); }
+    public void deleteReplyReportsByPostId(Long postId) { postMapper.deleteReplyReportsByPostId(postId); }
+
+    // 댓글 삭제 관련
+    public void deleteCommentById(Long commentId) { postMapper.deleteCommentById(commentId); }
+    public void deleteCommentLikesByCommentId(Long commentId) { postMapper.deleteCommentLikesByCommentId(commentId); }
+    public void deleteCommentReportsByCommentId(Long commentId) { postMapper.deleteCommentReportsByCommentId(commentId); }
+    public void deleteRepliesByCommentId(Long commentId) { postMapper.deleteRepliesByCommentId(commentId); }
+    public void deleteReplyLikesByCommentId(Long commentId) { postMapper.deleteReplyLikesByCommentId(commentId); }
+    public void deleteReplyReportsByCommentId(Long commentId) { postMapper.deleteReplyReportsByCommentId(commentId); }
+
+
+    // 답글 삭제 관련
+    public void deleteReplyById(Long replyId) { postMapper.deleteReplyById(replyId); }
+    public void deleteReplyLikeByReplyId(Long replyId) { postMapper.deleteReplyLikeByReplyId(replyId); }
+    public void deleteReplyReportByReplyId(Long replyId) { postMapper.deleteReplyReportByReplyId(replyId); }
 
     /* ===================== 🟨 임시저장 ===================== */
 
@@ -136,37 +171,61 @@ public class PostDAO {
         postMapper.insertReply(postReplyVO);
     }
 
-    public void deleteComment(Long commentId) {
-        postMapper.deleteComment(commentId);
+
+
+    // 게시글 상세 조회
+    public PostDetailDTO selectPost(Long postId, Long memberId) {
+        return postMapper.selectPost(postId, memberId);
     }
 
-    public void deleteReply(Long replyId) {
-        postMapper.deleteReply(replyId);
+    // 댓글 조회
+    public List<PostCommentDTO> selectComment(Long postId, Long memberId) {
+        return postMapper.selectComment(postId, memberId);
     }
 
-    public PostDetailDTO selectPost(Long postId) {
-        return postMapper.selectPost(postId);
+    // 대댓글 조회
+    public List<PostReplyDTO> selectReply(Long postCommentId, Long memberId) {
+        return postMapper.selectReply(postCommentId, memberId);
     }
 
-    public List<PostCommentDTO> selectComment(Long postId){
-        return postMapper.selectComment(postId);
+    // 다음글, 이전글
+    public PostNeighborDTO selectNextPost(Long postId) {
+        return postMapper.selectNextPost(postId);
     }
 
-    public List<PostReplyDTO> selectReply(Long commentId){
-        return postMapper.selectReply(commentId);
+    public PostNeighborDTO selectPrevPost(Long postId) {
+        return postMapper.selectPrevPost(postId);
     }
 
-    // 신고
+    // 게시글 신고
     public void reportPost(PostReportVO postReportVO) {
         postMapper.insertPostReport(postReportVO);
     }
 
+    // 댓글 신고
     public void reportComment(PostCommentReportVO PostCommentReportVO) {
         postMapper.insertPostCommentReport(PostCommentReportVO);
     }
 
+    // 답글 신고
     public void reportReply(PostReplyReportVO postReplyReportVO) {
         postMapper.insertPostReplyReport(postReplyReportVO);
+    }
+
+
+    // 게시글 신고 중복 여부
+    public boolean existsPostReport(Long postId, Long memberId) {
+        return postMapper.checkPostReportExists(postId, memberId) > 0;
+    }
+
+    // 댓글 신고 중복 여부
+    public boolean existsCommentReport(Long postCommentId, Long memberId) {
+        return postMapper.checkCommentReportExists(postCommentId, memberId) > 0;
+    }
+
+    // 답글 신고 중복 여부
+    public boolean existsReplyReport(Long postReplyId, Long memberId) {
+        return postMapper.checkReplyReportExists(postReplyId, memberId) > 0;
     }
 
 }

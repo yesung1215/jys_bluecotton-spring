@@ -2,7 +2,9 @@ package com.app.bluecotton.domain.dto.post;
 
 import com.app.bluecotton.domain.dto.MemberResponseDTO;
 import com.app.bluecotton.domain.dto.post.PostCommentDTO;
+import com.app.bluecotton.domain.vo.post.PostImageVO;
 import com.app.bluecotton.domain.vo.post.PostVO;
+import com.app.bluecotton.domain.vo.som.SomImageVO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,5 +31,6 @@ public class PostDetailDTO {
     private Integer postIsLike;
 
     private List<PostCommentDTO> comments;
+    private List<PostImageVO> postImageList;
 
 }
