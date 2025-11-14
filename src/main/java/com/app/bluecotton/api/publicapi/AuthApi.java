@@ -5,6 +5,8 @@ import com.app.bluecotton.domain.dto.TokenDTO;
 import com.app.bluecotton.domain.vo.member.MemberVO;
 import com.app.bluecotton.service.AuthService;
 import com.app.bluecotton.service.MemberService;
+import com.app.bluecotton.service.SmsService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -25,6 +27,8 @@ public class AuthApi {
 
     private final AuthService authService;
     private final RedisTemplate redisTemplate;
+    private final MemberService memberService;
+    private final SmsService smsService;
 
     //  로그인
     @PostMapping("login")
@@ -68,6 +72,43 @@ public class AuthApi {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponseDTO.of("요효시간 만료", null));
         }
         return  ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("로그인 성공", tokens));
+    }
+
+    @PostMapping("find-email")
+    public ResponseEntity<ApiResponseDTO<Object>> findEmail(@RequestParam String memberName, @RequestParam String memberPhone) {
+        log.info("memberName: {}, memberPhone: {}", memberName, memberPhone);
+        String email = memberService.getMemberEmailByNameAndPhone(memberName, memberPhone);
+        Map<String, String> result = new HashMap<>();
+        result.put("email", email);
+
+        return  ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("이메일 찾기 성공", result));
+    }
+
+    @PostMapping("reset-password")
+    public ResponseEntity<ApiResponseDTO<Object>> resetPassword(@RequestParam String memberEmail, @RequestParam String newPassword) {
+        memberService.resetPassword(memberEmail, newPassword);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("비밀번호 재설정 완료"));
+    }
+
+    // 이메일로 인증코드 전송
+    @PostMapping("/codes/email")
+    public ResponseEntity<ApiResponseDTO> sendAuthentificationCodeByEmail(String toEmail, HttpSession session) {
+        ApiResponseDTO response = smsService.sendAuthentificationCodeByEmail(toEmail, session);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    // 인증코드 확인
+    @PostMapping("/codes/verify")
+    public ResponseEntity<ApiResponseDTO> verifyAuthentificationCode(String userAuthentificationCode, HttpSession session) {
+        String authentificationCode = (String) session.getAttribute("authentificationCode");
+        boolean isVerified = authentificationCode != null && authentificationCode.equals(userAuthentificationCode);
+
+        Map<String, Boolean> verified = new HashMap<>();
+        verified.put("verified", isVerified);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponseDTO.of("인증코드 확인 완료", verified));
+
     }
 
 }
