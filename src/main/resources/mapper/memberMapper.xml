@@ -34,11 +34,20 @@
         WHERE MEMBER_ADDRESS IS NOT NULL
     </select>
 
+    <!-- 회원 이미지 조회 -->
     <select id="selectMemberProfileImage" parameterType="Long" resultType="MemberProfileVO">
         SELECT MEMBER_PROFILE_PATH, MEMBER_PROFILE_NAME, MEMBER_ID
         FROM TBL_MEMBER_PROFILE
         WHERE MEMBER_ID = #{memberId}
     </select>
+
+    <!-- 회원 이메일 조회 -->
+    <select id="selectMemberEmailByNameAndPhone" parameterType="map" resultType="String">
+        SELECT MEMBER_EMAIL
+        FROM TBL_MEMBER
+        WHERE MEMBER_NAME = #{memberName} AND MEMBER_PHONE = #{memberPhone}
+    </select>
+
     <!-- 일반 회원가입 -->
     <insert id="insert" parameterType="MemberVO">
         <selectKey keyProperty="id" resultType="long" order="BEFORE">
@@ -66,12 +75,13 @@
         )
     </insert>
 
-
+    <!-- 회원 기본 이미지 설정 -->
     <insert id="insertDefaultProfileImage" parameterType="MemberProfileVO">
         INSERT INTO TBL_MEMBER_PROFILE(ID, MEMBER_PROFILE_PATH, MEMBER_PROFILE_NAME, MEMBER_ID)
         VALUES(SEQ_MEMBER_PROFILE.NEXTVAL, #{memberProfilePath}, #{memberProfileName}, #{memberId})
 
     </insert>
+
     <!-- 회원 정보 수정 -->
     <update id="update" parameterType="MemberVO">
         UPDATE TBL_MEMBER
@@ -85,6 +95,13 @@
         MEMBER_PROVIDER = #{memberProvider},
         MEMBER_PHONE = #{memberPhone}
         WHERE ID = #{id}
+    </update>
+
+    <!-- 회원 비밀번호 재설정 -->
+    <update id="updatePassword" parameterType="map">
+        UPDATE TBL_MEMBER
+        SET MEMBER_PASSWORD = #{memberPassword}
+        WHERE MEMBER_EMAIL = #{memberEmail}
     </update>
 
     <!-- 회원 삭제 -->

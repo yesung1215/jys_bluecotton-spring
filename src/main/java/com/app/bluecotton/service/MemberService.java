@@ -19,7 +19,11 @@ public interface MemberService {
     // 이메일 중복 확인
     public boolean existsByMemberEmail(String memberEmail);
 
+    //  멤버 프로필 이미지 가져오기
     public MemberProfileVO getMemberProfileImage(Long memberId);
+
+    //  멤버 이메일 조회
+    public String getMemberEmailByNameAndPhone(String memberName, String memberPhone);
 
     // 회원 가입 후 로그인을 처리할 수 있도록
     public Map<String, String> register(MemberVO memberVO);
@@ -29,6 +33,11 @@ public interface MemberService {
 
     // 회원 정보 수정
     public void modify(MemberVO memberVO);
+
+    //  회원 비밀번호 재설정
+    public void resetPassword(String memberEmail, String newPassword);
+
+
 
     // 회원 탈퇴
     public void withdraw(Long id);

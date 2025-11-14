@@ -5,6 +5,8 @@ import com.app.bluecotton.domain.vo.member.MemberProfileVO;
 import com.app.bluecotton.domain.vo.member.MemberSocialVO;
 import com.app.bluecotton.domain.vo.member.MemberVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -28,11 +30,18 @@ public interface MemberMapper {
     //  회원 전체 조회
     public List<MemberVO> selectAll();
 
+    public String selectMemberEmailByNameAndPhone (String memberName, String memberPhone);
+
     //  이메일 중복 확인
     public boolean existByMemberEmail(String memberEmail);
 
     //  회원 정보 수정
     public void update(MemberVO  memberVO);
+
+    public void updatePassword(
+            @Param("memberEmail") String memberEmail,
+            @Param("memberPassword") String newPassword
+    );
 
     //  회원 탈퇴
     public void delete(Long memberId);

@@ -122,10 +122,21 @@ public class MemberServiceImpl implements MemberService {
         return memberDAO.findById(id).map(MemberResponseDTO::new).orElseThrow(() -> new MemberException("회원 조회 실패"));
     }
 
+    //  회원 프로필 사진 조회
     @Override
     public MemberProfileVO getMemberProfileImage(Long memberId) {
 
         return memberDAO.findMemberProfileImage(memberId).orElseThrow(() -> new MemberException("프로필 이미지 조회 실패"));
+    }
+
+    //  회원 이메일 조회
+    @Override
+    public String getMemberEmailByNameAndPhone(String memberName, String memberPhone) {
+        String findEmail = memberDAO.findMemberEmailByNameAndPhone(memberName, memberPhone);
+        if(findEmail == null) {
+            throw new MemberException("일치하는 메일이 없습니다");
+        }
+        return findEmail;
     }
 
     @Override
@@ -137,6 +148,14 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void modify(MemberVO memberVO) {
         memberDAO.update(memberVO);
+    }
+
+
+    //  회원 비밀번호 재설정
+    @Override
+    public void resetPassword(String memberEmail, String newPassword) {
+        String encoded = passwordEncoder.encode(newPassword);
+        memberDAO.updatePassword(memberEmail, encoded);
     }
 
     // 회원 탈퇴

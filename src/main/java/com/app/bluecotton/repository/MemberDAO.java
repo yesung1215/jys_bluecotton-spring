@@ -32,6 +32,9 @@ public class MemberDAO {
     public boolean existsByMemberEmail(String memberEmail){
         return memberMapper.existByMemberEmail(memberEmail);
     }
+    public String findMemberEmailByNameAndPhone(String memberName, String memberPhone){
+        return memberMapper.selectMemberEmailByNameAndPhone(memberName, memberPhone);
+    }
     //  회원 가입
     public void save(MemberVO memberVO){
         memberMapper.insert(memberVO);
@@ -52,6 +55,11 @@ public class MemberDAO {
     public void update(MemberVO memberVO){
         memberMapper.update(memberVO);
     }
+
+    public void updatePassword(String memberEmail, String newPassword){
+        memberMapper.updatePassword(memberEmail, newPassword);
+    }
+
     //  회원 탈퇴
     public void delete(Long id){
         memberMapper.delete(id);
