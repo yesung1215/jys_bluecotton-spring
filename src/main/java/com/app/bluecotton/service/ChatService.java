@@ -11,4 +11,5 @@ public interface ChatService {
     public List<ChatVO> selectChatListByMember(Long memberId);
     public void delete(Long id);
     public Long getChatIdByMemberId(String somTitle ,Long memberId);
+    public Long getChatIdByTitle(String chatTitle);
 }

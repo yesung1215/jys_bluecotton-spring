@@ -15,4 +15,5 @@ public interface ChatMapper {
     public void delete(Long id);
     public List<ChatVO> selectChatListByMember(Long memberId);
     public Long selectIdByTitleWithMemberId(Map<String, Object> paramMap);
+    public Long selectIdByTitle(String chatTitle);
 }

@@ -27,6 +27,8 @@ public class SomServiceImpl implements SomService {
     private final SomDAO somDAO;
     private final SomImageService somImageService;
     private final MemberService memberService;
+    private final ChatService chatService;
+    private final ChatMemberService chatMemberService;
 
     //  솜 등록
     @Override
@@ -128,7 +130,34 @@ public class SomServiceImpl implements SomService {
 
     @Override
     public void registerSomJoin(SomJoinVO somJoinVO) {
+        // 1. 솜 참여 처리
         somDAO.insertSomJoin(somJoinVO);
+        
+        // 2. 솜 정보 조회 (채팅방 제목을 위해)
+        SomResponseDTO somInfo = somDAO.findById(somJoinVO.getSomId())
+                .orElseThrow(() -> new SomException("솜 정보를 찾을 수 없습니다."));
+        
+        // 3. 해당 솜의 채팅방 찾기 (채팅방 제목 = 솜 제목)
+        Long chatId = chatService.getChatIdByTitle(somInfo.getSomTitle());
+        
+        // 4. 채팅방이 존재하면 자동으로 채팅방에 참여
+        if (chatId != null) {
+            com.app.bluecotton.domain.vo.chat.ChatMemberVO chatMemberVO = 
+                    new com.app.bluecotton.domain.vo.chat.ChatMemberVO();
+            chatMemberVO.setChatId(chatId);
+            chatMemberVO.setMemberId(somJoinVO.getMemberId());
+            chatMemberVO.setChatMemberRole("USER");
+            chatMemberVO.setChatMemberStatus("ACTIVE");
+            
+            // 채팅방 참여 (이미 참여 중이면 중복 방지됨)
+            Integer existingCount = chatMemberService.exists(chatMemberVO);
+            if (existingCount == 0) {
+                chatMemberService.createChatMember(chatMemberVO);
+                log.info("솜 참여 시 채팅방 자동 참여 완료 - chatId: {}, memberId: {}", chatId, somJoinVO.getMemberId());
+            } else {
+                log.info("이미 채팅방에 참여 중 - chatId: {}, memberId: {}", chatId, somJoinVO.getMemberId());
+            }
+        }
     }
 
     @Override

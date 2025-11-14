@@ -21,6 +21,7 @@ public class ChatMemberServiceImpl implements ChatMemberService {
         if (chatMemberDAO.exists(chatMemberVO) == 0) {
             chatMemberDAO.insertChatMember(chatMemberVO);
         }
+        // 이미 참여 중인 경우는 조용히 넘어감 (중복 참여 방지)
     }
 
     @Override

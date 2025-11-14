@@ -86,7 +86,14 @@
         GROUP BY CHAT_ID
         ) TBCM
         ON TBCM.CHAT_ID = TBC.ID
-        WHERE TBC.CHAT_TITLE = #{somTitle} TBC.CHAT_OWNER_ID = #{memberId}
+        WHERE TBC.CHAT_TITLE = #{somTitle} AND TBC.CHAT_OWNER_ID = #{memberId}
+    </select>
+
+    <select id="selectIdByTitle" parameterType="String" resultType="Long">
+        SELECT ID
+        FROM TBL_CHAT
+        WHERE CHAT_TITLE = #{chatTitle}
+        AND ROWNUM = 1
     </select>
 
 </mapper>

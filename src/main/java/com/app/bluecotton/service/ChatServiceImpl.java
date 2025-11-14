@@ -54,4 +54,9 @@ public class ChatServiceImpl implements ChatService {
         return chatDAO.selectIdByTitleWithMemberId(paramMap);
     }
 
+    @Override
+    public Long getChatIdByTitle(String chatTitle){
+        return chatDAO.selectIdByTitle(chatTitle);
+    }
+
 }

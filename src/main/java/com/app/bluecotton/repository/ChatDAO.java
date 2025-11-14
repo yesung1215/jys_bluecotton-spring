@@ -35,6 +35,10 @@ public class ChatDAO {
         return chatMapper.selectIdByTitleWithMemberId(paramMap);
     }
 
+    public Long selectIdByTitle(String chatTitle){
+        return chatMapper.selectIdByTitle(chatTitle);
+    }
+
     public void delete(Long id){
         chatMapper.delete(id);
     }
