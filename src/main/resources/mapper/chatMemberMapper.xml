@@ -22,12 +22,12 @@
         WHERE MEMBER_ID = #{memberId} AND CHAT_ID = #{chatId}
     </delete>
 
-    <select id="selectChatMemberByChatId" parameterType="Long" resultType="ChatMemberResponseDTO">
+    <select id="selectMemberListByChatId" parameterType="Long" resultType="ChatMemberResponseDTO">
         SELECT TBCM.ID, TBCM.CHAT_ID, TBCM.MEMBER_ID, TBM.MEMBER_NAME
         FROM TBL_CHAT_MEMBER TBCM
         JOIN TBL_MEMBER TBM
         ON TBCM.MEMBER_ID = TBM.ID
-        WHERE TBCM.CHAT_ID = #{chatId};
+        WHERE TBCM.CHAT_ID = #{chatId}
     </select>
 
 

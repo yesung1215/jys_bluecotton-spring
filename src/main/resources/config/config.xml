@@ -58,6 +58,8 @@
         <typeAlias type="com.app.bluecotton.domain.vo.chat.ChatVO" alias="ChatVO" />
         <typeAlias type="com.app.bluecotton.domain.vo.chat.ChatMemberVO" alias="ChatMemberVO" />
         <typeAlias type="com.app.bluecotton.domain.vo.chat.ChatMessageVO" alias="ChatMessageVO" />
+        <typeAlias type="com.app.bluecotton.domain.dto.ChatMemberResponseDTO" alias="ChatMemberResponseDTO" />
+
 
         <!-- cart -->
         <typeAlias type="com.app.bluecotton.domain.vo.shop.CartVO" alias="CartVO" />
