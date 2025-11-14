@@ -9,7 +9,7 @@
         VALUES (#{id}, #{somImagePath}, #{somImageName})
     </insert>
 
-    <update id="updateImgSomId" parameterType="SomImageUpdateDTO">
+    <update id="updateImgSomId" parameterType="com.app.bluecotton.domain.dto.post.PostImageUpdateDTO">
         UPDATE TBL_SOM_IMAGE
             SET SOM_ID = #{somId}
         WHERE ID IN

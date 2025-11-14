@@ -1,12 +1,11 @@
 package com.app.bluecotton.service;
 
 import com.app.bluecotton.domain.dto.post.*;
-import com.app.bluecotton.domain.vo.post.PostCommentVO;
-import com.app.bluecotton.domain.vo.post.PostDraftVO;
-import com.app.bluecotton.domain.vo.post.PostReplyVO;
-import com.app.bluecotton.domain.vo.post.PostVO;
+import com.app.bluecotton.domain.vo.post.*;
+import com.app.bluecotton.domain.vo.som.SomImageVO;
 import com.app.bluecotton.exception.PostException;
 import com.app.bluecotton.repository.PostDAO;
+import com.app.bluecotton.repository.PostImageDAO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,52 +21,66 @@ import java.util.List;
 public class PostServiceImpl implements PostService {
 
     private final PostDAO postDAO;
+    private final PostImageService postImageService;
 
     // 게시글 목록 조회
     @Override
-    public List<PostMainDTO> getPosts(String somCategory, String orderType, Long memberId, String q) {
-        return postDAO.findPosts(somCategory, orderType, memberId, q);
+    public List<PostMainDTO> getPosts(
+            String somCategory,
+            String orderType,
+            Long memberId,
+            String q,
+            int page,
+            int size
+    ) {
+        return postDAO.findPosts(somCategory, orderType, memberId, q, page, size);
+    }
+
+    // 토탈 게시글 수 처리
+    @Override
+    public int countPosts(String somCategory, String q) {
+        return postDAO.countPosts(somCategory, q);
     }
 
     // 게시글 등록 + draft 자동 삭제 (트랜잭션)
     @Override
-    public void write(PostVO postVO, List<String> imageUrls) {
-        write(postVO, imageUrls, null);
-    }
+    public Long write(PostVO postVO, List<Long> postImageIds, Long draftId) {
 
-    // 오버로딩: draftId까지 받는 버전 (등록 + 임시저장 자동삭제)
-    @Transactional(rollbackFor = Exception.class)
-    public void write(PostVO postVO, List<String> imageUrls, Long draftId) {
-
-        // 1일 1회 제한
         int count = postDAO.existsTodayPostInSom(postVO.getMemberId(), postVO.getSomId());
         if (count > 0) {
             throw new PostException("이미 오늘 해당 솜에 게시글을 작성했습니다.");
         }
 
-        // 게시글 등록
+        // 1) 게시글 등록
         postDAO.insert(postVO);
 
-        // 이미지 처리
-        if (imageUrls != null && !imageUrls.isEmpty()) {
+        // 2) 이미지 처리
+        if (postImageIds != null && !postImageIds.isEmpty()) {
             boolean isFirst = true;
-            for (String url : imageUrls) {
-                postDAO.updatePostIdByUrl(url, postVO.getId());
-                if (isFirst) {
-                    postDAO.insertThumbnail(url, postVO.getId());
-                    isFirst = false;
-                }
+
+            for (Long imageId : postImageIds) {
+
+                // 이미지 → postId 연결
+                postImageService.updatePostId(imageId, postVO.getId());
+
+                // 맨 첫 번째 이미지를 썸네일로
+//                if (isFirst) {
+//                    postImageService.updateThumbnail(imageId, postVO.getId());
+//                    isFirst = false;
+//                }
             }
+
         } else {
-            // 기본 썸네일 이미지 자동 등록
-            postDAO.insertDefaultImage("/upload/default/", "default_post.jpg", postVO.getId());
+            // 기본 썸네일 등록
+            postImageService.insertDefaultImage(postVO.getId());
         }
 
-        // draftId 존재 시 자동 삭제 (트랜잭션 내부)
+        // 3) 임시저장 삭제
         if (draftId != null) {
             postDAO.deleteDraftById(draftId);
         }
 
+        return postVO.getId();
     }
 
     // 회원이 참여 중인 솜 카테고리 목록 조회
@@ -79,11 +92,45 @@ public class PostServiceImpl implements PostService {
     // 게시글 삭제
     @Override
     public void withdraw(Long postId) {
+        // postId로 답글 관련 삭제
+        postDAO.deleteReplyReportsByPostId(postId);
+        postDAO.deleteReplyLikesByPostId(postId);
+        postDAO.deleteRepliesByPostId(postId);
+        // postId로 댓글 관련 삭제
+        postDAO.deleteCommentReportsByPostId(postId);
+        postDAO.deleteCommentLikesByPostId(postId);
+        postDAO.deleteCommentsByPostId(postId);
+        // postId로 게시글 관련 삭제
         postDAO.deleteLikesByPostId(postId);
         postDAO.deleteReportsByPostId(postId);
         postDAO.deletePostImages(postId);
         postDAO.deleteRecentsByPostId(postId);
+        // 게시글 삭제
         postDAO.deletePostById(postId);
+    }
+
+    // 댓글 삭제
+    @Override
+    public void deleteComment(Long commentId) {
+        // commentId로 답글 관련 삭제
+        postDAO.deleteReplyLikesByCommentId(commentId);
+        postDAO.deleteReplyReportsByCommentId(commentId);
+        postDAO.deleteRepliesByCommentId(commentId);
+        // commentId로 댓글 관련 삭제
+        postDAO.deleteCommentReportsByCommentId(commentId);
+        postDAO.deleteCommentLikesByCommentId(commentId);
+        // commentId로 댓글 삭제
+        postDAO.deleteCommentById(commentId);
+    }
+
+    // 답글 삭제
+    @Override
+    public void deleteReplyById(Long replyId) {
+        // ReplyId로 답글 관련 삭제
+        postDAO.deleteReplyLikeByReplyId(replyId);
+        postDAO.deleteReplyReportByReplyId(replyId);
+        // ReplyId로 답글 삭제
+        postDAO.deleteReplyById(replyId);
     }
 
     // 임시저장 등록 / 조회 / 삭제
@@ -133,26 +180,16 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    // 댓글 등록 / 삭제
+    // 댓글 등록
     @Override
     public void insertComment(PostCommentVO postCommentVO) {
         postDAO.insertComment(postCommentVO);
     }
 
-    @Override
-    public void deleteComment(Long commentId) {
-        postDAO.deleteComment(commentId);
-    }
-
-    // 대댓글 등록 / 삭제
+    // 대댓글 등록
     @Override
     public void insertReply(PostReplyVO postReplyVO) {
         postDAO.insertReply(postReplyVO);
-    }
-
-    @Override
-    public void deleteReply(Long replyId) {
-        postDAO.deleteReply(replyId);
     }
 
     // 게시글 좋아요 토글
@@ -165,32 +202,93 @@ public class PostServiceImpl implements PostService {
         }
     }
 
+    // 게시글 상세 조회
     @Override
-    public PostDetailDTO selectTest(Long postId) {
-        // 조회수 + 1
+    public PostDetailDTO getPost(Long postId, Long memberId) {
+        List<PostImageVO> postImages = postImageService.selectImagesByPostId(postId);
+
+        // 조회수 증가
         postDAO.updateReadCount(postId);
 
-        // 게시글 정보
-        PostDetailDTO postDetailDTO = postDAO.selectTest(postId);
-        log.info("{}", postDetailDTO);
-        // 댓글 목록
-        List<PostCommentDTO> comments = postDAO.selectCommentTest(postId);
+        // 게시글(좋아요 여부 포함)
+        PostDetailDTO detail = postDAO.selectPost(postId, memberId);
 
-        // 댓글 세팅
-        postDetailDTO.setComments(comments);
+        if (detail == null) return null;
 
-        // 각 댓글별 대댓글 조회 및 세팅
-        for (PostCommentDTO comment : comments) {
-            List<PostReplyDTO> replies = postDAO.selectReplyTest(comment.getId());
-            comment.setReplies(replies);
+        // 댓글
+        List<PostCommentDTO> comments = postDAO.selectComment(postId, memberId);
+
+        // 각 댓글의 대댓글
+        for (PostCommentDTO c : comments) {
+            List<PostReplyDTO> replies = postDAO.selectReply(c.getId(), memberId);
+            c.setReplies(replies);
         }
 
-        return postDetailDTO;
+        detail.setPostImageList(postImages);
+        detail.setComments(comments);
+
+        return detail;
     }
 
-    // 최근 본글 추가
+    // 이전글 id
+    @Override
+    @Transactional(readOnly = true)
+    public PostNeighborDTO getPrevPost(Long id) {
+        return postDAO.selectPrevPost(id);
+    }
+
+    // 다음글 id
+    @Override
+    @Transactional(readOnly = true)
+    public PostNeighborDTO getNextPost(Long id) {
+        return postDAO.selectNextPost(id);
+    }
+
+    // 최근 본 글 추가
     @Override
     public void registerRecent(Long memberId, Long postId) {
         postDAO.registerRecent(memberId, postId);
+    }
+
+    // 게시글 신고
+    @Override
+    public void reportPost(PostReportVO postReportVO) {
+
+        // 신고 중복 체크
+        boolean exists = postDAO.existsPostReport(
+                postReportVO.getPostId(),
+                postReportVO.getMemberId()
+        );
+        if (exists) {
+            throw new PostException("이미 이 게시글을 신고했습니다.");
+        }
+        // 신고 저장
+        postDAO.reportPost(postReportVO);
+    }
+
+    // 댓글 신고
+    @Override
+    public void reportComment(PostCommentReportVO postCommentReportVO) {
+        boolean exists = postDAO.existsCommentReport(
+                postCommentReportVO.getPostCommentId(),
+                postCommentReportVO.getMemberId()
+        );
+        if (exists) {
+            throw new PostException("이미 이 댓글을 신고했습니다.");
+        }
+        postDAO.reportComment(postCommentReportVO);
+    }
+
+    // 답글 신고
+    @Override
+    public void reportReply(PostReplyReportVO postReplyReportVO) {
+        boolean exists = postDAO.existsReplyReport(
+                postReplyReportVO.getPostReplyId(),
+                postReplyReportVO.getMemberId()
+        );
+        if (exists) {
+            throw new PostException("이미 이 답글을 신고했습니다.");
+        }
+        postDAO.reportReply(postReplyReportVO);
     }
 }

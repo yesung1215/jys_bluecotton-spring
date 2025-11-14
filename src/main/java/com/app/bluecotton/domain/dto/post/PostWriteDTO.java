@@ -10,7 +10,7 @@ public class PostWriteDTO {
     private String postContent;
     private Long memberId;
     private Long somId;
-    private List<String> imageUrls;
+    private List<Long> postImageIds;
     private Long draftId;
 
     public PostVO postVO() {

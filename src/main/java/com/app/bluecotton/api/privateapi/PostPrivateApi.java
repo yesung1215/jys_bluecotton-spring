@@ -4,6 +4,7 @@ import com.app.bluecotton.domain.dto.ApiResponseDTO;
 import com.app.bluecotton.domain.dto.MemberResponseDTO;
 import com.app.bluecotton.domain.dto.post.*;
 import com.app.bluecotton.domain.vo.post.*;
+import com.app.bluecotton.exception.PostException;
 import com.app.bluecotton.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,18 +31,15 @@ public class PostPrivateApi {
             @RequestBody PostWriteDTO dto,
             @AuthenticationPrincipal MemberResponseDTO currentUser
     ) {
-        Long memberId = currentUser.getId();
-        PostVO postVO = dto.postVO();
-        postVO.setMemberId(memberId);
+        dto.setMemberId(currentUser.getId());
+        Long postId = postService.write(dto.postVO(), dto.getPostImageIds(), dto.getDraftId());
 
-        postService.write(postVO, dto.getImageUrls());
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponseDTO.of("게시글이 등록되었습니다.", Map.of("postId", postVO.getId())));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponseDTO.of("게시글 등록 완료", Map.of("postId", postId)));
     }
 
-
-    // 참여 중 솜 카테고리 목록 조회
+    // 참여 중 솜 카테고리 조회
     @GetMapping("/categories")
     public ResponseEntity<List<SomCategoryDTO>> getJoinedCategories(
             @AuthenticationPrincipal MemberResponseDTO currentUser
@@ -54,10 +51,10 @@ public class PostPrivateApi {
     @DeleteMapping("/withdraw")
     public ResponseEntity<ApiResponseDTO> withdrawPost(@RequestParam Long id) {
         postService.withdraw(id);
-        return ResponseEntity.ok(ApiResponseDTO.of("게시글이 성공적으로 삭제되었습니다.", null));
+        return ResponseEntity.ok(ApiResponseDTO.of("게시글 삭제 완료"));
     }
 
-    // 임시저장 등록
+    // 임시저장 생성
     @PostMapping("/draft")
     public ResponseEntity<ApiResponseDTO> draftPost(
             @RequestBody PostDraftVO postDraftVO,
@@ -65,26 +62,27 @@ public class PostPrivateApi {
     ) {
         postDraftVO.setMemberId(currentUser.getId());
         postService.registerDraft(postDraftVO);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponseDTO.of("게시글이 임시 저장되었습니다."));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponseDTO.of("임시 저장 완료"));
     }
 
     // 임시저장 조회
     @GetMapping("/draft/{id}")
-    public ResponseEntity<ApiResponseDTO> getDraft(@PathVariable("id") Long id) {
+    public ResponseEntity<ApiResponseDTO> getDraft(@PathVariable Long id) {
         PostDraftVO draft = postService.getDraft(id);
         if (draft == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponseDTO.of("임시저장된 글을 찾을 수 없습니다.", null));
+                    .body(ApiResponseDTO.of("임시 저장된 글 없음", null));
         }
-        return ResponseEntity.ok(ApiResponseDTO.of("임시저장 글 불러오기 성공", draft));
+        return ResponseEntity.ok(ApiResponseDTO.of("불러오기 성공", draft));
     }
 
     // 임시저장 삭제
     @DeleteMapping("/draft/delete")
-    public ResponseEntity<ApiResponseDTO> deleteDraft(@RequestParam("id") Long id) {
+    public ResponseEntity<ApiResponseDTO> deleteDraft(@RequestParam Long id) {
         postService.deleteDraft(id);
-        return ResponseEntity.ok(ApiResponseDTO.of("임시저장 글이 삭제되었습니다."));
+        return ResponseEntity.ok(ApiResponseDTO.of("임시 저장 삭제 완료"));
     }
 
     // 게시글 수정 조회
@@ -93,9 +91,9 @@ public class PostPrivateApi {
         PostModifyDTO dto = postService.getPostForUpdate(id);
         if (dto == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponseDTO.of("존재하지 않는 게시글입니다.", null));
+                    .body(ApiResponseDTO.of("게시글 없음", null));
         }
-        return ResponseEntity.ok(ApiResponseDTO.of("게시글 조회 성공", dto));
+        return ResponseEntity.ok(ApiResponseDTO.of("조회 성공", dto));
     }
 
     // 게시글 수정
@@ -106,45 +104,45 @@ public class PostPrivateApi {
     ) {
         postVO.setId(id);
         postService.modifyPost(postVO);
-        return ResponseEntity.ok(ApiResponseDTO.of("게시글이 성공적으로 수정되었습니다."));
+        return ResponseEntity.ok(ApiResponseDTO.of("수정 완료"));
     }
 
     // 댓글 등록
     @PostMapping("/comment")
     public ResponseEntity<ApiResponseDTO> insertComment(
-            @RequestBody PostCommentVO postCommentVO,
+            @RequestBody PostCommentVO vo,
             @AuthenticationPrincipal MemberResponseDTO currentUser
     ) {
-        postCommentVO.setMemberId(currentUser.getId());
-        postService.insertComment(postCommentVO);
+        vo.setMemberId(currentUser.getId());
+        postService.insertComment(vo);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponseDTO.of("댓글이 등록되었습니다."));
+                .body(ApiResponseDTO.of("댓글 등록 완료"));
     }
 
     // 답글 등록
     @PostMapping("/reply")
     public ResponseEntity<ApiResponseDTO> insertReply(
-            @RequestBody PostReplyVO postReplyVO,
+            @RequestBody PostReplyVO vo,
             @AuthenticationPrincipal MemberResponseDTO currentUser
     ) {
-        postReplyVO.setMemberId(currentUser.getId());
-        postService.insertReply(postReplyVO);
+        vo.setMemberId(currentUser.getId());
+        postService.insertReply(vo);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponseDTO.of("답글이 등록되었습니다."));
+                .body(ApiResponseDTO.of("답글 등록 완료"));
     }
 
     // 댓글 삭제
     @DeleteMapping("/comment/{commentId}")
     public ResponseEntity<ApiResponseDTO> deleteComment(@PathVariable Long commentId) {
         postService.deleteComment(commentId);
-        return ResponseEntity.ok(ApiResponseDTO.of("댓글 및 관련 답글이 모두 삭제되었습니다."));
+        return ResponseEntity.ok(ApiResponseDTO.of("댓글 삭제 완료"));
     }
 
     // 답글 삭제
     @DeleteMapping("/reply/{replyId}")
     public ResponseEntity<ApiResponseDTO> deleteReply(@PathVariable Long replyId) {
-        postService.deleteReply(replyId);
-        return ResponseEntity.ok(ApiResponseDTO.of("답글이 삭제되었습니다."));
+        postService.deleteReplyById(replyId);
+        return ResponseEntity.ok(ApiResponseDTO.of("답글 삭제 완료"));
     }
 
     // 게시글 좋아요 토글
@@ -153,8 +151,7 @@ public class PostPrivateApi {
             @RequestBody Map<String, Long> payload,
             @AuthenticationPrincipal MemberResponseDTO currentUser
     ) {
-        Long postId = payload.get("postId");
-        postService.toggleLike(postId, currentUser.getId());
+        postService.toggleLike(payload.get("postId"), currentUser.getId());
         return ResponseEntity.ok(ApiResponseDTO.of("좋아요 토글 완료"));
     }
 
@@ -164,8 +161,7 @@ public class PostPrivateApi {
             @RequestBody Map<String, Long> payload,
             @AuthenticationPrincipal MemberResponseDTO currentUser
     ) {
-        Long commentId = payload.get("commentId");
-        postService.toggleCommentLike(commentId, currentUser.getId());
+        postService.toggleCommentLike(payload.get("commentId"), currentUser.getId());
         return ResponseEntity.ok(ApiResponseDTO.of("댓글 좋아요 토글 완료"));
     }
 
@@ -175,16 +171,56 @@ public class PostPrivateApi {
             @RequestBody Map<String, Long> payload,
             @AuthenticationPrincipal MemberResponseDTO currentUser
     ) {
-        Long replyId = payload.get("replyId");
-        postService.toggleReplyLike(replyId, currentUser.getId());
-        return ResponseEntity.ok(ApiResponseDTO.of("대댓글 좋아요 토글 완료"));
+        postService.toggleReplyLike(payload.get("replyId"), currentUser.getId());
+        return ResponseEntity.ok(ApiResponseDTO.of("답글 좋아요 토글 완료"));
     }
 
-    @PostMapping("recent/{postId}")
-    public ResponseEntity<ApiResponseDTO> recentPost(Authentication authentication, @PathVariable Long postId) {
-        MemberResponseDTO currentMember = (MemberResponseDTO) authentication.getPrincipal();
-        Long memberId = currentMember.getId();
+    // 🔥 최근 본 글 추가
+    @PostMapping("/recent/{postId}")
+    public ResponseEntity<ApiResponseDTO> recentPost(
+            Authentication authentication,
+            @PathVariable Long postId
+    ) {
+        Long memberId = ((MemberResponseDTO) authentication.getPrincipal()).getId();
         postService.registerRecent(memberId, postId);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("최근본글추가"));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponseDTO.of("최근 본 글 추가 완료"));
     }
+
+    // 🔥 게시글 신고
+    @PostMapping("/report/post")
+    public ResponseEntity<ApiResponseDTO> reportPost(
+            @RequestBody PostReportVO vo,
+            @AuthenticationPrincipal MemberResponseDTO currentUser
+    ) {
+        vo.setMemberId(currentUser.getId());
+        postService.reportPost(vo);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponseDTO.of("게시글 신고 완료"));
+    }
+
+    // 🔥 댓글 신고
+    @PostMapping("/report/comment")
+    public ResponseEntity<ApiResponseDTO> reportComment(
+            @RequestBody PostCommentReportVO vo,
+            @AuthenticationPrincipal MemberResponseDTO currentUser
+    ) {
+        vo.setMemberId(currentUser.getId());
+        postService.reportComment(vo);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponseDTO.of("댓글 신고 완료"));
+    }
+
+    // 🔥 답글 신고
+    @PostMapping("/report/reply")
+    public ResponseEntity<ApiResponseDTO> reportReply(
+            @RequestBody PostReplyReportVO vo,
+            @AuthenticationPrincipal MemberResponseDTO currentUser
+    ) {
+        vo.setMemberId(currentUser.getId());
+        postService.reportReply(vo);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponseDTO.of("답글 신고 완료"));
+    }
+
 }
