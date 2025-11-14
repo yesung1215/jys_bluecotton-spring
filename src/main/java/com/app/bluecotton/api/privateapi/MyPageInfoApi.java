@@ -1,9 +1,8 @@
-package com.app.bluecotton.api.mypage;
+package com.app.bluecotton.api.privateapi;
 
 import com.app.bluecotton.domain.dto.*;
 import com.app.bluecotton.service.MemberService;
 import com.app.bluecotton.service.MyPageInfoService;
-import com.app.bluecotton.service.MyPagePostService;
 import com.app.bluecotton.service.SomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,21 +15,12 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/my-page/*")
+@RequestMapping("/private/my-page/*")
 public class MyPageInfoApi {
 
     private final SomService somService;
     private final MemberService memberService;
     private final MyPageInfoService myPageInfoService;
-
-    // 솜 정보 출력
-    @GetMapping("read-som")
-    public ResponseEntity<ApiResponseDTO> readSom() {
-        log.info("솔로솜 및 파티솜 정보를 불러옵니다");
-        log.info("출력: {}", somService.findAllSom());
-        List<SomResponseDTO> data = somService.findAllSom();
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("솔로솜과 파티솜을 조회했습니다", data));
-    }
 
     // 회원정보 출력
     @GetMapping("read-member")
@@ -56,3 +46,4 @@ public class MyPageInfoApi {
     }
 
 }
+

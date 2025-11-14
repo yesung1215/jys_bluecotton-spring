@@ -1,9 +1,7 @@
-package com.app.bluecotton.api.mypage;
+package com.app.bluecotton.api.privateapi;
 
 import com.app.bluecotton.domain.dto.*;
-import com.app.bluecotton.service.MemberService;
 import com.app.bluecotton.service.MyPagePostService;
-import com.app.bluecotton.service.SomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,7 +13,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/my-page/*")
+@RequestMapping("/private/my-page/*")
 public class MyPagePostApi {
 
     private final MyPagePostService myPagePostService;

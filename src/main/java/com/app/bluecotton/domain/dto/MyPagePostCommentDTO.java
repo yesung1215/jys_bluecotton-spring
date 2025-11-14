@@ -25,6 +25,8 @@ public class MyPagePostCommentDTO {
     private Long commentId;
     private Long replyId;
     private Long postId;
+    private String postCommentContent;
+    private String postReplyContent;
     private Date postCommentCreateAt;
     private Date postReplyCreateAt;
     private String postTitle;
@@ -34,6 +36,8 @@ public class MyPagePostCommentDTO {
         this.commentId = postCommentVO.getId();
         this.replyId = postReplyVO.getId();
         this.postId = postVO.getId();
+        this.postCommentContent = postCommentVO.getPostCommentContent();
+        this.postReplyContent = postReplyVO.getPostReplyContent();
         this.postCommentCreateAt = postCommentVO.getPostCommentCreateAt();
         this.postReplyCreateAt = postReplyVO.getPostReplyCreateAt();
         this.postTitle = postVO.getPostTitle();
