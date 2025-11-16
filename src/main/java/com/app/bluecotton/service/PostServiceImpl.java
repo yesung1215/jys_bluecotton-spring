@@ -12,7 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -151,40 +154,67 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void modifyPost(PostModifyDTO postModifyDTO) {
+    @Transactional
+    public void modifyPost(PostModifyDTO dto) {
+
+        Long postId = dto.getId();
 
         // 1) 게시글 기본 정보 수정
-        postDAO.update(postModifyDTO.toPostVO());
-        Long postId = postModifyDTO.getId();
+        postDAO.update(dto.toPostVO());
 
-        // 2) 삭제된 이미지 제거
-        if (postModifyDTO.getDeleteImageIds() != null) {
-            for (Long imageId : postModifyDTO.getDeleteImageIds()) {
-                postImageService.deleteImageById(imageId);
-            }
-        }
+        // 2) 기존 이미지 전부 삭제 (이게 핵심)
+        postImageService.deleteImagesByPostId(postId);
 
-        // 3) 유지되는 이미지 postId 재연결
-        if (postModifyDTO.getPostImageIds() != null) {
-            for (Long imageId : postModifyDTO.getPostImageIds()) {
-                postImageService.updatePostId(imageId, postId);
-            }
-        }
+        // 3) 본문 내용에서 이미지 URL 다시 추출
+        String content = dto.getPostContent();
+        if (content == null) content = "";
 
-        // 4) 새 이미지 postId 연결
-        if (postModifyDTO.getNewImageIds() != null) {
-            for (Long imageId : postModifyDTO.getNewImageIds()) {
-                postImageService.updatePostId(imageId, postId);
-            }
-        }
+        List<String> imageUrls = extractImageUrlsFromMarkdown(content);
 
-        // 5) 최종 이미지 개수 검사 → 하나도 없으면 기본 이미지 생성
-        int finalImageCount = postImageService.selectImagesByPostId(postId).size();
-        if (finalImageCount == 0) {
+        // 4) 에디터에 이미지 하나도 없으면 → 기본 썸네일 1장만 넣기
+        if (imageUrls.isEmpty()) {
             postImageService.insertDefaultImage(postId);
+            return;
         }
 
+        // 5) 에디터에 남아있는 이미지들만 다시 INSERT
+        for (String url : imageUrls) {
+            PostImageVO vo = buildPostImageVOFromUrl(url, postId);
+            if (vo != null) {
+                postImageService.insertImageWithPostId(vo);
+            }
+        }
     }
+
+    // Markdown에서 ![...](url) 형태의 url들만 추출
+    private List<String> extractImageUrlsFromMarkdown(String md) {
+        List<String> urls = new ArrayList<>();
+        if (md == null) return urls;
+
+        Pattern p = Pattern.compile("!\\[[^\\]]*\\]\\(([^)]+)\\)");
+        Matcher m = p.matcher(md);
+        while (m.find()) {
+            urls.add(m.group(1));
+        }
+        return urls;
+    }
+
+    // URL → path / name 분리해서 VO 생성
+    private PostImageVO buildPostImageVOFromUrl(String url, Long postId) {
+        if (url == null || !url.contains("/")) return null;
+
+        int idx = url.lastIndexOf("/");
+        String path = url.substring(0, idx + 1);   // /upload/post/.../ 또는 https://.../
+        String name = url.substring(idx + 1);      // 파일명만
+
+        PostImageVO vo = new PostImageVO();
+        vo.setPostImagePath(path);
+        vo.setPostImageName(name);
+        vo.setPostId(postId);
+        return vo;
+    }
+
+
 
     // 댓글 좋아요 토글
     @Override

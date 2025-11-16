@@ -31,7 +31,6 @@ public class PostImageAPI {
     public ResponseEntity<ApiResponseDTO> updatePostImage(@RequestBody PostImageUpdateDTO postImageUpdateDTO) {
         log.info("받은 PostId: {}", postImageUpdateDTO.getPostId());
         log.info("받은 ImageIds: {}", postImageUpdateDTO.getPostImageIds());
-        postImageService.updateInsertPostImage(postImageUpdateDTO);
         log.info("이미지 업데이트 완료: {}", postImageUpdateDTO.toString().replace("\n", ""));
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.of("게시판 이미지 등록 완료"));
     };

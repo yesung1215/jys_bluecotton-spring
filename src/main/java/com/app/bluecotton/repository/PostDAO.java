@@ -4,6 +4,7 @@ import com.app.bluecotton.domain.dto.post.*;
 import com.app.bluecotton.domain.vo.post.*;
 import com.app.bluecotton.mapper.MemberMapper;
 import com.app.bluecotton.mapper.PostMapper;
+import com.app.bluecotton.service.PostImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +16,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PostDAO {
     private final PostMapper postMapper;
+    private final PostImageService postImageService;
 
     // 게시글 목록 조회 (좋아요 여부 포함)
     public List<PostMainDTO> findPosts(
@@ -91,9 +93,22 @@ public class PostDAO {
         return postMapper.findJoinedSomsByMemberId(memberId);
     }
 
-    public PostModifyDTO findByIdForUpdate(Long id) {
-        return postMapper.findByIdForUpdate(id);
+    public PostModifyDTO findByIdForUpdate(Long postId) {
+        PostModifyDTO postModifyDTO = postMapper.findByIdForUpdate(postId);
+
+        // 🔥 여기 추가해야 함
+        List<PostImageVO> images = postImageService.selectImagesByPostId(postId);
+
+        // 이미지 ID만 리스트로 넣어도 되고
+        List<Long> ids = images.stream()
+                .map(PostImageVO::getId)
+                .toList();
+
+        postModifyDTO.setPostImageIds(ids);
+
+        return postModifyDTO;
     }
+
 
     public void update(PostVO postVO) { postMapper.update(postVO);}
 
