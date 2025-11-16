@@ -29,13 +29,11 @@ public class ChatApi {
     // 채팅방 목록 가져오기
     @GetMapping("/get-rooms")
     public ResponseEntity<ApiResponseDTO> getAllRooms() {
-        log.info("{}", chatService.selectAll());
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("채팅방 목록 조회 성공", chatService.selectAll()));
     }
 
     @GetMapping("/get-join-rooms/{id}")
     public ResponseEntity<ApiResponseDTO> getJoinRooms(@PathVariable Long id) {
-        log.info("{}", chatService.selectChatListByMember(id));
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("채팅방 목록 조회 성공", chatService.selectChatListByMember(id)));
     }
 
