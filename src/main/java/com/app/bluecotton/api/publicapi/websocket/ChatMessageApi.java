@@ -22,8 +22,6 @@ public class ChatMessageApi {
     @MessageMapping("/chat/send")
     public void sendMessage(ChatMessageVO chatMessageVO) {
 
-        log.info("메세지 수신: {}", chatMessageVO);
-
         // 1) JOIN/LEAVE도 모두 메시지 테이블에 저장
         chatMessageService.insert(chatMessageVO);
 

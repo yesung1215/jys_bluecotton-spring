@@ -125,8 +125,6 @@ public interface PostMapper {
     public PostNeighborDTO selectNextPost(Long id);
     public PostNeighborDTO selectPrevPost(Long id);
 
-
-
     // 게시글 신고
     public void insertPostReport(PostReportVO postReportVO);
     // 댓글 신고

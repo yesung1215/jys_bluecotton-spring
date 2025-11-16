@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.app.bluecotton.mapper.PostImageMapper">
 
-    <!-- 1) 임시 이미지 저장 -->
+    <!-- 1) 임시 이미지 저장 (POST_ID 없이 저장) -->
     <insert id="insertImgTemp" parameterType="com.app.bluecotton.domain.vo.post.PostImageVO">
         <selectKey keyProperty="id" resultType="Long" order="BEFORE">
             SELECT SEQ_POST_IMAGE.NEXTVAL FROM DUAL
@@ -11,37 +13,21 @@
         VALUES (#{id}, #{postImagePath}, #{postImageName})
     </insert>
 
-    <!-- 2) 여러 이미지 postId 일괄 매핑 -->
-    <update id="updateImgPostId" parameterType="com.app.bluecotton.domain.dto.post.PostImageUpdateDTO">
-        UPDATE TBL_POST_IMAGE
-        SET POST_ID = #{postId}
-        WHERE ID IN
-        <foreach collection="postImageIds" item="id" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-    </update>
-
-    <!-- 3) 단일 이미지 postId 연결 -->
+    <!-- 2) 단일 이미지 postId 연결 -->
     <update id="updatePostId" parameterType="map">
         UPDATE TBL_POST_IMAGE
         SET POST_ID = #{postId}
         WHERE ID = #{imageId}
     </update>
 
-    <!-- 4) 전체 이미지 삭제 (수정 시 반드시 필요) -->
-    <delete id="deleteImagesByPostId" parameterType="long">
+    <!-- 3) POST_ID 기준 전체 이미지 삭제 -->
+    <delete id="deleteImagesByPostId" parameterType="Long">
         DELETE FROM TBL_POST_IMAGE
         WHERE POST_ID = #{postId}
     </delete>
 
-    <!-- 5) 단일 이미지 삭제 (수정 시 필요) -->
-    <delete id="deleteImageById" parameterType="long">
-        DELETE FROM TBL_POST_IMAGE
-        WHERE ID = #{imageId}
-    </delete>
-
-    <!-- 6) 기본 이미지 삽입 -->
-    <insert id="insertDefaultImage" parameterType="long">
+    <!-- 4) 기본 이미지 삽입 -->
+    <insert id="insertDefaultImage" parameterType="Long">
         INSERT INTO TBL_POST_IMAGE (
         ID,
         POST_IMAGE_PATH,
@@ -56,13 +42,30 @@
         )
     </insert>
 
-    <!-- 7) 이미지 조회 -->
-    <select id="selectImagesByPostId" parameterType="long"
+    <!-- 5) postId로 이미지 전체 조회 -->
+    <select id="selectImagesByPostId" parameterType="Long"
             resultType="com.app.bluecotton.domain.vo.post.PostImageVO">
         SELECT *
         FROM TBL_POST_IMAGE
         WHERE POST_ID = #{postId}
         ORDER BY ID ASC
     </select>
+
+    <!-- 6) 이미지 + postId 함께 INSERT -->
+    <insert id="insertImageWithPostId"
+            parameterType="com.app.bluecotton.domain.vo.post.PostImageVO">
+        INSERT INTO TBL_POST_IMAGE (
+        ID,
+        POST_IMAGE_PATH,
+        POST_IMAGE_NAME,
+        POST_ID
+        )
+        VALUES (
+        SEQ_POST_IMAGE.NEXTVAL,
+        #{postImagePath},
+        #{postImageName},
+        #{postId}
+        )
+    </insert>
 
 </mapper>

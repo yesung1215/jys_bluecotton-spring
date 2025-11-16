@@ -1,7 +1,6 @@
 package com.app.bluecotton.api.publicapi;
 
 import com.app.bluecotton.domain.dto.ApiResponseDTO;
-import com.app.bluecotton.domain.dto.SomReadResponseDTO;
 import com.app.bluecotton.domain.dto.SomResponseDTO;
 import com.app.bluecotton.domain.vo.som.SomJoinVO;
 import com.app.bluecotton.domain.vo.som.SomLikeVO;
@@ -10,7 +9,6 @@ import com.app.bluecotton.service.MemberService;
 import com.app.bluecotton.service.SomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.UpdateProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -75,7 +73,6 @@ public class SomApi {
         Integer maxPage = somService.selectSomMaxPage(params);
         resultData.put("somList", listData);
         resultData.put("maxPage", maxPage);
-        log.info("category: {}", somCategory);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of(message, resultData));
     }
 

@@ -29,10 +29,7 @@ public class SomImageAPI {
 
     @PutMapping("update")
     public ResponseEntity<ApiResponseDTO> updateSomImage(@RequestBody SomImageUpdateDTO somImageUpdateDTO) {
-        log.info("받은 SomId: {}", somImageUpdateDTO.getSomId());
-        log.info("받은 ImageIds: {}", somImageUpdateDTO.getSomImageIds());
         somImageService.updateInsertSomImage(somImageUpdateDTO);
-        log.info("이미지 업데이트 완료: {}", somImageUpdateDTO.toString().replace("\n", ""));
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.of("솜 이미지 등록 완료"));
     };
 }

@@ -1,11 +1,8 @@
 package com.app.bluecotton.api.publicapi;
 
-import com.app.bluecotton.domain.dto.ApiResponseDTO;
-import com.app.bluecotton.domain.dto.MemberResponseDTO;
 import com.app.bluecotton.domain.vo.chat.ChatMessageVO;
 import com.app.bluecotton.service.ChatMessageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
