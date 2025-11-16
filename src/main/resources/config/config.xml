@@ -23,6 +23,14 @@
         <typeAlias type="com.app.bluecotton.domain.vo.post.PostRecentVO" alias="PostRecentVO" />
         <typeAlias type="com.app.bluecotton.domain.vo.post.PostDraftVO" alias="PostDraftVO" />
 
+        <typeAlias type="com.app.bluecotton.domain.dto.post.PostMainDTO" alias="PostMainDTO" />
+        <typeAlias type="com.app.bluecotton.domain.dto.post.SomCategoryDTO" alias="SomCategoryDTO" />
+        <typeAlias type="com.app.bluecotton.domain.dto.post.PostModifyDTO" alias="PostModifyDTO" />
+        <typeAlias type="com.app.bluecotton.domain.dto.post.PostDetailDTO" alias="PostDetailDTO" />
+        <typeAlias type="com.app.bluecotton.domain.dto.post.PostCommentDTO" alias="PostCommentDTO" />
+        <typeAlias type="com.app.bluecotton.domain.dto.post.PostReplyDTO" alias="PostReplyDTO" />
+        <typeAlias type="com.app.bluecotton.domain.dto.post.PostNeighborDTO" alias="PostNeighborDTO" />
+
         <!-- shop -->
         <typeAlias type="com.app.bluecotton.domain.vo.shop.ProductVO" alias="ProductVO" />
         <typeAlias type="com.app.bluecotton.domain.vo.shop.ProductLikeVO" alias="ProductLikeVO" />

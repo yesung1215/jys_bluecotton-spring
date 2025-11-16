@@ -73,33 +73,33 @@ public class PostDAO {
     public void deleteReplyLikeByReplyId(Long replyId) { postMapper.deleteReplyLikeByReplyId(replyId); }
     public void deleteReplyReportByReplyId(Long replyId) { postMapper.deleteReplyReportByReplyId(replyId); }
 
-    /* ===================== 🟨 임시저장 ===================== */
-
+    //  임시 저장
     public void insertDraft(PostDraftVO postDraftVO) {
         postMapper.insertDraft(postDraftVO);
     }
 
+    //  임시저장 불러오기
     public PostDraftVO findDraftById(Long id) {
         return postMapper.selectDraftById(id);
     }
 
+    //  임시저장 삭제
     public void deleteDraftById(Long id) {
         postMapper.deleteDraftById(id);
     }
 
-    /* ===================== 🟩 카테고리 / 수정 ===================== */
-
+    // 참여하는 솜 카테고리 불러오기(글쓰기)
     public List<SomCategoryDTO> findJoinedCategories(Long memberId) {
         return postMapper.findJoinedSomsByMemberId(memberId);
     }
 
+    // 수정 할 게시글 조회
     public PostModifyDTO findByIdForUpdate(Long postId) {
         PostModifyDTO postModifyDTO = postMapper.findByIdForUpdate(postId);
 
-        // 🔥 여기 추가해야 함
+        // 이미지 불러오기
         List<PostImageVO> images = postImageService.selectImagesByPostId(postId);
 
-        // 이미지 ID만 리스트로 넣어도 되고
         List<Long> ids = images.stream()
                 .map(PostImageVO::getId)
                 .toList();
@@ -109,70 +109,74 @@ public class PostDAO {
         return postModifyDTO;
     }
 
-
+    // 게시글 수정
     public void update(PostVO postVO) { postMapper.update(postVO);}
 
 
-    // 게시글 좋아요
+    // 게시글 좋아요 여부 확인
     public boolean existsLike(Long postId, Long memberId) {
         return postMapper.existsLike(postId, memberId) > 0;
     }
 
+    // 게시글 좋아요
     public void insertLike(Long postId, Long memberId) {
         postMapper.insertLike(postId, memberId);
     }
 
+    // 게시글 좋아요 삭제
     public void deleteLike(Long postId, Long memberId) {
         postMapper.deleteLike(postId, memberId);
     }
 
-    // 댓글 좋아요
+    // 댓글 좋아요 여부 확인
     public boolean existsCommentLike(Long commentId, Long memberId) {
         return postMapper.existsCommentLike(commentId, memberId) > 0;
     }
 
+    // 댓글 좋아요
     public void insertCommentLike(Long commentId, Long memberId) {
         postMapper.insertCommentLike(commentId, memberId);
     }
 
+    // 댓글 좋아요 삭제
     public void deleteCommentLike(Long commentId, Long memberId) {
         postMapper.deleteCommentLike(commentId, memberId);
     }
 
-    // 대댓글 좋아요
+    // 대댓글 좋아요 여부 확인
     public boolean existsReplyLike(Long replyId, Long memberId) {
         return postMapper.existsReplyLike(replyId, memberId) > 0;
     }
 
+    // 대댓글 좋아요
     public void insertReplyLike(Long replyId, Long memberId) {
         postMapper.insertReplyLike(replyId, memberId);
     }
 
+    // 대댓글 좋아요 삭제
     public void deleteReplyLike(Long replyId, Long memberId) {
         postMapper.deleteReplyLike(replyId, memberId);
     }
 
-    /* ===================== 👁 조회수 / 최근 본 게시글 ===================== */
-
+    //  조회수 + 1(게시물 상세 조회 시)
     public void updateReadCount(Long postId) {
         postMapper.updateReadCount(postId);
     }
 
+    //  최근 본 글 게시물(게시물 상세 조회 시)
     public void registerRecent(Long memberId, Long postId) {
         postMapper.insertOrUpdateRecentView(memberId, postId);
     }
 
-    /* ===================== 댓글 / 답글 ===================== */
-
+    //  댓글 추가
     public void insertComment(PostCommentVO postCommentVO) {
         postMapper.insertComment(postCommentVO);
     }
 
+    //  답글 추가
     public void insertReply(PostReplyVO postReplyVO) {
         postMapper.insertReply(postReplyVO);
     }
-
-
 
     // 게시글 상세 조회
     public PostDetailDTO selectPost(Long postId, Long memberId) {
@@ -213,7 +217,6 @@ public class PostDAO {
         postMapper.insertPostReplyReport(postReplyReportVO);
     }
 
-
     // 게시글 신고 중복 여부
     public boolean existsPostReport(Long postId, Long memberId) {
         return postMapper.checkPostReportExists(postId, memberId) > 0;
@@ -228,5 +231,4 @@ public class PostDAO {
     public boolean existsReplyReport(Long postReplyId, Long memberId) {
         return postMapper.checkReplyReportExists(postReplyId, memberId) > 0;
     }
-
 }

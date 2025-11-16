@@ -78,9 +78,12 @@ public interface PostMapper {
     public PostDraftVO selectDraftById(Long id);
     public void deleteDraftById(Long id);
 
+    // 참여하고 있는 솜 카테고리 조회
     public List<SomCategoryDTO> findJoinedSomsByMemberId(Long memberId);
 
+    // 수정할 게시글 조회
     public PostModifyDTO findByIdForUpdate(@Param("id") Long id);
+    // 게시글 수정
     public void update(PostVO postVO);
 
     // 게시물 좋아요
@@ -106,16 +109,19 @@ public interface PostMapper {
     public void insertComment(PostCommentVO postCommentVO);
     public void insertReply(PostReplyVO postReplyVO);
 
+    // 게시글 상세조회
     PostDetailDTO selectPost(
             @Param("postId") Long postId,
             @Param("memberId") Long memberId
     );
 
+    // 게시글 댓글조회
     List<PostCommentDTO> selectComment(
             @Param("postId") Long postId,
             @Param("memberId") Long memberId
     );
 
+    // 게시글 답글조회
     List<PostReplyDTO> selectReply(
             @Param("commentId") Long commentId,
             @Param("memberId") Long memberId

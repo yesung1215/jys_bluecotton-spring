@@ -6,7 +6,7 @@
 <mapper namespace="com.app.bluecotton.mapper.PostMapper">
 
     <!-- 오늘의 솜 메인페이지 게시글 리스트 조회 (+ 좋아요 여부 포함) -->
-    <select id="select" resultType="com.app.bluecotton.domain.dto.post.PostMainDTO">
+    <select id="select" resultType="PostMainDTO">
         SELECT
         TBP.ID,
         TBS.SOM_CATEGORY,
@@ -126,7 +126,7 @@
     </select>
 
     <!-- 게시글 등록 -->
-    <insert id="insert" parameterType="com.app.bluecotton.domain.vo.post.PostVO">
+    <insert id="insert" parameterType="PostVO">
         <selectKey keyProperty="id" order="BEFORE" resultType="Long">
             SELECT SEQ_POST.NEXTVAL FROM DUAL
         </selectKey>
@@ -161,33 +161,20 @@
 
     <!-- 기본 이미지 등록 -->
     <insert id="insertDefaultImage">
-        INSERT INTO TBL_POST_IMAGE (
-        ID, POST_IMAGE_PATH, POST_IMAGE_NAME, POST_ID
-        ) VALUES (
-        SEQ_POST_IMAGE.NEXTVAL,
-        #{postImagePath}, #{postImageName}, #{postId}
-        )
+        INSERT INTO TBL_POST_IMAGE (ID, POST_IMAGE_PATH, POST_IMAGE_NAME, POST_ID)
+        VALUES (SEQ_POST_IMAGE.NEXTVAL, #{postImagePath}, #{postImageName}, #{postId})
     </insert>
 
     <!-- 첫 번째 이미지를 대표 썸네일로 등록 -->
     <insert id="insertThumbnail">
-        INSERT INTO TBL_POST_IMAGE (
-        ID, POST_IMAGE_PATH, POST_IMAGE_NAME, POST_ID
-        ) VALUES (
-        SEQ_POST_IMAGE.NEXTVAL,
-        #{postImagePath}, #{postImageName}, #{postId}
-        )
+        INSERT INTO TBL_POST_IMAGE (ID, POST_IMAGE_PATH, POST_IMAGE_NAME, POST_ID)
+        VALUES (SEQ_POST_IMAGE.NEXTVAL, #{postImagePath}, #{postImageName}, #{postId})
     </insert>
 
     <!-- [게시글 등록용] 참여 중인 솜 -->
-    <select id="findJoinedSomsByMemberId"
-            parameterType="Long"
-            resultType="com.app.bluecotton.domain.dto.post.SomCategoryDTO">
-        SELECT
-        TBS.ID,
-        TBS.SOM_CATEGORY,
-        TBS.SOM_TITLE,
-        TRUNC(TRUNC(SYSDATE) - TRUNC(TBS.SOM_START_DATE)) + 1 AS SOM_DAY_DIFF
+    <select id="findJoinedSomsByMemberId" parameterType="Long" resultType="SomCategoryDTO">
+        SELECT TBS.ID, TBS.SOM_CATEGORY, TBS.SOM_TITLE,
+            TRUNC(TRUNC(SYSDATE) - TRUNC(TBS.SOM_START_DATE)) + 1 AS SOM_DAY_DIFF
         FROM TBL_SOM TBS
         JOIN TBL_SOM_JOIN TBSJ ON TBS.ID = TBSJ.SOM_ID
         WHERE TBSJ.MEMBER_ID = #{memberId}
@@ -195,42 +182,30 @@
     </select>
 
     <!-- 게시글 수정용 조회 -->
-    <select id="findByIdForUpdate"
-            parameterType="Long"
-            resultType="com.app.bluecotton.domain.dto.post.PostModifyDTO">
-        SELECT
-        TBP.ID,
-        TBP.POST_TITLE,
-        TBP.POST_CONTENT,
-        TBP.MEMBER_ID,
-        TBP.SOM_ID,
-        TBS.SOM_CATEGORY
+    <select id="findByIdForUpdate" parameterType="Long" resultType="PostModifyDTO">
+        SELECT TBP.ID, TBP.POST_TITLE, TBP.POST_CONTENT, TBP.MEMBER_ID, TBP.SOM_ID, TBS.SOM_CATEGORY
         FROM TBL_POST TBP
         JOIN TBL_SOM TBS ON TBP.SOM_ID = TBS.ID
         WHERE TBP.ID = #{id}
     </select>
 
     <!-- [게시글 수정] 참여 중인 솜 목록 -->
-    <select id="findJoinedCategories"
-            parameterType="Long"
-            resultType="com.app.bluecotton.domain.dto.post.SomCategoryDTO">
-        SELECT
-        TBS.ID,
-        TBS.SOM_CATEGORY
+    <select id="findJoinedCategories" parameterType="Long" resultType="SomCategoryDTO">
+        SELECT TBS.ID, TBS.SOM_CATEGORY
         FROM TBL_SOM TBS
         JOIN TBL_SOM_JOIN TBSJ ON TBS.ID = TBSJ.SOM_ID
         WHERE TBSJ.MEMBER_ID = #{memberId}
     </select>
 
     <!-- 게시글 수정 -->
-    <update id="update" parameterType="com.app.bluecotton.domain.vo.post.PostVO">
+    <update id="update" parameterType="PostVO">
         UPDATE TBL_POST
         SET POST_TITLE = #{postTitle},
         POST_CONTENT = #{postContent}
         WHERE ID = #{id}
     </update>
 
-    <!-- 게시글 삭제 (Post + cascade) -->
+    <!-- 게시글 삭제 (Post) -->
     <delete id="deletePostById" parameterType="Long">
         DELETE FROM TBL_POST WHERE ID = #{postId}
     </delete>
@@ -334,31 +309,15 @@
     </delete>
 
     <!-- 임시저장 등록 -->
-    <insert id="insertDraft" parameterType="com.app.bluecotton.domain.vo.post.PostDraftVO">
-        INSERT INTO TBL_POST_DRAFT (
-        ID, POST_DRAFT_TITLE, POST_DRAFT_CONTENT,
-        POST_DRAFT_CREATE_AT, MEMBER_ID, SOM_ID
-        ) VALUES (
-        SEQ_POST_DRAFT.NEXTVAL,
-        #{postDraftTitle, jdbcType=VARCHAR},
-        #{postDraftContent, jdbcType=CLOB},
-        DEFAULT,
-        #{memberId, jdbcType=NUMERIC},
-        #{somId, jdbcType=NUMERIC}
-        )
+    <insert id="insertDraft" parameterType="PostDraftVO">
+        INSERT INTO TBL_POST_DRAFT(ID, POST_DRAFT_TITLE, POST_DRAFT_CONTENT, POST_DRAFT_CREATE_AT, MEMBER_ID, SOM_ID)
+        VALUES(SEQ_POST_DRAFT.NEXTVAL, #{postDraftTitle, jdbcType=VARCHAR}, #{postDraftContent, jdbcType=CLOB},
+            DEFAULT, #{memberId, jdbcType=NUMERIC}, #{somId, jdbcType=NUMERIC})
     </insert>
 
     <!-- 임시저장 조회 -->
-    <select id="selectDraftById"
-            parameterType="Long"
-            resultType="com.app.bluecotton.domain.vo.post.PostDraftVO">
-        SELECT
-        ID,
-        POST_DRAFT_TITLE,
-        POST_DRAFT_CONTENT,
-        POST_DRAFT_CREATE_AT,
-        MEMBER_ID,
-        SOM_ID
+    <select id="selectDraftById" parameterType="Long" resultType="PostDraftVO">
+        SELECT ID, POST_DRAFT_TITLE, POST_DRAFT_CONTENT, POST_DRAFT_CREATE_AT, MEMBER_ID, SOM_ID
         FROM TBL_POST_DRAFT
         WHERE ID = #{id}
     </select>
@@ -370,12 +329,8 @@
 
     <!-- 댓글 좋아요 -->
     <insert id="insertCommentLike" parameterType="map">
-        INSERT INTO TBL_POST_COMMENT_LIKE (
-        ID, POST_COMMENT_ID, MEMBER_ID
-        ) VALUES (
-        SEQ_POST_COMMENT_LIKE.NEXTVAL,
-        #{commentId}, #{memberId}
-        )
+        INSERT INTO TBL_POST_COMMENT_LIKE (ID, POST_COMMENT_ID, MEMBER_ID)
+        VALUES (SEQ_POST_COMMENT_LIKE.NEXTVAL, #{commentId}, #{memberId})
     </insert>
 
     <delete id="deleteCommentLike" parameterType="map">
@@ -386,12 +341,8 @@
 
     <!-- 답글 좋아요 -->
     <insert id="insertReplyLike" parameterType="map">
-        INSERT INTO TBL_POST_REPLY_LIKE (
-        ID, POST_REPLY_ID, MEMBER_ID
-        ) VALUES (
-        SEQ_POST_REPLY_LIKE.NEXTVAL,
-        #{replyId}, #{memberId}
-        )
+        INSERT INTO TBL_POST_REPLY_LIKE (ID, POST_REPLY_ID, MEMBER_ID)
+        VALUES (SEQ_POST_REPLY_LIKE.NEXTVAL, #{replyId}, #{memberId})
     </insert>
 
     <delete id="deleteReplyLike" parameterType="map">
@@ -425,15 +376,8 @@
     <!-- 최근 본 게시글 등록/갱신 -->
     <insert id="insertOrUpdateRecentView" parameterType="map">
         MERGE INTO TBL_POST_RECENT TPR
-        USING (
-        SELECT #{memberId} AS MEMBER_ID,
-        #{postId} AS POST_ID
-        FROM DUAL
-        ) SRC
-        ON (
-        TPR.MEMBER_ID = SRC.MEMBER_ID
-        AND TPR.POST_ID = SRC.POST_ID
-        )
+        USING(SELECT #{memberId} AS MEMBER_ID, #{postId} AS POST_ID FROM DUAL )
+        SRC ON(TPR.MEMBER_ID = SRC.MEMBER_ID AND TPR.POST_ID = SRC.POST_ID )
         WHEN MATCHED THEN
         UPDATE SET TPR.POST_RECENT_CREATE_AT = SYSTIMESTAMP
         WHEN NOT MATCHED THEN
@@ -442,31 +386,15 @@
     </insert>
 
     <!-- 댓글 등록 -->
-    <insert id="insertComment" parameterType="com.app.bluecotton.domain.vo.post.PostCommentVO">
-        INSERT INTO TBL_POST_COMMENT (
-        ID, POST_COMMENT_CONTENT,
-        POST_COMMENT_CREATE_AT, POST_ID, MEMBER_ID
-        ) VALUES (
-        SEQ_POST_COMMENT.NEXTVAL,
-        #{postCommentContent},
-        SYSTIMESTAMP,
-        #{postId},
-        #{memberId}
-        )
+    <insert id="insertComment" parameterType="PostCommentVO">
+        INSERT INTO TBL_POST_COMMENT (ID, POST_COMMENT_CONTENT, POST_COMMENT_CREATE_AT, POST_ID, MEMBER_ID )
+        VALUES (SEQ_POST_COMMENT.NEXTVAL, #{postCommentContent}, SYSTIMESTAMP, #{postId}, #{memberId})
     </insert>
 
     <!-- 답글 등록 -->
-    <insert id="insertReply" parameterType="com.app.bluecotton.domain.vo.post.PostReplyVO">
-        INSERT INTO TBL_POST_REPLY (
-        ID, POST_REPLY_CONTENT,
-        POST_REPLY_CREATE_AT, POST_COMMENT_ID, MEMBER_ID
-        ) VALUES (
-        SEQ_POST_REPLY.NEXTVAL,
-        #{postReplyContent},
-        SYSTIMESTAMP,
-        #{postCommentId},
-        #{memberId}
-        )
+    <insert id="insertReply" parameterType="PostReplyVO">
+        INSERT INTO TBL_POST_REPLY (ID, POST_REPLY_CONTENT, POST_REPLY_CREATE_AT, POST_COMMENT_ID, MEMBER_ID )
+        VALUES (SEQ_POST_REPLY.NEXTVAL, #{postReplyContent}, SYSTIMESTAMP, #{postCommentId}, #{memberId})
     </insert>
 
     <!-- 게시글 좋아요 여부 -->
@@ -479,12 +407,8 @@
 
     <!-- 게시글 좋아요 추가 -->
     <insert id="insertLike" parameterType="map">
-        INSERT INTO TBL_POST_LIKE (
-        ID, POST_ID, MEMBER_ID
-        ) VALUES (
-        SEQ_POST_LIKE.NEXTVAL,
-        #{postId}, #{memberId}
-        )
+        INSERT INTO TBL_POST_LIKE (ID, POST_ID, MEMBER_ID)
+        VALUES (SEQ_POST_LIKE.NEXTVAL, #{postId}, #{memberId})
     </insert>
 
     <!-- 게시글 좋아요 취소 -->
@@ -495,9 +419,7 @@
     </delete>
 
     <!-- 게시글 상세 조회 -->
-    <select id="selectPost" parameterType="map"
-            resultType="com.app.bluecotton.domain.dto.post.PostDetailDTO">
-
+    <select id="selectPost" parameterType="map" resultType="PostDetailDTO">
         SELECT
         TBP.ID,
         TBP.POST_TITLE,
@@ -525,10 +447,7 @@
     </select>
 
     <!-- 댓글 조회 -->
-    <select id="selectComment"
-            parameterType="map"
-            resultType="com.app.bluecotton.domain.dto.post.PostCommentDTO">
-
+    <select id="selectComment" parameterType="map" resultType="PostCommentDTO">
         SELECT
         TBC.ID,
         TBC.POST_COMMENT_CONTENT,
@@ -553,10 +472,7 @@
     </select>
 
     <!-- 답글 조회 -->
-    <select id="selectReply"
-            parameterType="map"
-            resultType="com.app.bluecotton.domain.dto.post.PostReplyDTO">
-
+    <select id="selectReply" parameterType="map" resultType="PostReplyDTO">
         SELECT
         TPR.ID,
         TPR.POST_REPLY_CONTENT,
@@ -577,22 +493,12 @@
 
         WHERE TPR.POST_COMMENT_ID = #{commentId}
         ORDER BY TPR.ID ASC
-
     </select>
 
     <!-- 게시글 신고 -->
-    <insert id="insertPostReport"
-            parameterType="com.app.bluecotton.domain.vo.post.PostReportVO">
-        INSERT INTO TBL_POST_REPORT (
-        ID, POST_REPORT_CONTENT,
-        POST_REPORT_CREATE_AT, POST_ID, MEMBER_ID
-        ) VALUES (
-        SEQ_POST_REPORT.NEXTVAL,
-        #{postReportContent},
-        SYSTIMESTAMP,
-        #{postId},
-        #{memberId}
-        )
+    <insert id="insertPostReport" parameterType="PostReportVO">
+        INSERT INTO TBL_POST_REPORT (ID, POST_REPORT_CONTENT, POST_REPORT_CREATE_AT, POST_ID, MEMBER_ID)
+        VALUES (SEQ_POST_REPORT.NEXTVAL, #{postReportContent}, SYSTIMESTAMP, #{postId}, #{memberId})
     </insert>
 
     <!-- 게시글 신고 중복 체크 -->
@@ -604,9 +510,8 @@
     </select>
 
     <!-- 댓글 신고 -->
-    <!-- 댓글 신고 -->
     <insert id="insertPostCommentReport"
-            parameterType="com.app.bluecotton.domain.vo.post.PostCommentReportVO">
+            parameterType="PostCommentReportVO">
         INSERT INTO TBL_POST_COMMENT_REPORT (
         ID,
         POST_COMMENT_REPORT_CONTENT,
@@ -631,19 +536,9 @@
     </select>
 
     <!-- 답글 신고 -->
-    <insert id="insertPostReplyReport"
-            parameterType="com.app.bluecotton.domain.vo.post.PostReplyReportVO">
-        INSERT INTO TBL_POST_REPLY_REPORT (
-        ID, POST_REPLY_REPORT_CONTENT,
-        POST_REPLY_REPORT_CREATE_AT,
-        POST_REPLY_ID, MEMBER_ID
-        ) VALUES (
-        SEQ_POST_REPLY_REPORT.NEXTVAL,
-        #{postReplyReportContent},
-        SYSTIMESTAMP,
-        #{postReplyId},
-        #{memberId}
-        )
+    <insert id="insertPostReplyReport" parameterType="PostReplyReportVO">
+        INSERT INTO TBL_POST_REPLY_REPORT (ID, POST_REPLY_REPORT_CONTENT, POST_REPLY_REPORT_CREATE_AT, POST_REPLY_ID, MEMBER_ID)
+        VALUES (SEQ_POST_REPLY_REPORT.NEXTVAL, #{postReplyReportContent}, SYSTIMESTAMP, #{postReplyId}, #{memberId})
     </insert>
 
     <!-- 답글 신고 중복 -->
@@ -655,8 +550,7 @@
     </select>
 
     <!-- 다음 글 -->
-    <select id="selectNextPost" parameterType="Long"
-            resultType="com.app.bluecotton.domain.dto.post.PostNeighborDTO">
+    <select id="selectNextPost" parameterType="Long" resultType="PostNeighborDTO">
         SELECT ID, POST_TITLE
         FROM TBL_POST
         WHERE ID > #{id}
@@ -666,8 +560,7 @@
     </select>
 
     <!-- 이전 글 -->
-    <select id="selectPrevPost" parameterType="Long"
-            resultType="com.app.bluecotton.domain.dto.post.PostNeighborDTO">
+    <select id="selectPrevPost" parameterType="Long" resultType="PostNeighborDTO">
         SELECT ID, POST_TITLE
         FROM TBL_POST
         WHERE ID <![CDATA[<]]> #{id}
@@ -675,5 +568,4 @@
         ORDER BY ID DESC
         FETCH FIRST 1 ROW ONLY
     </select>
-
 </mapper>

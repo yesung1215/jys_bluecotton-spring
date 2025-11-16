@@ -5,7 +5,7 @@
 <mapper namespace="com.app.bluecotton.mapper.PostImageMapper">
 
     <!-- 1) 임시 이미지 저장 (POST_ID 없이 저장) -->
-    <insert id="insertImgTemp" parameterType="com.app.bluecotton.domain.vo.post.PostImageVO">
+    <insert id="insertImgTemp" parameterType="PostImageVO">
         <selectKey keyProperty="id" resultType="Long" order="BEFORE">
             SELECT SEQ_POST_IMAGE.NEXTVAL FROM DUAL
         </selectKey>
@@ -28,23 +28,12 @@
 
     <!-- 4) 기본 이미지 삽입 -->
     <insert id="insertDefaultImage" parameterType="Long">
-        INSERT INTO TBL_POST_IMAGE (
-        ID,
-        POST_IMAGE_PATH,
-        POST_IMAGE_NAME,
-        POST_ID
-        )
-        VALUES (
-        SEQ_POST_IMAGE.NEXTVAL,
-        '/upload/default/',
-        'default_post.jpg',
-        #{postId}
-        )
+        INSERT INTO TBL_POST_IMAGE(ID, POST_IMAGE_PATH, POST_IMAGE_NAME, POST_ID)
+        VALUES(SEQ_POST_IMAGE.NEXTVAL, '/upload/default/', 'default_post.jpg', #{postId})
     </insert>
 
     <!-- 5) postId로 이미지 전체 조회 -->
-    <select id="selectImagesByPostId" parameterType="Long"
-            resultType="com.app.bluecotton.domain.vo.post.PostImageVO">
+    <select id="selectImagesByPostId" parameterType="Long" resultType="PostImageVO">
         SELECT *
         FROM TBL_POST_IMAGE
         WHERE POST_ID = #{postId}
@@ -52,20 +41,8 @@
     </select>
 
     <!-- 6) 이미지 + postId 함께 INSERT -->
-    <insert id="insertImageWithPostId"
-            parameterType="com.app.bluecotton.domain.vo.post.PostImageVO">
-        INSERT INTO TBL_POST_IMAGE (
-        ID,
-        POST_IMAGE_PATH,
-        POST_IMAGE_NAME,
-        POST_ID
-        )
-        VALUES (
-        SEQ_POST_IMAGE.NEXTVAL,
-        #{postImagePath},
-        #{postImageName},
-        #{postId}
-        )
+    <insert id="insertImageWithPostId" parameterType="PostImageVO">
+        INSERT INTO TBL_POST_IMAGE (ID, POST_IMAGE_PATH, POST_IMAGE_NAME, POST_ID)
+        VALUES (SEQ_POST_IMAGE.NEXTVAL, #{postImagePath}, #{postImageName}, #{postId})
     </insert>
-
 </mapper>

@@ -2,14 +2,10 @@ package com.app.bluecotton.service;
 
 import com.app.bluecotton.domain.dto.post.*;
 import com.app.bluecotton.domain.vo.post.*;
-import com.app.bluecotton.domain.vo.som.SomImageVO;
 import com.app.bluecotton.exception.PostException;
 import com.app.bluecotton.repository.PostDAO;
-import com.app.bluecotton.repository.PostImageDAO;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -20,7 +16,6 @@ import java.util.regex.Pattern;
 @Service
 @Transactional(rollbackFor = Exception.class)
 @RequiredArgsConstructor
-@Slf4j
 public class PostServiceImpl implements PostService {
 
     private final PostDAO postDAO;
@@ -213,8 +208,6 @@ public class PostServiceImpl implements PostService {
         vo.setPostId(postId);
         return vo;
     }
-
-
 
     // 댓글 좋아요 토글
     @Override

@@ -4,10 +4,8 @@ import com.app.bluecotton.domain.dto.ApiResponseDTO;
 import com.app.bluecotton.domain.dto.MemberResponseDTO;
 import com.app.bluecotton.domain.dto.post.*;
 import com.app.bluecotton.domain.vo.post.*;
-import com.app.bluecotton.exception.PostException;
 import com.app.bluecotton.service.PostService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
 @RestController
 @RequestMapping("/private/post")
 @RequiredArgsConstructor
@@ -175,7 +172,7 @@ public class PostPrivateApi {
         return ResponseEntity.ok(ApiResponseDTO.of("답글 좋아요 토글 완료"));
     }
 
-    // 🔥 최근 본 글 추가
+    // 최근 본 글 추가
     @PostMapping("/recent/{postId}")
     public ResponseEntity<ApiResponseDTO> recentPost(
             Authentication authentication,
@@ -187,7 +184,7 @@ public class PostPrivateApi {
                 .body(ApiResponseDTO.of("최근 본 글 추가 완료"));
     }
 
-    // 🔥 게시글 신고
+    // 게시글 신고
     @PostMapping("/report/post")
     public ResponseEntity<ApiResponseDTO> reportPost(
             @RequestBody PostReportVO vo,
@@ -199,7 +196,7 @@ public class PostPrivateApi {
                 .body(ApiResponseDTO.of("게시글 신고 완료"));
     }
 
-    // 🔥 댓글 신고
+    // 댓글 신고
     @PostMapping("/report/comment")
     public ResponseEntity<ApiResponseDTO> reportComment(
             @RequestBody PostCommentReportVO vo,
@@ -211,7 +208,7 @@ public class PostPrivateApi {
                 .body(ApiResponseDTO.of("댓글 신고 완료"));
     }
 
-    // 🔥 답글 신고
+    // 답글 신고
     @PostMapping("/report/reply")
     public ResponseEntity<ApiResponseDTO> reportReply(
             @RequestBody PostReplyReportVO vo,
