@@ -62,6 +62,7 @@
                 AND (SOM_TITLE LIKE '%' || #{somKeyword} || '%'
                 OR SOM_CONTENT LIKE '%' || #{somKeyword} || '%')
             </if>
+            AND SOM_END_DATE > SYSDATE
         </where>
     </select>
 
@@ -104,6 +105,7 @@
                 AND (SOM_TITLE LIKE '%' || #{somKeyword} || '%'
                 OR SOM_CONTENT LIKE '%' || #{somKeyword} || '%')
             </if>
+            AND SOM_END_DATE > SYSDATE
         </where>
         ORDER BY ID DESC
         OFFSET (#{page} - 1) * 9 ROWS FETCH NEXT 9 ROWS ONLY
