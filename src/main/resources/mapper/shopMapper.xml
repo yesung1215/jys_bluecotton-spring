@@ -38,6 +38,7 @@
 
         FROM TBL_PRODUCT TBP
         <where>
+            <!-- 상품 검색 -->
             <if test="q != null and q != ''">
                 AND (TBP.PRODUCT_NAME LIKE '%' || #{q} || '%')
             </if>
@@ -346,6 +347,21 @@
         WHERE ID = #{id}
     </delete>
 
+
+    <!-- 마이리뷰 : 기존 리뷰 이미지 전부 삭제 -->
+    <delete id="deleteMyReviewImage" parameterType="long">
+        DELETE FROM TBL_PRODUCT_REVIEW_IMAGE
+        WHERE PRODUCT_REVIEW_ID = #{reviewId}
+    </delete>
+
+    <!-- 마이리뷰 : 수정 시 새 이미지 1장 등록 -->
+    <insert id="insertMyReviewImageOnUpdate" parameterType="map">
+        INSERT INTO TBL_PRODUCT_REVIEW_IMAGE
+        (ID, PRODUCT_REVIEW_IMAGE_PATH, PRODUCT_REVIEW_IMAGE_NAME, PRODUCT_REVIEW_ID)
+        VALUES
+        (SEQ_PRODUCT_REVIEW_IMAGE.NEXTVAL, #{imagePath}, #{imageName}, #{reviewId})
+    </insert>
+
     <!-- 마이페이지 구매내역 전체조회 -->
     <select id="selectPurchaseList" parameterType="Long" resultType="com.app.bluecotton.domain.dto.MyPageOrderListDTO">
         SELECT
@@ -358,13 +374,14 @@
         AND TBPI.PRODUCT_IMAGE_TYPE = 'MAIN'
         AND ROWNUM = 1)  AS PRODUCT_MAIN_IMAGE_URL,
         TBO.ORDER_CREATE_AT,
-        (SELECT COUNT(*)
-        FROM TBL_ORDER
-        WHERE MEMBER_ID = TBO.MEMBER_ID) AS ORDER_TOTAL_COUNT
+        TP.PAYMENT_STATUS
         FROM TBL_ORDER TBO
         JOIN TBL_PRODUCT TBP
         ON TBP.ID = TBO.PRODUCT_ID
+        JOIN TBL_PAYMENT TP
+        ON TP.ORDER_ID = TBO.ID
         WHERE TBO.MEMBER_ID = #{memberId}
+        AND TP.PAYMENT_STATUS = 'COMPLETED'
         ORDER BY TBO.ORDER_CREATE_AT DESC
     </select>
 
@@ -440,6 +457,21 @@
         WHERE ID = #{id}
     </delete>
 
+    <!--  마이페이지 배송현황 ORDER_ID 삭제 -->
+    <delete id="deletePaymentByOrderId" parameterType="Long">
+        DELETE FROM TBL_PAYMENT
+        WHERE ORDER_ID = #{id}
+    </delete>
+
+    <!--  마이페이지 배송현황 PAYMENT_ID 삭제 -->
+    <delete id="deletePaymentSocialByPaymentId" parameterType="Long">
+        DELETE FROM TBL_PAYMENT_SOCIAL
+        WHERE PAYMENT_ID IN (
+        SELECT ID
+        FROM TBL_PAYMENT
+        WHERE ORDER_ID = #{id}
+        )
+    </delete>
 
     <!-- 리뷰하기 유효성 검사  -->
     <select id="existProductReview" parameterType="map" resultType="int">
@@ -463,8 +495,17 @@
     <!-- 리뷰 댓글 신고-->
     <insert id="productReviewReport" parameterType="com.app.bluecotton.domain.vo.shop.ProductReviewReportVO">
         INSERT INTO TBL_PRODUCT_REVIEW_REPORT
-        VALUES (SEQ_PRODUCT_REVIEW_REPORT.NEXTVAL , #{productReviewReportContent}, #{memberId}, #{productReviewId})
+        VALUES (SEQ_PRODUCT_REVIEW_REPORT.NEXTVAL , #{productReviewReportContent}, SYSTIMESTAMP,  #{memberId}, #{productReviewId})
     </insert>
+
+    <!-- 리뷰 댓글 신고 중복 체크 -->
+    <select id="checkProductReviewReportExists" resultType="int" parameterType="map">
+        SELECT COUNT(*)
+        FROM TBL_PRODUCT_REVIEW_REPORT
+        WHERE PRODUCT_REVIEW_ID = #{productReviewId}
+        AND MEMBER_ID = #{memberId}
+    </select>
+
 
 
     <!-- 리뷰 댓글 도움돼요 상태 여부 조회 -->
@@ -485,6 +526,8 @@
         AND TPRR.MEMBER_ID = #{memberId}
         WHERE TBPR.ID = #{reviewId}
     </select>
+
+
 
 
 

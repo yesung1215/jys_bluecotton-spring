@@ -2,6 +2,7 @@ package com.app.bluecotton.service;
 
 import com.app.bluecotton.domain.dto.*;
 import com.app.bluecotton.domain.vo.shop.ProductReviewReportVO;
+import com.app.bluecotton.exception.ShopException;
 import com.app.bluecotton.repository.ShopDAO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,11 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+
 @Service
 @Transactional(rollbackFor = Exception.class)
 @RequiredArgsConstructor
 public class ShopServiceImpl implements ShopService {
-
 
     private final ShopDAO shopDAO;
 
@@ -54,13 +55,10 @@ public class ShopServiceImpl implements ShopService {
     public void toggleLike(Long memberId, Long productId) {
         Integer count = shopDAO.findLikeCount(memberId, productId);
 
-        // 찜한 상품이 있을 때
-        if (count > 0) {
+        if (count != null && count > 0) {
             // 찜 삭제
             shopDAO.deleteLikedProduct(memberId, productId);
-        }
-        // 찜한 상품 없을 때
-        else {
+        } else {
             // 찜 추가
             shopDAO.insertMyLikedProduct(memberId, productId);
         }
@@ -78,12 +76,39 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public void modifyMyReview(Map<String, Object> modifyReview) {
+
+        // 1) 리뷰 본문 & 별점 수정
         shopDAO.updateMyReview(modifyReview);
+
+        // 2) 이미지가 넘어온 경우에만 이미지 갱신
+        Long reviewId    = (Long) modifyReview.get("reviewId");
+        String imagePath = (String) modifyReview.get("imagePath");
+        String imageName = (String) modifyReview.get("imageName");
+
+        if (reviewId != null &&
+                imagePath != null && !imagePath.isBlank() &&
+                imageName != null && !imageName.isBlank()) {
+
+            // 기존 이미지 삭제
+            shopDAO.deleteMyReviewImage(reviewId);
+            // 새 이미지 1장 등록
+            shopDAO.insertMyReviewImageOnUpdate(modifyReview);
+        }
     }
 
     @Override
     public void deleteMyReview(Long id) {
         shopDAO.deleteMyReview(id);
+    }
+
+    @Override
+    public void deleteMyReviewImage(Long id) {
+        shopDAO.deleteMyReviewImage(id);
+    }
+
+    @Override
+    public void insertMyReviewImageOnUpdate(Map<String, Object> updateReview) {
+        shopDAO.insertMyReviewImageOnUpdate(updateReview);
     }
 
     @Override
@@ -111,8 +136,11 @@ public class ShopServiceImpl implements ShopService {
         return shopDAO.findMyDeliveryList(memberId);
     }
 
+    // 배송현황 구매 취소
     @Override
     public void deleteMyDeliveryProduct(Long id) {
+        shopDAO.deletePaymentSocialByPaymentId(id);
+        shopDAO.deletePaymentByOrderId(id);
         shopDAO.deleteMyDeliveryProduct(id);
     }
 
@@ -126,30 +154,46 @@ public class ShopServiceImpl implements ShopService {
     @Override
     public void writeReview(MyPageReviewWriteDTO dto) {
 
-        // 백엔드에서 유효성 검사
         int exist = shopDAO.existProductReview(dto.getProductId(), dto.getMemberId());
         if (exist == 1) {
             throw new IllegalStateException("이미 리뷰를 작성했습니다.");
         }
 
-        // 문제 없다면 리뷰 저장
+        // 리뷰 본문 저장
         shopDAO.insertMyReview(dto);
 
+        // 이미지가 있을 때만 이미지 테이블에 INSERT
+        if (dto.getImagePath() != null && !dto.getImagePath().isBlank()
+                && dto.getImageName() != null && !dto.getImageName().isBlank()) {
+
+            shopDAO.insertMyReviewImage(dto);
+        }
     }
 
+    // ===== 신고 / 도움돼요 =====
+
+    // 리뷰 신고 중복 체크만 따로 쓰고 싶을 때
+    @Override
+    public void checkProductReviewReportExists(Long productReviewId, Long memberId) {
+        boolean exists = shopDAO.checkProductReviewReportExists(productReviewId, memberId);
+        if (exists) {
+            throw new ShopException("이미 이 리뷰를 신고했습니다.");
+        }
+    }
+
+    // 상품 리뷰 댓글 신고하기 (중복 체크 + 저장)
     @Override
     public void reportProductReview(ProductReviewReportVO productReviewReportVO) {
-        shopDAO.reportProductReview(productReviewReportVO);
-    }
 
-    @Override
-    public ProductReviewRecommendDTO ProductReviewRecommendDTO(Map<String, Object> recommend) {
-        return null;
+        // 1) 중복 신고 체크
+        checkProductReviewReportExists(
+                productReviewReportVO.getProductReviewId(),
+                productReviewReportVO.getMemberId()
+        );
+
+        // 2) 신고 저장
+        shopDAO.reportProductReview(productReviewReportVO);
     }
 
 
 }
-
-
-
-

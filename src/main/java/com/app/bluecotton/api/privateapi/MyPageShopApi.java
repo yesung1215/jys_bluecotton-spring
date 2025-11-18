@@ -37,6 +37,7 @@ public class MyPageShopApi {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("마이리뷰 조회 성공", myReviews));
     }
 
+    // 마이리뷰 수정
     @PutMapping("review/{reviewId}")
     public ResponseEntity<ApiResponseDTO> modifyMyReview(@PathVariable Long reviewId, @RequestBody Map<String,Object> modifyReview){
         modifyReview.put("reviewId", reviewId);
@@ -99,6 +100,17 @@ public class MyPageShopApi {
         int result = shopService.existProductReview(productId, memberId);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("리뷰 작성 여부", result));
     }
+
+
+    // 찜하기 토글
+    @PostMapping("like/toggle")
+    public ResponseEntity<ApiResponseDTO> toggleLike(@RequestBody Map<String, Long> toggle) {
+        Long memberId = toggle.get("memberId");
+        Long productId = toggle.get("productId");
+        shopService.toggleLike(memberId, productId);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("찜하기 토글 성공"));
+    }
+
 
 
 }

@@ -71,6 +71,14 @@
         o.ID                      AS orderId,
         o.PRODUCT_ID              AS productId,
         p.PRODUCT_NAME            AS productName,
+
+        (SELECT pi.PRODUCT_IMAGE_PATH || pi.PRODUCT_IMAGE_NAME
+        FROM TBL_PRODUCT_IMAGE pi
+        WHERE pi.PRODUCT_ID = p.ID
+        AND pi.PRODUCT_IMAGE_TYPE = 'MAIN'
+        AND ROWNUM = 1) AS productMainImageUrl,
+
+
         o.ORDER_CREATE_AT         AS orderCreateAt,
         pay.PAYMENT_STATUS        AS paymentStatus,
         o.ORDER_STATUS            AS orderStatus

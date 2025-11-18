@@ -9,11 +9,10 @@ import java.util.Date;
 @NoArgsConstructor
 public class MyPageOrderListDTO {
 
-    private Long orderId;
-    private Long productId;
+    private Long   orderId;
+    private Long   productId;
     private String productName;
     private String productMainImageUrl;
-    private Date OrderCreateAt;
+    private String orderCreateAt;
     private Integer orderTotalCount;
-
 }

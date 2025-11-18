@@ -59,6 +59,14 @@ public interface ShopMapper {
     public void deleteMyReview(Long id);
 
 
+
+    // 마이리뷰 : 기존 리뷰 이미지 전부 삭제
+    public void deleteMyReviewImage(Long id);
+
+    // 마이리뷰 : 수정 시 새 이미지 1장 등록
+    public void insertMyReviewImageOnUpdate(Map<String,Object> updateReview);
+
+
     // 마이페이지(샵) 구매내역 전체조회
     public List<MyPageOrderListDTO> selectPurchaseList(@Param("memberId") Long memberId);
 
@@ -78,6 +86,12 @@ public interface ShopMapper {
     // 마이페이지 배송현황 구매 취소
     public void deleteMyDeliveryProduct(Long id);
 
+    // 마이페이지 배송현황 구매 취소 (ORDER_ID 삭제)
+    public void deletePaymentByOrderId(Long id);
+
+    // 마이페이지 배송현황 구매 취소 (PAYMENT_SOCIAL_ID 삭제)
+    public void deletePaymentSocialByPaymentId(Long id);
+
 
     // 구매하기 유효성 검사
     public int existProductReview(Map<String,Object> reviewParams);
@@ -85,6 +99,9 @@ public interface ShopMapper {
 
     // 상품 리뷰 댓글 신고
     public void productReviewReport(ProductReviewReportVO productReviewReportVO);
+
+    // 상품 리뷰 댓글 신고 중복 체크
+    public int checkProductReviewReportExists(Map<String,Object> reviewParams);
 
 
     // 리뷰 댓글 도움돼요 상태 여부 조회

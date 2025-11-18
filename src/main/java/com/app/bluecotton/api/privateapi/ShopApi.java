@@ -1,12 +1,14 @@
 package com.app.bluecotton.api.privateapi;
 
 import com.app.bluecotton.domain.dto.*;
+import com.app.bluecotton.domain.vo.post.PostReportVO;
 import com.app.bluecotton.domain.vo.shop.ProductReviewReportVO;
 import com.app.bluecotton.service.ShopService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -70,8 +72,8 @@ public class ShopApi {
     ) {
         // id도 넘겨야 함
         reviewParams.put("id", id);
-//        log.info("상세 페이지 리뷰 조회 요청 들어옴: {}", reviewParams);
         List<ProductReviewDetailResponseDTO> reviewProducts = shopService.getProductReviewDetail(reviewParams);
+        log.info("상세 페이지 리뷰 조회 요청 들어옴: {}", reviewProducts);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("상품 리뷰 조회 성공",  reviewProducts));
     }
 
@@ -85,12 +87,6 @@ public class ShopApi {
     }
 
 
-    // 상품 리뷰 댓글 신고
-    @PostMapping("read/review/report")
-    public ResponseEntity<ApiResponseDTO> createProductReview(@RequestBody ProductReviewReportVO productReviewReportVO){
-        shopService.reportProductReview(productReviewReportVO);
-        return ResponseEntity.status(HttpStatus.OK).body((ApiResponseDTO.of("댓글 신고 완료", productReviewReportVO)));
-    }
 
 
 

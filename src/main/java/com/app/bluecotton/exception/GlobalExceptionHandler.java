@@ -40,6 +40,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDTO.of(e.getMessage()));
     }
 
+    // Shop 관련
+    // 1일 1회 제한 409오류 코드
+    @ExceptionHandler(ShopException.class)
+    public ResponseEntity<ApiResponseDTO<Object>> handleShopException(ShopException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponseDTO.of(e.getMessage()));
+    }
+
    @ExceptionHandler(CartException.class)
    public ResponseEntity<ApiResponseDTO<Object>> handleCartException(CartException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponseDTO.of(e.getMessage()));
