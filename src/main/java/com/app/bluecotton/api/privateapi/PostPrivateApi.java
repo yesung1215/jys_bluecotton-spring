@@ -211,11 +211,11 @@ public class PostPrivateApi {
     // 답글 신고
     @PostMapping("/report/reply")
     public ResponseEntity<ApiResponseDTO> reportReply(
-            @RequestBody PostReplyReportVO vo,
+            @RequestBody PostReplyReportVO postReplyReportVO,
             @AuthenticationPrincipal MemberResponseDTO currentUser
     ) {
-        vo.setMemberId(currentUser.getId());
-        postService.reportReply(vo);
+        postReplyReportVO.setMemberId(currentUser.getId());
+        postService.reportReply(postReplyReportVO);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponseDTO.of("답글 신고 완료"));
     }
