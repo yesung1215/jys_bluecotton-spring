@@ -80,6 +80,7 @@
             TBP.POST_TITLE LIKE '%' || #{q} || '%'
             OR TBP.POST_CONTENT LIKE '%' || #{q} || '%'
             OR TBM.MEMBER_NICKNAME LIKE '%' || #{q} || '%'
+            OR TBS.SOM_TITLE LIKE '%' || #{q} || '%'
             )
         </if>
 
