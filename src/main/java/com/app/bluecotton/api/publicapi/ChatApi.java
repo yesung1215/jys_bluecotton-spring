@@ -9,6 +9,7 @@ import com.app.bluecotton.service.ChatService;
 import com.app.bluecotton.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.hc.client5.http.ssl.HttpsSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -81,5 +82,18 @@ public class ChatApi {
             chatMemberService.createChatMember(chatMemberVO);
         }
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("채팅방 개설 성공", chatMemberVO));
+    }
+
+    @DeleteMapping("/delete-user")
+    public ResponseEntity<ApiResponseDTO> deleteUser(@RequestBody Map<String, Object> params) {
+        String memberEmail = (String) params.get("memberEmail");
+        Long chatId = Long.parseLong( String.valueOf(params.get("chatId")));
+        Long memberId = memberService.getMemberIdByMemberEmail(memberEmail);
+        ChatMemberVO chatMemberVO = new ChatMemberVO();
+        chatMemberVO.setChatId(chatId);
+        chatMemberVO.setMemberId(memberId);
+        chatMemberService.delete(chatMemberVO);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("채팅방 퇴장 완료"));
     }
 }
