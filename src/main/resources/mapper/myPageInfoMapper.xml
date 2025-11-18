@@ -59,4 +59,318 @@
         WHERE MEMBER_ID = #{id}
     </update>
 
+    <!-- 회원 탈퇴 시 관련 데이터 전체 삭제 -->
+    <delete id="deleteMemberCascade" parameterType="Long">
+        <![CDATA[
+    BEGIN
+        --------------------------------------------------------------------
+        -- 0. 채팅 관련 (TBL_CHAT_MEMBER)
+        --------------------------------------------------------------------
+        DELETE FROM TBL_CHAT_MEMBER
+         WHERE MEMBER_ID = #{id};
+
+        --------------------------------------------------------------------
+        -- 1. 멤버 프로필 / 소셜 연동
+        --------------------------------------------------------------------
+        DELETE FROM TBL_MEMBER_PROFILE
+         WHERE MEMBER_ID = #{id};
+
+        DELETE FROM TBL_MEMBER_SOCIAL
+         WHERE MEMBER_ID = #{id};
+
+        --------------------------------------------------------------------
+        -- 2. 솜(SOM) 관련 - 내가 한 인증/리뷰/참가
+        --------------------------------------------------------------------
+        -- 내가 한 솜 인증 이미지
+        DELETE FROM TBL_SOM_CHECK_IMAGE
+         WHERE SOM_CHECK_ID IN (
+            SELECT ID
+              FROM TBL_SOM_CHECK
+             WHERE MEMBER_ID = #{id}
+        );
+
+        -- 내가 한 솜 인증
+        DELETE FROM TBL_SOM_CHECK
+         WHERE MEMBER_ID = #{id};
+
+        -- 내가 쓴 솜 리뷰
+        DELETE FROM TBL_SOM_REVIEW
+         WHERE MEMBER_ID = #{id};
+
+        -- 내가 참가한 솜 JOIN
+        DELETE FROM TBL_SOM_JOIN
+         WHERE MEMBER_ID = #{id};
+
+        --------------------------------------------------------------------
+        -- 3. 내가 만든 솜(TBL_SOM.MEMBER_ID = 회원) 관련 정리
+        --------------------------------------------------------------------
+        -- 내가 만든 솜의 인증 이미지
+        DELETE FROM TBL_SOM_CHECK_IMAGE
+         WHERE SOM_CHECK_ID IN (
+            SELECT ID
+              FROM TBL_SOM_CHECK
+             WHERE SOM_ID IN (
+                    SELECT ID FROM TBL_SOM WHERE MEMBER_ID = #{id}
+             )
+        );
+
+        -- 내가 만든 솜의 인증
+        DELETE FROM TBL_SOM_CHECK
+         WHERE SOM_ID IN (
+            SELECT ID FROM TBL_SOM WHERE MEMBER_ID = #{id}
+        );
+
+        -- 내가 만든 솜의 리뷰
+        DELETE FROM TBL_SOM_REVIEW
+         WHERE SOM_ID IN (
+            SELECT ID FROM TBL_SOM WHERE MEMBER_ID = #{id}
+        );
+
+        -- 내가 만든 솜에 참가한 사람들 JOIN
+        DELETE FROM TBL_SOM_JOIN
+         WHERE SOM_ID IN (
+            SELECT ID FROM TBL_SOM WHERE MEMBER_ID = #{id}
+        );
+
+        -- 내가 만든 솜 이미지
+        DELETE FROM TBL_SOM_IMAGE
+         WHERE SOM_ID IN (
+            SELECT ID FROM TBL_SOM WHERE MEMBER_ID = #{id}
+        );
+
+        --------------------------------------------------------------------
+        -- 4. 커뮤니티 - 좋아요/신고/최근 본 글 (내가 한 행들)
+        --------------------------------------------------------------------
+        DELETE FROM TBL_POST_COMMENT_LIKE   WHERE MEMBER_ID = #{id};
+        DELETE FROM TBL_POST_REPLY_LIKE     WHERE MEMBER_ID = #{id};
+        DELETE FROM TBL_POST_COMMENT_REPORT WHERE MEMBER_ID = #{id};
+        DELETE FROM TBL_POST_REPLY_REPORT   WHERE MEMBER_ID = #{id};
+        DELETE FROM TBL_POST_LIKE           WHERE MEMBER_ID = #{id};
+        DELETE FROM TBL_POST_REPORT         WHERE MEMBER_ID = #{id};
+        DELETE FROM TBL_POST_RECENT         WHERE MEMBER_ID = #{id};
+
+        --------------------------------------------------------------------
+        -- 5. 내가 쓴 대댓글 → 그 대댓글에 달린 좋아요/신고 → 대댓글 삭제
+        --------------------------------------------------------------------
+        DELETE FROM TBL_POST_REPLY_LIKE
+         WHERE POST_REPLY_ID IN (
+            SELECT ID FROM TBL_POST_REPLY WHERE MEMBER_ID = #{id}
+        );
+
+        DELETE FROM TBL_POST_REPLY_REPORT
+         WHERE POST_REPLY_ID IN (
+            SELECT ID FROM TBL_POST_REPLY WHERE MEMBER_ID = #{id}
+        );
+
+        DELETE FROM TBL_POST_REPLY
+         WHERE MEMBER_ID = #{id};
+
+        --------------------------------------------------------------------
+        -- 6. 내가 쓴 댓글 + 그 댓글에 달린 모든 대댓글 정리
+        --------------------------------------------------------------------
+        -- 6-1. 내 댓글에 달린 모든 대댓글의 좋아요/신고 삭제
+        DELETE FROM TBL_POST_REPLY_LIKE
+         WHERE POST_REPLY_ID IN (
+            SELECT ID
+              FROM TBL_POST_REPLY
+             WHERE POST_COMMENT_ID IN (
+                    SELECT ID
+                      FROM TBL_POST_COMMENT
+                     WHERE MEMBER_ID = #{id}
+             )
+        );
+
+        DELETE FROM TBL_POST_REPLY_REPORT
+         WHERE POST_REPLY_ID IN (
+            SELECT ID
+              FROM TBL_POST_REPLY
+             WHERE POST_COMMENT_ID IN (
+                    SELECT ID
+                      FROM TBL_POST_COMMENT
+                     WHERE MEMBER_ID = #{id}
+             )
+        );
+
+        -- 6-2. 내 댓글에 달린 모든 대댓글 삭제
+        DELETE FROM TBL_POST_REPLY
+         WHERE POST_COMMENT_ID IN (
+            SELECT ID
+              FROM TBL_POST_COMMENT
+             WHERE MEMBER_ID = #{id}
+        );
+
+        -- 6-3. 내 댓글에 달린 댓글 좋아요/신고 삭제
+        DELETE FROM TBL_POST_COMMENT_LIKE
+         WHERE POST_COMMENT_ID IN (
+            SELECT ID
+              FROM TBL_POST_COMMENT
+             WHERE MEMBER_ID = #{id}
+        );
+
+        DELETE FROM TBL_POST_COMMENT_REPORT
+         WHERE POST_COMMENT_ID IN (
+            SELECT ID
+              FROM TBL_POST_COMMENT
+             WHERE MEMBER_ID = #{id}
+        );
+
+        -- 6-4. 마지막으로 내 댓글 삭제
+        DELETE FROM TBL_POST_COMMENT
+         WHERE MEMBER_ID = #{id};
+
+        --------------------------------------------------------------------
+        -- 7. 내가 쓴 게시글(POST)에 달린 모든 댓글/대댓글/좋아요/신고/이미지 정리
+        --------------------------------------------------------------------
+        -- 7-1. 내 게시글에 달린 대댓글의 좋아요/신고 삭제
+        DELETE FROM TBL_POST_REPLY_LIKE
+         WHERE POST_REPLY_ID IN (
+            SELECT ID
+              FROM TBL_POST_REPLY
+             WHERE POST_COMMENT_ID IN (
+                    SELECT ID
+                      FROM TBL_POST_COMMENT
+                     WHERE POST_ID IN (
+                            SELECT ID FROM TBL_POST WHERE MEMBER_ID = #{id}
+                     )
+             )
+        );
+
+        DELETE FROM TBL_POST_REPLY_REPORT
+         WHERE POST_REPLY_ID IN (
+            SELECT ID
+              FROM TBL_POST_REPLY
+             WHERE POST_COMMENT_ID IN (
+                    SELECT ID
+                      FROM TBL_POST_COMMENT
+                     WHERE POST_ID IN (
+                            SELECT ID FROM TBL_POST WHERE MEMBER_ID = #{id}
+                     )
+             )
+        );
+
+        -- 7-2. 내 게시글에 달린 모든 대댓글 삭제
+        DELETE FROM TBL_POST_REPLY
+         WHERE POST_COMMENT_ID IN (
+            SELECT ID
+              FROM TBL_POST_COMMENT
+             WHERE POST_ID IN (
+                    SELECT ID FROM TBL_POST WHERE MEMBER_ID = #{id}
+             )
+        );
+
+        -- 7-3. 내 게시글에 달린 댓글 좋아요/신고 삭제
+        DELETE FROM TBL_POST_COMMENT_LIKE
+         WHERE POST_COMMENT_ID IN (
+            SELECT ID
+              FROM TBL_POST_COMMENT
+             WHERE POST_ID IN (
+                    SELECT ID FROM TBL_POST WHERE MEMBER_ID = #{id}
+             )
+        );
+
+        DELETE FROM TBL_POST_COMMENT_REPORT
+         WHERE POST_COMMENT_ID IN (
+            SELECT ID
+              FROM TBL_POST_COMMENT
+             WHERE POST_ID IN (
+                    SELECT ID FROM TBL_POST WHERE MEMBER_ID = #{id}
+             )
+        );
+
+        -- 7-4. 내 게시글에 달린 모든 댓글 삭제
+        DELETE FROM TBL_POST_COMMENT
+         WHERE POST_ID IN (
+            SELECT ID FROM TBL_POST WHERE MEMBER_ID = #{id}
+        );
+
+        -- 7-5. 내 게시글의 이미지 삭제
+        DELETE FROM TBL_POST_IMAGE
+         WHERE POST_ID IN (
+            SELECT ID FROM TBL_POST WHERE MEMBER_ID = #{id}
+        );
+
+        -- 7-6. 내 게시글에 달린 좋아요/신고/최근 삭제
+        DELETE FROM TBL_POST_LIKE
+         WHERE POST_ID IN (
+            SELECT ID FROM TBL_POST WHERE MEMBER_ID = #{id}
+        );
+
+        DELETE FROM TBL_POST_REPORT
+         WHERE POST_ID IN (
+            SELECT ID FROM TBL_POST WHERE MEMBER_ID = #{id}
+        );
+
+        DELETE FROM TBL_POST_RECENT
+         WHERE POST_ID IN (
+            SELECT ID FROM TBL_POST WHERE MEMBER_ID = #{id}
+        );
+
+        -- 7-7. 마지막으로 내가 쓴 게시글 삭제
+        DELETE FROM TBL_POST
+         WHERE MEMBER_ID = #{id};
+
+        --------------------------------------------------------------------
+        -- 8. 게시글 임시저장(드래프트)
+        --------------------------------------------------------------------
+        DELETE FROM TBL_POST_DRAFT
+         WHERE MEMBER_ID = #{id};
+
+        -- (옵션) 내가 만든 솜에 연결된 draft까지 정리
+        DELETE FROM TBL_POST_DRAFT
+         WHERE SOM_ID IN (
+            SELECT ID FROM TBL_SOM WHERE MEMBER_ID = #{id}
+        );
+
+        --------------------------------------------------------------------
+        -- 9. 상품 리뷰/리뷰 추천/리뷰 신고
+        --------------------------------------------------------------------
+        DELETE FROM TBL_PRODUCT_REVIEW_RECOMMEND
+         WHERE MEMBER_ID = #{id};
+
+        DELETE FROM TBL_PRODUCT_REVIEW_REPORT
+         WHERE MEMBER_ID = #{id};
+
+        DELETE FROM TBL_PRODUCT_REVIEW
+         WHERE MEMBER_ID = #{id};
+
+        --------------------------------------------------------------------
+        -- 10. 상품 좋아요 / 장바구니 / 주문 / 결제 / 배송
+        --------------------------------------------------------------------
+        DELETE FROM TBL_PRODUCT_LIKE
+         WHERE MEMBER_ID = #{id};
+
+        DELETE FROM TBL_PAYMENT_SOCIAL
+         WHERE PAYMENT_ID IN (
+            SELECT ID FROM TBL_PAYMENT WHERE MEMBER_ID = #{id}
+        );
+
+        DELETE FROM TBL_PAYMENT
+         WHERE MEMBER_ID = #{id};
+
+        DELETE FROM TBL_ORDER
+         WHERE MEMBER_ID = #{id};
+
+        DELETE FROM TBL_CART
+         WHERE MEMBER_ID = #{id};
+
+        DELETE FROM TBL_DELIVERY
+         WHERE MEMBER_ID = #{id};
+
+        --------------------------------------------------------------------
+        -- 11. 내가 만든 솜(TBL_SOM) 최종 삭제
+        --------------------------------------------------------------------
+        DELETE FROM TBL_SOM
+         WHERE MEMBER_ID = #{id};
+
+        --------------------------------------------------------------------
+        -- 12. 마지막으로 멤버 삭제
+        --------------------------------------------------------------------
+        DELETE FROM TBL_MEMBER
+         WHERE ID = #{id};
+
+    END;
+    ]]>
+    </delete>
+
+
 </mapper>

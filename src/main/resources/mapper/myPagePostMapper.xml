@@ -4,7 +4,7 @@
 
     <!--마이페이지 내가 쓴 글-->
     <select id="readPostWrite" parameterType="Long" resultType="com.app.bluecotton.domain.dto.MyPagePostWriteDTO">
-        SELECT TBM.ID, TBP.POST_TITLE, TBP.POST_CREATE_AT, TBS.SOM_CATEGORY
+        SELECT TBP.ID, TBP.POST_TITLE, TBP.POST_CREATE_AT, TBS.SOM_CATEGORY
         FROM TBL_POST TBP
         JOIN TBL_SOM TBS
         ON TBP.SOM_ID = TBS.ID
@@ -15,15 +15,17 @@
 
     <!--마이페이지 내가 좋아요한 글-->
     <select id="readPostLike" parameterType="Long" resultType="com.app.bluecotton.domain.dto.MyPagePostLikeDTO">
-        SELECT TBP.ID, TBP.POST_CREATE_AT, TBP.POST_TITLE, TBS.SOM_CATEGORY
+        SELECT
+        TBP.ID,
+        TBP.POST_CREATE_AT,
+        TBP.POST_TITLE,
+        TBS.SOM_CATEGORY
         FROM TBL_POST_LIKE TPL
         JOIN TBL_POST TBP
         ON TPL.POST_ID = TBP.ID
         JOIN TBL_SOM TBS
         ON TBP.SOM_ID = TBS.ID
-        JOIN TBL_MEMBER TBM
-        ON TBP.MEMBER_ID = TBM.ID
-        WHERE TBM.ID = #{id}
+        WHERE TPL.MEMBER_ID = #{memberId}
     </select>
 
     <!--마이페이지 내가 쓴 댓글과 대댓글-->
