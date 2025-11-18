@@ -2,6 +2,7 @@ package com.app.bluecotton.api.privateapi;
 
 import com.app.bluecotton.domain.dto.*;
 import com.app.bluecotton.service.MyPagePostService;
+import com.app.bluecotton.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import java.util.List;
 public class MyPagePostApi {
 
     private final MyPagePostService myPagePostService;
+    private final PostService postService;
 
     //    마이페이지 내가 쓴 글
     @GetMapping("read-post-write")
@@ -66,23 +68,23 @@ public class MyPagePostApi {
     @DeleteMapping("delete-post-write")
     public ResponseEntity<ApiResponseDTO> deletePostWrite(@RequestParam Long id){
         log.info("내가 작성한 글을 삭제합니다");
-        myPagePostService.deletePostWrite(id);
+        postService.withdraw(id);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("내가 작성한 글이 삭제되었습니다"));
     }
 
     //    내가 좋아요한 글 삭제
     @DeleteMapping("delete-post-like")
     public ResponseEntity<ApiResponseDTO> deletePostLike(@RequestParam Long id){
-        log.info("내가 좋아요한 글을 삭제합니다");
+        log.info("나의 좋아요를 취소합니다");
         myPagePostService.deletePostLike(id);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("내가 좋아요한 글이 삭제되었습니다"));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("나의 좋아요가 취소되었습니다"));
     }
 
     //    내가 단 댓글 삭제
     @DeleteMapping("delete-post-comment")
     public ResponseEntity<ApiResponseDTO> deletePostComment(@RequestParam Long id){
         log.info("내가 단 댓글을 삭제합니다");
-        myPagePostService.deletePostComment(id);
+        postService.deleteComment(id);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("내가 단 댓글이 삭제되었습니다"));
     }
 
@@ -90,7 +92,7 @@ public class MyPagePostApi {
     @DeleteMapping("delete-post-reply")
     public ResponseEntity<ApiResponseDTO> deletePostReply(@RequestParam Long id){
         log.info("내가 단 대댓글을 삭제합니다");
-        myPagePostService.deletePostReply(id);
+        postService.deleteReplyById(id);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("내가 단 댓글이 삭제되었습니다"));
     }
 
@@ -98,7 +100,7 @@ public class MyPagePostApi {
     @DeleteMapping("delete-post-save")
     public ResponseEntity<ApiResponseDTO> deletePostSave(@RequestParam Long id){
         log.info("내가 임시저장한 글을 삭제합니다");
-        myPagePostService.deletePostSave(id);
+        postService.deleteDraft(id);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("내가 임시저장한 글이 삭제되었습니다"));
     }
 

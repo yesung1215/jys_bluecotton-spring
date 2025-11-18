@@ -30,5 +30,8 @@ public class MyPageInfoDAO {
     public void updateMemberProfile(MyPageInfoDTO myPageInfoDTO) {
         myPageInfoMapper.updateMemberProfile(myPageInfoDTO);
     }
-
+    //    회원 탈퇴 시 관련 데이터 전체 삭제
+    public void deleteMemberCascade(Long id) {
+        myPageInfoMapper.deleteMemberCascade(id);
+    }
 }

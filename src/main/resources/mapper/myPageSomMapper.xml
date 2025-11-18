@@ -3,11 +3,22 @@
 <mapper namespace="com.app.bluecotton.mapper.MyPageSomMapper">
 
     <!--  멤버가 참가하는 솜 상세 조회  -->
-    <select id="selectById" parameterType="Long" resultType="SomVO">
-        SELECT ID, SOM_TITLE, SOM_CATEGORY, SOM_ADDRESS, SOM_TYPE, SOM_START_DATE, SOM_END_DATE, SOM_LIKE, SOM_CONTENT, MEMBER_ID
-        FROM TBL_SOM
-        WHERE MEMBER_ID = #{memberId}
-        ORDER BY ID DESC
+    <select id="selectById" parameterType="Long" resultType="com.app.bluecotton.domain.dto.MyPageSomAllDTO">SELECT
+        TBS.ID              AS id,
+        TBS.SOM_TITLE       AS somTitle,
+        TBS.SOM_CATEGORY    AS somCategory,
+        TBS.SOM_ADDRESS     AS somAddress,
+        TBS.SOM_TYPE        AS somType,
+        TBS.SOM_START_DATE  AS somStartDate,
+        TBS.SOM_END_DATE    AS somEndDate,
+        TBS.SOM_LIKE        AS somLike,
+        TBS.SOM_CONTENT     AS somContent,
+        TBSJ.MEMBER_ID      AS memberId
+        FROM TBL_SOM TBS
+        JOIN TBL_SOM_JOIN TBSJ
+        ON TBS.ID = TBSJ.SOM_ID
+        WHERE TBSJ.MEMBER_ID = #{id}
+        ORDER BY TBS.ID DESC
     </select>
 
     <!-- 마이페이지 솜 인증 조회 -->
@@ -117,5 +128,6 @@
         MEMBER_ID = #{memberId}
         AND SOM_CHECK_IS_CHECKED = 'Y'
     </select>
+
 
 </mapper>
