@@ -11,17 +11,17 @@
         FROM TBL_PRODUCT_REVIEW TBPR
         WHERE TBPR.PRODUCT_ID = TBP.ID) AS PRODUCT_AVG_RATING,
 
-        <!--   리뷰 총합 -->
+        <!-- 리뷰 총합 -->
         (SELECT COUNT(TBPR.ID)
         FROM TBL_PRODUCT_REVIEW TBPR
         WHERE TBPR.PRODUCT_ID = TBP.ID) AS PRODUCT_REVIEW_COUNT,
 
-        <!--    찜 하기 총 개수-->
+        <!-- 찜 하기 총 개수 -->
         (SELECT COUNT(TBPL.PRODUCT_ID)
         FROM TBL_PRODUCT_LIKE TBPL
         WHERE TBPL.PRODUCT_ID = TBP.ID) AS PRODUCT_LIKE_COUNT,
 
-        <!--   이미지 경로 + 이미지 이름-->
+        <!-- 이미지 URL -->
         (SELECT TBPI.PRODUCT_IMAGE_PATH || TBPI.PRODUCT_IMAGE_NAME
         FROM TBL_PRODUCT_IMAGE TBPI
         WHERE TBPI.PRODUCT_ID = TBP.ID
@@ -42,6 +42,7 @@
             <if test="q != null and q != ''">
                 AND (TBP.PRODUCT_NAME LIKE '%' || #{q} || '%')
             </if>
+
             <!-- 카테고리: 다중 선택 OR 그룹 -->
             <if test="selection != 'all'">
                 <trim prefix="(" suffix=")" suffixOverrides="OR">
@@ -56,12 +57,13 @@
                 </trim>
             </if>
 
-
+            <!-- 상품 타입  -->
             <trim prefix="AND (" suffix=")" suffixOverrides="OR">
                 <if test="newType != null"> PRODUCT_TYPE = #{newType} OR </if>
                 <if test="best    != null"> PRODUCT_TYPE = #{best}    OR </if>
             </trim>
 
+            <!-- 구매타입 -->
             <trim prefix="AND (" suffix=")" suffixOverrides="OR">
                 <if test="candy != null"> PRODUCT_PURCHASE_TYPE = #{candy} OR </if>
                 <if test="cash  != null"> PRODUCT_PURCHASE_TYPE = #{cash}  OR </if>
@@ -96,13 +98,13 @@
         </choose>
     </select>
     
-<!-- 샵 메인 페이지 찜하기 추가 -->
+    <!-- 샵 메인 페이지 찜하기 추가 -->
     <insert id="insertMyLikedProduct">
         INSERT INTO TBL_PRODUCT_LIKE (ID, MEMBER_ID, PRODUCT_ID)
         VALUES (SEQ_PRODUCT_LIKE.NEXTVAL, #{memberId}, #{productId})
     </insert>
 
-<!--  샵 메인 페이지 찜하기 삭제  -->
+    <!--  샵 메인 페이지 찜하기 삭제  -->
     <delete id="deleteMyLikedProduct" >
         DELETE FROM TBL_PRODUCT_LIKE
         WHERE MEMBER_ID = #{memberId} AND PRODUCT_ID = #{productId}
@@ -150,7 +152,6 @@
         AND TBPI.PRODUCT_IMAGE_TYPE = 'MAIN'
         AND ROWNUM = 1) AS PRODUCT_MAIN_IMAGE_URL,
 
-
         (SELECT LISTAGG(TBPI.PRODUCT_IMAGE_PATH || TBPI.PRODUCT_IMAGE_NAME, ',')
         WITHIN GROUP (ORDER BY TBPI.ID)
         FROM TBL_PRODUCT_IMAGE TBPI
@@ -160,7 +161,6 @@
         FROM TBL_PRODUCT TBP
         WHERE TBP.ID = #{id}
     </select>
-
 
     <!-- 상품 상세 페이지 찜하기 -->
     <select id="selectProductDetailHeaderLike" parameterType="map" resultType="com.app.bluecotton.domain.dto.ProductDetailResponseDTO">
@@ -478,18 +478,14 @@
         SELECT
         CASE
         WHEN EXISTS (
-        SELECT
-        ID
+        SELECT ID
         FROM TBL_PRODUCT_REVIEW
         WHERE
         PRODUCT_ID = #{productId}
         AND
         MEMBER_ID = #{memberId}
-        )
-        THEN 1
-        ELSE 0
-        END
-        FROM DUAL
+        ) THEN 1
+        ELSE 0 END FROM DUAL
     </select>
 
     <!-- 리뷰 댓글 신고-->

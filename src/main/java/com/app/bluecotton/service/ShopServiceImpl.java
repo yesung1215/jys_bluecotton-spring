@@ -51,7 +51,6 @@ public class ShopServiceImpl implements ShopService {
 
     // 찜하기 토글
     @Override
-    @Transactional
     public void toggleLike(Long memberId, Long productId) {
         Integer count = shopDAO.findLikeCount(memberId, productId);
 
@@ -96,8 +95,10 @@ public class ShopServiceImpl implements ShopService {
         }
     }
 
+    // 마이리뷰 삭제
     @Override
     public void deleteMyReview(Long id) {
+        shopDAO.deleteMyReviewImage(id);
         shopDAO.deleteMyReview(id);
     }
 
