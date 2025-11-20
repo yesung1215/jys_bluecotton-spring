@@ -2,9 +2,7 @@ package com.app.bluecotton.api;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriUtils;
 
@@ -13,32 +11,30 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@Controller
+@RestController
 @RequestMapping("/file")
 public class FileReadApi {
 
-    private static final String BASE_DIR = "C:/bluecottonimage";
-
+    private static final Path BASE_DIR = Paths.get("C:/bluecottonimage");
 
     @GetMapping("/{type}/{fileName:.+}")
-    @ResponseBody
     public ResponseEntity<Resource> serve(
             @PathVariable String type,
             @PathVariable String fileName
     ) throws Exception {
 
-        String decoded = UriUtils.decode(fileName, StandardCharsets.UTF_8);
+        // URL 인코딩된 파일명을 UTF-8로 디코딩 (한글 파일명 대응)
+        String decodedName = UriUtils.decode(fileName, StandardCharsets.UTF_8);
 
-        Path file = Paths.get(BASE_DIR, type, decoded);
+        // 실제 파일 경로: C:/bluecottonimage/{type}/{fileName}
+        Path file = BASE_DIR.resolve(type).resolve(decodedName);
 
-        if (!Files.exists(file)) return ResponseEntity.notFound().build();
-
-        String contentType = Files.probeContentType(file);
-        if (contentType == null) contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
-
+        // 파일 없으면 404에러
+        if (!Files.exists(file)) {
+            return ResponseEntity.notFound().build();
+        }
         Resource resource = new UrlResource(file.toUri());
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .body(resource);
+
+        return ResponseEntity.ok(resource);
     }
 }
