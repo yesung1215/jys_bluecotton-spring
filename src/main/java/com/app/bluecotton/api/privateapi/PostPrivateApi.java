@@ -48,7 +48,9 @@ public class PostPrivateApi {
     @DeleteMapping("/withdraw")
     public ResponseEntity<ApiResponseDTO> withdrawPost(@RequestParam Long id) {
         postService.withdraw(id);
-        return ResponseEntity.ok(ApiResponseDTO.of("게시글 삭제 완료"));
+        return  ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ApiResponseDTO.of("게시글 삭제 완료"));
     }
 
     // 임시저장 생성
@@ -72,14 +74,18 @@ public class PostPrivateApi {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ApiResponseDTO.of("임시 저장된 글 없음", null));
         }
-        return ResponseEntity.ok(ApiResponseDTO.of("불러오기 성공", draft));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponseDTO.of("불러오기 성공", draft));
     }
 
     // 임시저장 삭제
     @DeleteMapping("/draft/delete")
     public ResponseEntity<ApiResponseDTO> deleteDraft(@RequestParam Long id) {
         postService.deleteDraft(id);
-        return ResponseEntity.ok(ApiResponseDTO.of("임시 저장 삭제 완료"));
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ApiResponseDTO.of("임시 저장 삭제 완료"));
     }
 
     // 게시글 수정 조회
@@ -101,7 +107,8 @@ public class PostPrivateApi {
     ) {
         postModifyDTO.setId(id);
         postService.modifyPost(postModifyDTO);
-        return ResponseEntity.ok(ApiResponseDTO.of("수정 완료"));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponseDTO.of("수정 완료"));
     }
 
     // 댓글 등록
@@ -132,14 +139,16 @@ public class PostPrivateApi {
     @DeleteMapping("/comment/{commentId}")
     public ResponseEntity<ApiResponseDTO> deleteComment(@PathVariable Long commentId) {
         postService.deleteComment(commentId);
-        return ResponseEntity.ok(ApiResponseDTO.of("댓글 삭제 완료"));
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponseDTO.of("댓글 삭제 완료"));
     }
 
     // 답글 삭제
     @DeleteMapping("/reply/{replyId}")
     public ResponseEntity<ApiResponseDTO> deleteReply(@PathVariable Long replyId) {
         postService.deleteReplyById(replyId);
-        return ResponseEntity.ok(ApiResponseDTO.of("답글 삭제 완료"));
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponseDTO.of("답글 삭제 완료"));
     }
 
     // 게시글 좋아요 토글
@@ -149,7 +158,8 @@ public class PostPrivateApi {
             @AuthenticationPrincipal MemberResponseDTO currentUser
     ) {
         postService.toggleLike(payload.get("postId"), currentUser.getId());
-        return ResponseEntity.ok(ApiResponseDTO.of("좋아요 토글 완료"));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponseDTO.of("게시글 좋아요 완료"));
     }
 
     // 댓글 좋아요 토글
@@ -159,7 +169,8 @@ public class PostPrivateApi {
             @AuthenticationPrincipal MemberResponseDTO currentUser
     ) {
         postService.toggleCommentLike(payload.get("commentId"), currentUser.getId());
-        return ResponseEntity.ok(ApiResponseDTO.of("댓글 좋아요 토글 완료"));
+        return  ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponseDTO.of("댓글 좋아요 완료"));
     }
 
     // 답글 좋아요 토글
@@ -169,7 +180,8 @@ public class PostPrivateApi {
             @AuthenticationPrincipal MemberResponseDTO currentUser
     ) {
         postService.toggleReplyLike(payload.get("replyId"), currentUser.getId());
-        return ResponseEntity.ok(ApiResponseDTO.of("답글 좋아요 토글 완료"));
+        return  ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponseDTO.of("답글 좋아요 완료"));
     }
 
     // 최근 본 글 추가

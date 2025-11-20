@@ -43,36 +43,27 @@ public class PostServiceImpl implements PostService {
     // 게시글 등록 + draft 자동 삭제 (트랜잭션)
     @Override
     public Long write(PostVO postVO, List<Long> postImageIds, Long draftId) {
-
+        // ０） 금일 게시글 여부 확인
         int count = postDAO.existsTodayPostInSom(postVO.getMemberId(), postVO.getSomId());
         if (count > 0) {
             throw new PostException("이미 오늘 해당 솜에 게시글을 작성했습니다.");
         }
-
         // 1) 게시글 등록
         postDAO.insert(postVO);
-
         // 2) 이미지 처리
         if (postImageIds != null && !postImageIds.isEmpty()) {
-            boolean isFirst = true;
-
             for (Long imageId : postImageIds) {
-
                 // 이미지 → postId 연결
                 postImageService.updatePostId(imageId, postVO.getId());
-
             }
-
         } else {
             // 기본 썸네일 등록
             postImageService.insertDefaultImage(postVO.getId());
         }
-
         // 3) 임시저장 삭제
         if (draftId != null) {
             postDAO.deleteDraftById(draftId);
         }
-
         return postVO.getId();
     }
 

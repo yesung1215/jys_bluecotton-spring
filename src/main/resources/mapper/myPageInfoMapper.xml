@@ -7,24 +7,23 @@
     <!-- 회원 + 프로필 정보 조회 -->
     <select id="selectMemberInfo" parameterType="Long" resultType="com.app.bluecotton.domain.dto.MyPageInfoDTO">
         SELECT
-        TM.ID                        AS id,
-        TM.MEMBER_NAME               AS memberName,
-        TM.MEMBER_NICKNAME           AS memberNickname,
-        TM.MEMBER_EMAIL              AS memberEmail,
-        TM.MEMBER_PASSWORD           AS memberPassword,
-        TM.MEMBER_ADDRESS            AS memberAddress,
-        TM.MEMBER_DETAIL_ADDRESS     AS memberDetailAddress,
-        TM.MEMBER_POSTCODE           AS memberPostcode,
-        TM.MEMBER_GENDER             AS memberGender,
-        TM.MEMBER_BIRTH              AS memberBirth,
-        TM.MEMBER_CANDY              AS memberCandy,
-        TM.MEMBER_RANK               AS memberRank,
-        TM.MEMBER_PROVIDER           AS memberProvider,
-        TM.MEMBER_PHONE              AS memberPhone,
-
-        TMP.ID                       AS memberPictureId,
-        TMP.MEMBER_PROFILE_PATH      AS memberPicturePath,
-        TMP.MEMBER_PROFILE_NAME      AS memberPictureName
+            TM.ID AS id,
+            TM.MEMBER_NAME AS memberName,
+            TM.MEMBER_NICKNAME AS memberNickname,
+            TM.MEMBER_EMAIL AS memberEmail,
+            TM.MEMBER_PASSWORD AS memberPassword,
+            TM.MEMBER_ADDRESS AS memberAddress,
+            TM.MEMBER_DETAIL_ADDRESS AS memberDetailAddress,
+            TM.MEMBER_POSTCODE AS memberPostcode,
+            TM.MEMBER_GENDER AS memberGender,
+            TM.MEMBER_BIRTH AS memberBirth,
+            TM.MEMBER_CANDY AS memberCandy,
+            TM.MEMBER_RANK AS memberRank,
+            TM.MEMBER_PROVIDER AS memberProvider,
+            TM.MEMBER_PHONE AS memberPhone,
+            TMP.ID AS memberPictureId,
+            TMP.MEMBER_PROFILE_PATH AS memberPicturePath,
+            TMP.MEMBER_PROFILE_NAME AS memberPictureName
         FROM TBL_MEMBER TM
         LEFT JOIN TBL_MEMBER_PROFILE TMP
         ON TM.ID = TMP.MEMBER_ID

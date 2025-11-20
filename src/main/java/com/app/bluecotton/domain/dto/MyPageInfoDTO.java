@@ -1,4 +1,4 @@
-package com.app.bluecotton.domain.dto;
+    package com.app.bluecotton.domain.dto;
 
 import com.app.bluecotton.domain.vo.member.MemberProfileVO;
 import com.app.bluecotton.domain.vo.member.MemberVO;

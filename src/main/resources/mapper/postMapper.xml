@@ -172,7 +172,7 @@
         VALUES (SEQ_POST_IMAGE.NEXTVAL, #{postImagePath}, #{postImageName}, #{postId})
     </insert>
 
-    <!-- [게시글 등록용] 참여 중인 솜 -->
+    <!-- 참여 중인 솜 조회 -->
     <select id="findJoinedSomsByMemberId" parameterType="Long" resultType="SomCategoryDTO">
         SELECT TBS.ID, TBS.SOM_CATEGORY, TBS.SOM_TITLE,
             TRUNC(TRUNC(SYSDATE) - TRUNC(TBS.SOM_START_DATE)) + 1 AS SOM_DAY_DIFF

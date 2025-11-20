@@ -70,4 +70,13 @@ public class MyPageSomApi {
         Long data =  myPageSomService.readRank(id);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("랭크를 호출했습니다", data));
     }
+
+    // 특정 솜 참가 취소
+    @DeleteMapping  ("delete-som")
+    public ResponseEntity<ApiResponseDTO> deleteMySom(@RequestParam("memberId") Long memberId,
+                                                      @RequestParam("somId") Long somId) {
+        log.info("참가한 솜을 삭제합니다");
+        myPageSomService.deleteMySom(memberId, somId);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("참가한 솜을 삭제했습니다"));
+    }
 }

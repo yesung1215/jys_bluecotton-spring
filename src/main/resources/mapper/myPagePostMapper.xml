@@ -31,15 +31,15 @@
     <!--마이페이지 내가 쓴 댓글과 대댓글-->
     <select id="readPostComment" parameterType="Long" resultType="com.app.bluecotton.domain.dto.MyPagePostCommentDTO">
         SELECT
-        TBPC.ID                       AS comment_id,
-        TBPR.ID                       AS reply_id,
-        TBP.ID                        AS post_id,
-        TBPC.POST_COMMENT_CONTENT     AS post_comment_content,
-        TBPR.POST_REPLY_CONTENT       AS post_reply_content,
-        TBPC.POST_COMMENT_CREATE_AT   AS post_comment_create_at,
-        TBPR.POST_REPLY_CREATE_AT     AS post_reply_create_at,
-        TBP.POST_TITLE                AS post_title,
-        TBS.SOM_CATEGORY              AS som_category
+            TBPC.ID AS comment_id,
+            TBPR.ID AS reply_id,
+            TBP.ID AS post_id,
+            TBPC.POST_COMMENT_CONTENT AS post_comment_content,
+            TBPR.POST_REPLY_CONTENT AS post_reply_content,
+            TBPC.POST_COMMENT_CREATE_AT AS post_comment_create_at,
+            TBPR.POST_REPLY_CREATE_AT AS post_reply_create_at,
+            TBP.POST_TITLE AS post_title,
+            TBS.SOM_CATEGORY AS som_category
         FROM TBL_POST TBP
         JOIN TBL_SOM TBS
         ON TBP.SOM_ID = TBS.ID
