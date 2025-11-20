@@ -57,4 +57,8 @@ public class MyPageSomServiceImpl implements MyPageSomService {
     //    마이페이지 랭크 호출
     @Override
     public Long readRank(Long id){ return myPageSomDAO.readRank(id); }
+
+    // 특정 솜 참가 취소
+    @Override
+    public void deleteMySom(Long memberId, Long somId){ myPageSomDAO.deleteMySom(memberId, somId); }
 }

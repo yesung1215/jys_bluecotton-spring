@@ -6,6 +6,7 @@ import com.app.bluecotton.domain.vo.som.SomVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface MyPageSomMapper {
@@ -24,5 +25,7 @@ public interface MyPageSomMapper {
     public List<MyPageSomReviewDTO> readSomReview(Long id);
     //    마이페이지 랭크 호출
     public Long readRank(Long id);
+    // 특정 솜 참가 취소
+    void deleteMySom(Long memberId, Long somId);
 
 }

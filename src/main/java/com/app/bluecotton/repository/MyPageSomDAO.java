@@ -34,5 +34,7 @@ public class MyPageSomDAO {
     public Long readRank(Long id) {
         return myPageSomMapper.readRank(id);
     }
+    // 특정 솜 참가 취소
+    public void deleteMySom(Long memberId, Long somId) { myPageSomMapper.deleteMySom(memberId, somId); }
 
 }

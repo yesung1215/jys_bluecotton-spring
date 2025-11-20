@@ -20,5 +20,7 @@ public interface MyPageSomService {
     public List<MyPageSomReviewDTO> readSomReview(Long id);
     //    마이페이지 랭크 호출
     public Long readRank(Long id);
+    // 특정 솜 참가 취소
+    public void deleteMySom(Long memberId, Long somId);
 
 }

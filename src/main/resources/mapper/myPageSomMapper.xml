@@ -26,13 +26,13 @@
             parameterType="long"
             resultType="com.app.bluecotton.domain.dto.MyPageSomCheckDTO">
         SELECT
-        TBM.ID                    AS memberId,
-        TBSC.ID                   AS somCheckId,
-        TBSC.SOM_CHECK_IS_CHECKED AS somCheckIsChecked,
-        TBSC.SOM_CHECK_CONTENT    AS somCheckContent,
-        TBS.SOM_CATEGORY          AS somCategory,
-        TBS.SOM_START_DATE        AS somStartDate,
-        TBS.SOM_END_DATE          AS somEndDate
+            TBM.ID AS memberId,
+            TBSC.ID AS somCheckId,
+            TBSC.SOM_CHECK_IS_CHECKED AS somCheckIsChecked,
+            TBSC.SOM_CHECK_CONTENT AS somCheckContent,
+            TBS.SOM_CATEGORY AS somCategory,
+            TBS.SOM_START_DATE AS somStartDate,
+            TBS.SOM_END_DATE AS somEndDate
         FROM TBL_SOM_CHECK TBSC
         JOIN TBL_SOM TBS
         ON TBSC.SOM_ID = TBS.ID
@@ -129,5 +129,35 @@
         AND SOM_CHECK_IS_CHECKED = 'Y'
     </select>
 
+    <!-- 특정 솜에 대해: 참가 + 인증 + 인증이미지 + 리뷰 삭제 -->
+    <delete id="deleteMySom" parameterType="map">
+        <![CDATA[
+    BEGIN
+        -- 1) 인증 이미지 삭제
+        DELETE FROM TBL_SOM_CHECK_IMAGE
+         WHERE SOM_CHECK_ID IN (
+            SELECT ID
+              FROM TBL_SOM_CHECK
+             WHERE MEMBER_ID = #{memberId}
+               AND SOM_ID    = #{somId}
+        );
+
+        -- 2) 인증 삭제
+        DELETE FROM TBL_SOM_CHECK
+         WHERE MEMBER_ID = #{memberId}
+           AND SOM_ID    = #{somId};
+
+        -- 3) 리뷰 삭제
+        DELETE FROM TBL_SOM_REVIEW
+         WHERE MEMBER_ID = #{memberId}
+           AND SOM_ID    = #{somId};
+
+        -- 4) 참가 기록 삭제 (JOIN)
+        DELETE FROM TBL_SOM_JOIN
+         WHERE MEMBER_ID = #{memberId}
+           AND SOM_ID    = #{somId};
+    END;
+    ]]>
+    </delete>
 
 </mapper>
