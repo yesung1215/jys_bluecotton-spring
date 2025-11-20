@@ -52,15 +52,25 @@ public class ShopServiceImpl implements ShopService {
     // 찜하기 토글
     @Override
     public void toggleLike(Long memberId, Long productId) {
-        Integer count = shopDAO.findLikeCount(memberId, productId);
 
-        if (count != null && count > 0) {
-            // 찜 삭제
-            shopDAO.deleteLikedProduct(memberId, productId);
-        } else {
-            // 찜 추가
-            shopDAO.insertMyLikedProduct(memberId, productId);
+        if (memberId == null || productId == null) {
+            throw new ShopException("회원 정보 또는 상품 정보가 올바르지 않습니다.");
         }
+
+        try {
+            Integer count = shopDAO.findLikeCount(memberId, productId);
+
+            if (count != null && count > 0) {
+                // 찜 삭제
+                shopDAO.deleteLikedProduct(memberId, productId);
+            } else {
+                // 찜 추가
+                shopDAO.insertMyLikedProduct(memberId, productId);
+            }
+        } catch (Exception e) {
+            throw new ShopException("찜");
+        }
+
     }
 
     @Override
